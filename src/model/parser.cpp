@@ -10,7 +10,10 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parse()
 }
 
 #pragma region structures
-
+std::unique_ptr<nodes::Node> Parser::parseFunc(std::string type, std::string name)
+{
+    
+}
 #pragma endregion
 
 #pragma region keyWords
@@ -86,12 +89,40 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parseGlobal()
     {
         if(!isStdType(peek().value().getType()) && (peek().value().getType() != TokenType::identifier || !isDefType(peek().value().getValue().value())))
         {
-            
+            std::cerr << "Expected a declaration.";
+            exit(EXIT_FAILURE);
+        }
+
+        std::string type = "";
+
+        if(isStdType(consume().getType()))
+        {
+            type = stdTypeToStr(consume().getType());
+        }
+        else
+        {
+            type = peek().value().getValue().value();
+        }
+
+        if(!peek().has_value() || peek().value().getType() != TokenType::identifier)
+        {
+            std::cerr << "\nExpected identifier.";
+            exit(EXIT_FAILURE);
+        }
+
+        std::string name = consume().getValue().value();
+
+        if(peek().has_value() && peek().value().getType() == TokenType::lParen)
+        {
+            parseFunc(std::move(type), std::move(name));
+        }
+        else
+        {
+            std::cerr << "\nExpected '('";
+            exit(EXIT_FAILURE);
         }
     }
 }
-
-
 
 std::vector<std::unique_ptr<nodes::Node>> Parser::parseBlock()
 {

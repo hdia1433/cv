@@ -19,7 +19,7 @@ private:
     size_t index;
 
     //structures
-    std::unique_ptr<nodes::Node> parseFunc();
+    std::unique_ptr<nodes::Node> parseFunc(std::string, std::string);
 
     //keywords
     std::unique_ptr<nodes::Node> parseExit();
