@@ -12,7 +12,27 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parse()
 #pragma region structures
 std::unique_ptr<nodes::Node> Parser::parseFunc(std::string type, std::string name)
 {
-    
+    consume();
+
+    if(!peek().has_value() && peek().value().getType() != TokenType::rParen)
+    {
+        std::cerr << "Expected ')'";
+        exit(EXIT_FAILURE);
+    }
+
+    consume();
+
+    if(!peek().has_value() && peek().value().getType() != TokenType::lBrace)
+    {
+        std::cerr << "Expected '{'";
+        exit(EXIT_FAILURE);
+    }
+
+    consume();
+
+    std::unique_ptr<nodes::FunctionDecl> function = std::make_unique<nodes::FunctionDecl>(type, name, parseBlock());
+
+    return function;
 }
 #pragma endregion
 
