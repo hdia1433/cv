@@ -33,28 +33,22 @@ int main(int argc, char* argv[])
     Lexer lexer(std::move(code));
     std::vector tokens = lexer.tokenize();
 
-    for(Token token : tokens)
-    {
-        std::cout << token << " ";
-    }
-
     std::println("Parsing");
 
     Parser parser(std::move(tokens));
-    auto tree = parser.parse();
+    auto nodes = parser.parse();
 
-    // std::println("Generating assembly");
+    std::println("Generating assembly");
 
-    // Generator generator(tree.value());
+    Generator generator(std::move(nodes));
     
-    // std::fstream file("out.asm", std::ios::out);
-    // file << generator.generate();
-    // file.close();
+    std::fstream file("out.asm", std::ios::out);
+    file << generator.generate();
+    file.close();
 
-    // std::println("Building file");
+    std::println("Building file");
 
-    // system("nasm -f macho64 out.asm");
-    // system("clang -arch x86_64 out.o -o out");
+    system("clang out.asm -o out");
 
     return 0;
 }

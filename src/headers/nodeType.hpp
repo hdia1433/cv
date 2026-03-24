@@ -5,6 +5,5 @@ enum class NodeType
 {
     function,
     exit,
-    intLit,
-    empty
+    intLit
 };

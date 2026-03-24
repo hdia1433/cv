@@ -1,4 +1,4 @@
 void main()
 {
-    exit 45;
+    exit 42;
 }

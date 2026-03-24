@@ -6,7 +6,18 @@ Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)), index(0)
 
 std::vector<std::unique_ptr<nodes::Node>> Parser::parse()
 {
-    return parseGlobal();
+    std::vector<std::unique_ptr<nodes::Node>> nodes = parseGlobal();
+
+    for(const std::unique_ptr<nodes::Node>& node : nodes)
+    {
+        if(node->type == NodeType::function && static_cast<nodes::FunctionDecl*>(node.get())->name == "main")
+        {
+            return nodes;
+        }
+    }
+
+    std::cerr << "Couldn't find starting point. must declare void function named 'name'.";
+    exit(EXIT_FAILURE);
 }
 
 #pragma region structures

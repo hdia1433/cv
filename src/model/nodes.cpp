@@ -20,6 +20,6 @@ namespace nodes
 
     Empty::Empty()
     {
-        type = NodeType::empty;
+        
     }
 }
