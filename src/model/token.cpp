@@ -56,6 +56,8 @@ std::ostream& operator<<(std::ostream& os, TokenType type)
             return os << "LEFT_CURLY_BRACKET";
         case TokenType::rBrace:
             return os << "RIGHT_CURLY_BRACKET";
+        case TokenType::assign:
+            return os << "ASSIGN_OP";
         case TokenType::semi:
             return os << "SEMICOLON";
         case TokenType::exitKey:

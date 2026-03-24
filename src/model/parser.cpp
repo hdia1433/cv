@@ -1,6 +1,6 @@
 #include "parser.hpp"
 
-Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)), index(0)
+Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)), index(0), stackOff(0)
 {
 }
 
@@ -10,7 +10,7 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parse()
 
     for(const std::unique_ptr<nodes::Node>& node : nodes)
     {
-        if(node->type == NodeType::function && static_cast<nodes::FunctionDecl*>(node.get())->name == "main")
+        if(node->type == NodeType::functionDecl && static_cast<nodes::FunctionDecl*>(node.get())->name == "main")
         {
             return nodes;
         }
@@ -21,6 +21,41 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parse()
 }
 
 #pragma region structures
+std::unique_ptr<nodes::Node> Parser::parseVar(Token typeToken, const std::string name)
+{
+    align(typeToSize(typeToken.getType()));
+    if(isStdType(typeToken.getType()))
+    {
+        if(scopeStack.back().symbols.find(name) == scopeStack.back().symbols.end())
+        {
+            scopeStack.back().symbols.insert(name, {stdTypeToStr(typeToken.getType()), stackOff});
+            stackOff += typeToSize(typeToken.getType());
+        }
+
+        if(peek().has_value() && peek().value().getType() == TokenType::semi)
+        {
+            return std::make_unique<nodes::VarDecl>(stdTypeToStr(typeToken.getType()), name, stdTypeToValue(typeToken.getType()));
+        }
+        else if(!peek().has_value() || peek().value().getType() != TokenType::assign)
+        {
+            std::cerr << "\nExpected '=' or ';' after variable declaration.";
+            exit(EXIT_FAILURE);
+        }
+
+        consume();
+
+        if(!peek().has_value() || !isStdLit(peek().value().getType()))
+        {
+            std::cerr << "\nExpected value after token.";
+        }
+
+        return std::make_unique<nodes::VarDecl>(stdTypeToStr(typeToken.getType()), name, stdTypeToValue(typeToken.getType(), consume().getValue().value()));
+    }
+
+    std::cerr << "\nCustom types not yet implemented";
+    exit(EXIT_FAILURE);
+}
+
 std::unique_ptr<nodes::Node> Parser::parseFunc(std::string type, std::string name)
 {
     consume();
@@ -71,18 +106,39 @@ std::unique_ptr<nodes::Node> Parser::parseStatement()
 
     std::unique_ptr<nodes::Node> statement;
 
-    switch (peek().value().getType())
+    if(isStdType(peek().value().getType()) || (peek().value().getType() == TokenType::identifier && isDefType(peek().value().getValue().value())))
     {
-    case TokenType::exitKey:
-        statement = parseExit();
-        break;
-    case TokenType::semi:
-        statement = std::make_unique<nodes::Empty>();
-        consume();
-        return statement;
-    default:
-        statement = parseExpr();
-        break;
+        std::string type;
+
+        if(peek().value().getType() == TokenType::voidType)
+        {
+            std::cerr << "\nVariable cannot be of type void.";
+            exit(EXIT_FAILURE);
+        }
+
+        if(!peek(1).has_value() || peek(1).value().getType() != TokenType::identifier)
+        {
+            std::cerr << "\nExpected identifier.";
+            exit(EXIT_FAILURE);
+        }
+
+        statement = parseVar(std::move(consume()), consume().getValue().value());
+    }
+    else
+    {
+        switch (peek().value().getType())
+        {
+        case TokenType::exitKey:
+            statement = parseExit();
+            break;
+        case TokenType::semi:
+            statement = std::make_unique<nodes::Empty>();
+            consume();
+            return statement;
+        default:
+            statement = parseExpr();
+            break;
+        }
     }
 
     if (!peek().has_value() || peek().value().getType() != TokenType::semi)
@@ -117,6 +173,8 @@ std::unique_ptr<nodes::Node> Parser::parsePrimary()
 std::vector<std::unique_ptr<nodes::Node>> Parser::parseGlobal()
 {
     std::vector<std::unique_ptr<nodes::Node>> nodes;
+
+    scopeStack.emplace_back();
 
     while(peek().has_value())
     {
@@ -156,22 +214,37 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parseGlobal()
         }
     }
 
+    scopeStack.pop_back();
+
     return nodes;
 }
 
 std::vector<std::unique_ptr<nodes::Node>> Parser::parseBlock()
 {
-    std::vector<std::unique_ptr<nodes::Node>> funcBody;
+    std::vector<std::unique_ptr<nodes::Node>> blockBody;
+
+    int beginStackOff = stackOff;
+
+    scopeStack.emplace_back();
 
     while (peek().has_value())
     {
         if (peek().value().getType() == TokenType::rBrace)
         {
             consume();
-            return funcBody;
+            stackOff = beginStackOff;
+
+            scopeStack.pop_back();
+            return blockBody;
         }
 
-        funcBody.emplace_back(parseStatement());
+        std::unique_ptr<nodes::Node> statement = parseStatement();
+        
+        if(statement->type == NodeType::empty)
+        {
+            continue;
+        }
+        blockBody.emplace_back(std::move(statement));
     }
 
     std::cerr << "\nExpected '}'";
@@ -181,7 +254,7 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parseBlock()
 #pragma endregion
 
 #pragma region helper
-bool Parser::isStdType(TokenType type)
+bool Parser::isStdType(const TokenType& type)
 {
     switch (type)
     {
@@ -190,6 +263,18 @@ bool Parser::isStdType(TokenType type)
         return true;
     default:
         return false;
+    }
+}
+
+bool Parser::isStdLit(const TokenType& type)
+{
+    switch(type)
+    {
+        case TokenType::intLit:
+            return true;
+            break;
+        default:
+            return false;
     }
 }
 
@@ -207,6 +292,40 @@ std::string Parser::stdTypeToStr(TokenType token)
     }
 }
 
+std::unique_ptr<nodes::Node> Parser::stdTypeToValue(const TokenType& type, const std::string& value)
+{
+    if(value.empty())
+    {
+        switch(type)
+        {
+            case TokenType::voidType:
+                std::cerr << "\nVoid type doesn't contain a value.";
+                exit(EXIT_FAILURE);
+                break;
+            case TokenType::intLit:
+                return std::make_unique<nodes::Int>();
+            default:
+                std::cerr << "\nExpected type.";
+                exit(EXIT_FAILURE);
+                break;
+        }
+    }
+
+    switch(type)
+    {
+        case TokenType::voidType:
+            std::cerr << "\nVoid type doesn't contain a value.";
+            exit(EXIT_FAILURE);
+            break;
+        case TokenType::intLit:
+            return std::make_unique<nodes::Int>(std::stoi(value));
+        default:
+            std::cerr << "\nExpected type.";
+            exit(EXIT_FAILURE);
+            break;
+    }
+}
+
 bool Parser::isDefType(std::string type)
 {
     for (std::string defType : types)
@@ -217,6 +336,29 @@ bool Parser::isDefType(std::string type)
         }
     }
     return false;
+}
+
+unsigned int Parser::typeToSize(const TokenType& type)
+{
+    switch(type)
+    {
+        case TokenType::voidType:
+            std::cerr << "\nVoid type cannot contain a value.";
+            exit(EXIT_FAILURE);
+        case TokenType::intType:
+            return 4;
+        case TokenType::identifier:
+            std::cerr << "\nCustom types not implemented yet.";
+            exit(EXIT_FAILURE);
+        default:
+            std::cerr << "\nExpected type";
+            exit(EXIT_FAILURE);
+    }
+}
+
+void Parser::align(const int& alignment)
+{
+    stackOff = (stackOff + alignment - 1) & ~(alignment - 1);
 }
 
 std::optional<Token> Parser::peek(unsigned int ahead)

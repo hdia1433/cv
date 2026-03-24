@@ -3,7 +3,11 @@
 
 enum class NodeType
 {
-    function,
+    functionDecl,
+    varDecl,
+    varRef,
+    symbol,
     exit,
-    intLit
+    intLit,
+    empty
 };

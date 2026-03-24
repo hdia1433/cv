@@ -15,10 +15,14 @@ public:
 private:
     const std::vector<Token> tokens;
     std::unordered_set<std::string> types;
-    size_t index;
+    unsigned int index;
+    unsigned int stackOff;
+    std::vector<nodes::Scope> scopeStack;
+    
 
     //structures
-    std::unique_ptr<nodes::Node> parseFunc(std::string, std::string);
+    std::unique_ptr<nodes::Node> parseVar(Token typeToken, const std::string name);
+    std::unique_ptr<nodes::Node> parseFunc(std::string type, std::string name);
 
     //keywords
     std::unique_ptr<nodes::Node> parseExit();
@@ -35,7 +39,11 @@ private:
     //helper
     std::optional<Token> peek(unsigned int = 0);
     Token consume();
-    bool isStdType(TokenType);
+    bool isStdType(const TokenType& type);
+    bool isStdLit(const TokenType& type);
     std::string stdTypeToStr(TokenType);
+    std::unique_ptr<nodes::Node> stdTypeToValue(const TokenType& type, const std::string& value = "");
     bool isDefType(std::string);
+    unsigned int typeToSize(const TokenType& type);
+    void align(const int& size);
 };

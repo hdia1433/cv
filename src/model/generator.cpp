@@ -96,7 +96,7 @@ std::string Generator::nodeToFunc(nodes::Node* node)
 {
     switch(node->type)
     {
-        case NodeType::function:
+        case NodeType::functionDecl:
             return generateFunc(static_cast<nodes::FunctionDecl*>(node));
             break;
         case NodeType::exit:
@@ -104,6 +104,8 @@ std::string Generator::nodeToFunc(nodes::Node* node)
             break;
         case NodeType::intLit:
             return generateInt(static_cast<nodes::Int*>(node));
+            break;
+        case NodeType::empty:
             break;
     }
 }

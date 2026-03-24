@@ -12,6 +12,19 @@ namespace nodes
         virtual ~Node() = default;
     };
 
+    struct Symbol: public Node
+    {
+        std::string type;
+        int stackOff;
+
+        Symbol(std::string, int);
+    };
+
+    struct Scope: public Node
+    {
+        std::unordered_map<std::string, Symbol> symbols;
+    };
+
     struct FunctionDecl: public Node
     {
         std::string returnType;
@@ -32,7 +45,9 @@ namespace nodes
 
     struct VarRef: public Node
     {
-        
+        std::string name;
+
+        VarRef(std::string);
     };
 
     struct Exit: public Node
