@@ -1,12 +1,14 @@
 #pragma once
 #include "pch.hpp"
 #include "token.hpp"
+#include "nodeType.hpp"
 
 namespace nodes
 {
     struct Node
     {
-    public:
+        NodeType type;
+
         virtual ~Node() = default;
     };
 
@@ -36,6 +38,6 @@ namespace nodes
 
     struct Empty: public Node
     {
-
+        Empty();
     };
 }
