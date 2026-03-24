@@ -1,4 +1,4 @@
-void _main()
+void main()
 {
     exit 45;
 }

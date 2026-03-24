@@ -6,7 +6,7 @@ Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)), index(0)
 
 std::vector<std::unique_ptr<nodes::Node>> Parser::parse()
 {
-    parseGlobal();
+    return parseGlobal();
 }
 
 #pragma region structures
@@ -14,7 +14,7 @@ std::unique_ptr<nodes::Node> Parser::parseFunc(std::string type, std::string nam
 {
     consume();
 
-    if(!peek().has_value() && peek().value().getType() != TokenType::rParen)
+    if(!peek().has_value() || peek().value().getType() != TokenType::rParen)
     {
         std::cerr << "Expected ')'";
         exit(EXIT_FAILURE);
@@ -22,7 +22,7 @@ std::unique_ptr<nodes::Node> Parser::parseFunc(std::string type, std::string nam
 
     consume();
 
-    if(!peek().has_value() && peek().value().getType() != TokenType::lBrace)
+    if(!peek().has_value() || peek().value().getType() != TokenType::lBrace)
     {
         std::cerr << "Expected '{'";
         exit(EXIT_FAILURE);
@@ -105,6 +105,8 @@ std::unique_ptr<nodes::Node> Parser::parsePrimary()
 #pragma region codeBlocks
 std::vector<std::unique_ptr<nodes::Node>> Parser::parseGlobal()
 {
+    std::vector<std::unique_ptr<nodes::Node>> nodes;
+
     while(peek().has_value())
     {
         if(!isStdType(peek().value().getType()) && (peek().value().getType() != TokenType::identifier || !isDefType(peek().value().getValue().value())))
@@ -115,13 +117,13 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parseGlobal()
 
         std::string type = "";
 
-        if(isStdType(consume().getType()))
+        if(isStdType(peek().value().getType()))
         {
             type = stdTypeToStr(consume().getType());
         }
         else
         {
-            type = peek().value().getValue().value();
+            type = consume().getValue().value();
         }
 
         if(!peek().has_value() || peek().value().getType() != TokenType::identifier)
@@ -134,7 +136,7 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parseGlobal()
 
         if(peek().has_value() && peek().value().getType() == TokenType::lParen)
         {
-            parseFunc(std::move(type), std::move(name));
+            nodes.emplace_back(parseFunc(std::move(type), std::move(name)));
         }
         else
         {
@@ -142,14 +144,12 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parseGlobal()
             exit(EXIT_FAILURE);
         }
     }
+
+    return nodes;
 }
 
 std::vector<std::unique_ptr<nodes::Node>> Parser::parseBlock()
 {
-    consume();
-    consume();
-    consume();
-
     std::vector<std::unique_ptr<nodes::Node>> funcBody;
 
     while (peek().has_value())
@@ -163,7 +163,7 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parseBlock()
         funcBody.emplace_back(parseStatement());
     }
 
-    std::cerr << "\nExpected '{'";
+    std::cerr << "\nExpected '}'";
     exit(EXIT_FAILURE);
 }
 

@@ -1,7 +1,7 @@
 #include "generator.hpp"
 #include "sstream"
 
-Generator::Generator(nodes::Node root):
+Generator::Generator(std::vector<std::unique_ptr<nodes::Node>> root):
 root(std::move(root))
 {
 
@@ -9,5 +9,9 @@ root(std::move(root))
 
 std::string Generator::generate()
 {
-    return "";
+    std::stringstream assembly;
+
+    
+
+    return assembly.str();
 }

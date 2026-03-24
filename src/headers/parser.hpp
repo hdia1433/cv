@@ -14,7 +14,6 @@ public:
 
 private:
     const std::vector<Token> tokens;
-    std::unordered_map<std::string, std::unique_ptr<nodes::FunctionDecl>> functions;
     std::unordered_set<std::string> types;
     size_t index;
 

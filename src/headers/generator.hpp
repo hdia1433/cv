@@ -5,10 +5,10 @@
 class Generator
 {
 private:
-    const nodes::Node root;
+    const std::vector<std::unique_ptr<nodes::Node>> root;
 
 public:
-    Generator(nodes::Node);
+    Generator(std::vector<std::unique_ptr<nodes::Node>>);
 
     std::string generate();
 };
