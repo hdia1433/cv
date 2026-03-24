@@ -28,7 +28,9 @@ std::unique_ptr<nodes::Node> Parser::parseVar(Token typeToken, const std::string
     {
         if(scopeStack.back().symbols.find(name) == scopeStack.back().symbols.end())
         {
-            scopeStack.back().symbols.insert(name, {stdTypeToStr(typeToken.getType()), stackOff});
+            allSymbols.emplace_back(stdTypeToStr(typeToken.getType()), stackOff);
+            scopeStack.back().symbols[name] = allSymbols.back().get();
+
             stackOff += typeToSize(typeToken.getType());
         }
 
@@ -158,13 +160,23 @@ std::unique_ptr<nodes::Node> Parser::parseExpr()
 
 std::unique_ptr<nodes::Node> Parser::parsePrimary()
 {
-    if (peek().has_value() && peek().value().getType() == TokenType::intLit)
+    if (peek().has_value() && isStdLit(peek().value().getType()))
     {
-        return std::make_unique<nodes::Int>(std::stoi(consume().getValue().value()));
+        return stdTypeToValue(consume().getType(), consume().getValue().value());
+    }
+    else if (!peek().has_value() || peek().value().getType() != TokenType::identifier)
+    {
+        std::cerr << "\nExpected primary, none given.";
+        exit(EXIT_FAILURE);
     }
 
-    std::cerr << "\nExpected expression, none given.";
-    exit(EXIT_FAILURE);
+    if(scopeStack.back().symbols.find(peek().value().getValue().value()) == scopeStack.back().symbols.end())
+    {
+        std::cerr << "\nUnrecognised symbol: '" << peek().value().getValue().value() << "'";
+        exit(EXIT_FAILURE);
+    }
+
+    return std::make_unique<nodes::VarRef>(peek().value().getValue().value(), scopeStack.back().symbols[consume().getValue().value()]);
 }
 
 #pragma endregion
@@ -298,14 +310,10 @@ std::unique_ptr<nodes::Node> Parser::stdTypeToValue(const TokenType& type, const
     {
         switch(type)
         {
-            case TokenType::voidType:
-                std::cerr << "\nVoid type doesn't contain a value.";
-                exit(EXIT_FAILURE);
-                break;
             case TokenType::intLit:
                 return std::make_unique<nodes::Int>();
             default:
-                std::cerr << "\nExpected type.";
+                std::cerr << "\nExpected literal.";
                 exit(EXIT_FAILURE);
                 break;
         }

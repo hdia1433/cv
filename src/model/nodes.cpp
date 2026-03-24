@@ -17,7 +17,7 @@ namespace nodes
         Node::type = NodeType::varDecl;
     }
 
-    VarRef::VarRef(std::string name):name(std::move(name))
+    VarRef::VarRef(std::string name, Symbol* symbol):name(std::move(name)), symbol(symbol)
     {
         type = NodeType::varRef;
     }

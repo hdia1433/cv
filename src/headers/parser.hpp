@@ -18,6 +18,7 @@ private:
     unsigned int index;
     unsigned int stackOff;
     std::vector<nodes::Scope> scopeStack;
+    std::vector<std::unique_ptr<nodes::Symbol>> allSymbols;
     
 
     //structures

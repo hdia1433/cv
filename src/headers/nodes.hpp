@@ -22,7 +22,7 @@ namespace nodes
 
     struct Scope: public Node
     {
-        std::unordered_map<std::string, Symbol> symbols;
+        std::unordered_map<const std::string, Symbol*> symbols;
     };
 
     struct FunctionDecl: public Node
@@ -46,8 +46,9 @@ namespace nodes
     struct VarRef: public Node
     {
         std::string name;
+        Symbol* symbol;
 
-        VarRef(std::string);
+        VarRef(std::string, Symbol* symbol);
     };
 
     struct Exit: public Node
