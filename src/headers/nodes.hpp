@@ -21,6 +21,19 @@ namespace nodes
         FunctionDecl(std::string, std::string, std::vector<std::unique_ptr<Node>>);
     };
 
+    struct VarDecl: public Node
+    {
+        std::string type;
+        std::string name;
+        std::unique_ptr<nodes::Node> value;
+
+        VarDecl(std::string, std::string, std::unique_ptr<nodes::Node>);
+    };
+
+    struct VarRef: public Node
+    {
+        
+    };
 
     struct Exit: public Node
     {
@@ -33,7 +46,7 @@ namespace nodes
     {
         int value;
     
-        Int(int);
+        Int(int = 0);
     };
 
     struct Empty: public Node

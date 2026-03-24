@@ -77,6 +77,11 @@ std::vector<Token> Lexer::tokenize()
             consume();
             tokens.emplace_back(TokenType::rBrace);
         }
+        else if(peek().value() == '=')
+        {
+            consume();
+            tokens.emplace_back(TokenType::assign);
+        }
         else if(std::isspace(peek().value()))
         {
             consume();

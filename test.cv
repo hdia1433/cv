@@ -1,4 +1,6 @@
 void main()
 {
+    int exitValue = 6;
+
     exit 42;
 }

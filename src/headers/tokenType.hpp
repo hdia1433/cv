@@ -9,6 +9,7 @@ enum class TokenType
     intLit,
     lParen, rParen,
     lBrace, rBrace,
+    assign,
     semi,
     exitKey,
     identifier
