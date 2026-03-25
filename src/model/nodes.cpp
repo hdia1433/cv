@@ -25,7 +25,7 @@ namespace nodes
     Exit::Exit(std::unique_ptr<Node> expr): 
     expr(std::move(expr))
     {
-        type = NodeType::exit;
+        type = NodeType::abort;
     }
 
     Int::Int(int value):value(value)

@@ -19,6 +19,8 @@ private:
     unsigned int stackOff;
     std::vector<nodes::Scope> scopeStack;
     std::vector<std::unique_ptr<nodes::Symbol>> allSymbols;
+    int row;
+    int col;
     
 
     //structures
@@ -26,7 +28,7 @@ private:
     std::unique_ptr<nodes::Node> parseFunc(std::string type, std::string name);
 
     //keywords
-    std::unique_ptr<nodes::Node> parseExit();
+    std::unique_ptr<nodes::Node> parseAbort();
 
     //statement tree
     std::unique_ptr<nodes::Node> parseStatement();
@@ -47,4 +49,5 @@ private:
     bool isDefType(std::string);
     unsigned int typeToSize(const TokenType& type);
     void align(const int& size);
+    void updateRowCol(const Token& token);
 };

@@ -11,6 +11,6 @@ enum class TokenType
     lBrace, rBrace,
     assign,
     semi,
-    exitKey,
+    abortKey,
     identifier
 };

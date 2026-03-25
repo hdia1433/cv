@@ -7,7 +7,7 @@ enum class NodeType
     varDecl,
     varRef,
     symbol,
-    exit,
+    abort,
     intLit,
     empty
 };

@@ -40,13 +40,13 @@ std::string Generator::generateFunc(nodes::FunctionDecl* func)
 #pragma endregion
 
 #pragma region keywords
-std::string Generator::generateExit(nodes::Exit* exit)
+std::string Generator::generateExit(nodes::Exit* abort)
 {
     std::stringstream assembly;
 
     std::string indent("\t", indentNum);
 
-    assembly << "mov x0, " << nodeToFunc(exit->expr.get()) << std::endl;
+    assembly << "mov x0, " << nodeToFunc(abort->expr.get()) << std::endl;
     assembly << indent << "mov x16, 1\n";
     assembly << indent << "svc #0";
 
@@ -99,7 +99,7 @@ std::string Generator::nodeToFunc(nodes::Node* node)
         case NodeType::functionDecl:
             return generateFunc(static_cast<nodes::FunctionDecl*>(node));
             break;
-        case NodeType::exit:
+        case NodeType::abort:
             return generateExit(static_cast<nodes::Exit*>(node));
             break;
         case NodeType::intLit:

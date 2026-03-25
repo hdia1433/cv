@@ -1,6 +1,5 @@
 void main()
 {
-    int exitValue = 6;
-
-    exit exitValue;
+    int abortValueA = 6;
+    abort abortValueA;
 }

@@ -8,6 +8,8 @@ class Lexer
 private:
     const std::string& code;
     size_t currentIndex;
+    int row;
+    int col;
 
 public:
     Lexer(const std::string&);

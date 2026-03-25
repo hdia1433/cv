@@ -1,7 +1,7 @@
 #include "lexer.hpp"
 
 Lexer::Lexer(const std::string& code):
-    code(code), currentIndex(0)
+    code(code), currentIndex(0), row(1), col(1)
 {
 
 }
@@ -13,29 +13,32 @@ std::vector<Token> Lexer::tokenize()
 
     while(peek().has_value())
     {
+        int beginRow = row;
+        int beginCol = col;
+
         if(std::isalpha(peek().value()) || peek().value() == '_')
         {
             buffer.push_back(consume());
-            while(peek().has_value() && (std::isalnum(peek().value()) || peek().value() == '_'))
+            while(peek().has_value() && (std::isalnum(peek().value()) || peek().value() == '_' || peek().value() == '@'))
             {
                 buffer.push_back(consume());
             }
 
             if(buffer == "void")
             {
-                tokens.emplace_back(TokenType::voidType);
+                tokens.emplace_back(beginRow, beginCol, buffer, TokenType::voidType);
             }
             else if(buffer == "int")
             {
-                tokens.emplace_back(TokenType::intType);
+                tokens.emplace_back(beginRow, beginCol, buffer, TokenType::intType);
             }
-            else if(buffer == "exit")
+            else if(buffer == "abort")
             {
-                tokens.emplace_back(TokenType::exitKey);
+                tokens.emplace_back(beginRow, beginCol, buffer, TokenType::abortKey);
             }
             else
             {
-                tokens.emplace_back(TokenType::identifier, buffer);
+                tokens.emplace_back(beginRow, beginCol, buffer, TokenType::identifier, buffer);
             }
             buffer.clear();
             continue;
@@ -47,40 +50,46 @@ std::vector<Token> Lexer::tokenize()
             {
                 buffer.push_back(consume());
             }
-            tokens.emplace_back(TokenType::intLit, buffer);
+            tokens.emplace_back(beginRow, beginCol, buffer, TokenType::intLit, buffer);
             buffer.clear();
             continue;
         }
         else if(peek().value() == ';')
         {
             consume();
-            tokens.emplace_back(TokenType::semi);
+            tokens.emplace_back(beginRow, beginCol, ";", TokenType::semi);
             continue;
         }
         else if(peek().value() == '(')
         {
             consume();
-            tokens.emplace_back(TokenType::lParen);
+            tokens.emplace_back(beginRow, beginCol, "(", TokenType::lParen);
         }
         else if(peek().value() == ')')
         {
             consume();
-            tokens.emplace_back(TokenType::rParen);
+            tokens.emplace_back(beginRow, beginCol, ")", TokenType::rParen);
         }
         else if(peek().value() == '{')
         {
             consume();
-            tokens.emplace_back(TokenType::lBrace);
+            tokens.emplace_back(beginRow, beginCol, "{", TokenType::lBrace);
         }
         else if(peek().value() == '}')
         {
             consume();
-            tokens.emplace_back(TokenType::rBrace);
+            tokens.emplace_back(beginRow, beginCol, "}", TokenType::rBrace);
         }
         else if(peek().value() == '=')
         {
             consume();
-            tokens.emplace_back(TokenType::assign);
+            tokens.emplace_back(beginRow, beginCol, "=", TokenType::assign);
+        }
+        else if (peek().value() == '\n')
+        {
+            consume();
+            col = 1;
+            row++;
         }
         else if(std::isspace(peek().value()))
         {
@@ -89,7 +98,7 @@ std::vector<Token> Lexer::tokenize()
         }
         else
         {
-            std::cerr << "Error! Cannot begin token with: " << peek().value();
+            std::cerr << "\nAn error was found at line " << row << " and column " << col << ".\nA name cannot begin with with: " << peek().value();
             exit(EXIT_FAILURE);
         }
     }
@@ -104,10 +113,12 @@ std::optional<char> Lexer::peek(int amount) const
     {
         return{};
     }
-    return code[currentIndex];
+    return code[currentIndex + amount];
 }
 
 char Lexer::consume()
 {
+    col++;
+
     return code[currentIndex++];
 }

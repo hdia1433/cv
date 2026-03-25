@@ -1,6 +1,6 @@
 #include "token.hpp"
 
-Token::Token(TokenType type, std::optional<std::string> value):type(type), value(value)
+Token::Token(const int& row, const int& col, const std::string& buffer, const TokenType& type, const std::optional<std::string>& value):row(row), col(col), buffer(buffer), type(type), value(value)
 {
     
 }
@@ -13,6 +13,21 @@ const TokenType& Token::getType() const
 const std::optional<std::string>& Token::getValue() const
 {
     return value;
+}
+
+const int& Token::getRow() const
+{
+    return row;
+}
+
+const int& Token::getCol() const
+{
+    return col;
+}
+
+const std::string& Token::getBuffer() const
+{
+    return buffer;
 }
 
 void Token::printToken()
@@ -60,7 +75,7 @@ std::ostream& operator<<(std::ostream& os, TokenType type)
             return os << "ASSIGN_OP";
         case TokenType::semi:
             return os << "SEMICOLON";
-        case TokenType::exitKey:
+        case TokenType::abortKey:
             return os << "EXIT";
         case TokenType::identifier:
             return os <<"IDENTIFIER";
