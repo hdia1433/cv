@@ -2,6 +2,7 @@
 #include "pch.hpp"
 #include "token.hpp"
 #include "nodeType.hpp"
+#include <unordered_map>
 
 namespace nodes
 {
@@ -22,7 +23,7 @@ namespace nodes
 
     struct Scope: public Node
     {
-        std::unordered_map<const std::string, Symbol*> symbols;
+        std::unordered_map<std::string, Symbol*> symbols;
     };
 
     struct FunctionDecl: public Node

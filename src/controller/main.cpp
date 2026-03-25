@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
         code = codeStream.str();
     }
 
-    std::println("Lexing");
+    std::println("\nLexing");
 
     Lexer lexer(std::move(code));
     std::vector<Token> tokens = lexer.tokenize();
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
         std::cout << token << " ";
     }
 
-    std::println("Parsing");
+    std::println("\nParsing");
 
     Parser parser(std::move(tokens));
     auto nodes = parser.parse();

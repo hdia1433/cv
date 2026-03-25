@@ -28,7 +28,7 @@ std::unique_ptr<nodes::Node> Parser::parseVar(Token typeToken, const std::string
     {
         if(scopeStack.back().symbols.find(name) == scopeStack.back().symbols.end())
         {
-            allSymbols.emplace_back(stdTypeToStr(typeToken.getType()), stackOff);
+            allSymbols.emplace_back(std::make_unique<nodes::Symbol>(stdTypeToStr(typeToken.getType()), stackOff));
             scopeStack.back().symbols[name] = allSymbols.back().get();
 
             stackOff += typeToSize(typeToken.getType());
