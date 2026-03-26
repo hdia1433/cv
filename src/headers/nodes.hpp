@@ -17,8 +17,9 @@ namespace nodes
     {
         std::string type;
         int stackOff;
+        int size;
 
-        Symbol(std::string, int);
+        Symbol(const std::string& type, const int& stackOff, const int& size);
     };
 
     struct Scope: public Node
@@ -40,8 +41,10 @@ namespace nodes
         std::string type;
         std::string name;
         std::unique_ptr<nodes::Node> value;
+        int offset;
+        int size;
 
-        VarDecl(std::string, std::string, std::unique_ptr<nodes::Node>);
+        VarDecl(const std::string& type, const std::string& name, std::unique_ptr<nodes::Node> value, const int& offset, const int& size);
     };
 
     struct VarRef: public Node
@@ -52,11 +55,11 @@ namespace nodes
         VarRef(std::string, Symbol* symbol);
     };
 
-    struct Exit: public Node
+    struct Abort: public Node
     {
         std::unique_ptr<Node> expr;
 
-        Exit(std::unique_ptr<Node>);
+        Abort(std::unique_ptr<Node>);
     };
 
     struct Int: public Node

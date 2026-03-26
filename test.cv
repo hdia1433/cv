@@ -1,5 +1,6 @@
 void main()
 {
     int abortValueA = 6;
-    abort abortValueA;
+    int abortValueB = abortValueA;
+    abort abortValueB;
 }

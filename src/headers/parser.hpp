@@ -12,6 +12,8 @@ public:
 
     std::vector<std::unique_ptr<nodes::Node>> parse();
 
+    std::vector<std::unique_ptr<nodes::Symbol>> getAllSymbols();
+
 private:
     const std::vector<Token> tokens;
     std::unordered_set<std::string> types;
@@ -32,8 +34,8 @@ private:
 
     //statement tree
     std::unique_ptr<nodes::Node> parseStatement();
-    std::unique_ptr<nodes::Node> parseExpr();
-    std::unique_ptr<nodes::Node> parsePrimary();
+    std::unique_ptr<nodes::Node> parseExpr(const std::string& desiredType = "");
+    std::unique_ptr<nodes::Node> parsePrimary(const std::string& desiredType = "");
 
     //blocks
     std::vector<std::unique_ptr<nodes::Node>> parseGlobal();

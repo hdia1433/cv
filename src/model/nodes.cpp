@@ -2,7 +2,7 @@
 
 namespace nodes
 {
-    Symbol::Symbol(std::string type, int stackOff):type(std::move(type)), stackOff(std::move(stackOff))
+    Symbol::Symbol(const std::string& type, const int& stackOff, const int& size):type(std::move(type)), stackOff(std::move(stackOff)), size(std::move(size))
     {
         Node::type = NodeType::symbol;
     }
@@ -12,7 +12,7 @@ namespace nodes
         type = NodeType::functionDecl;
     }
 
-    VarDecl::VarDecl(std::string type, std::string name, std::unique_ptr<Node> value): type(std::move(type)), name(std::move(name)), value(std::move(value))
+    VarDecl::VarDecl(const std::string& type, const std::string& name, std::unique_ptr<Node> value, const int& offset, const int& size): type(std::move(type)), name(std::move(name)), value(std::move(value)), offset(std::move(offset)), size(std::move(size))
     {
         Node::type = NodeType::varDecl;
     }
@@ -22,7 +22,7 @@ namespace nodes
         type = NodeType::varRef;
     }
 
-    Exit::Exit(std::unique_ptr<Node> expr): 
+    Abort::Abort(std::unique_ptr<Node> expr): 
     expr(std::move(expr))
     {
         type = NodeType::abort;

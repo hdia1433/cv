@@ -24,6 +24,11 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parse()
     exit(EXIT_FAILURE);
 }
 
+std::vector<std::unique_ptr<nodes::Symbol>> Parser::getAllSymbols()
+{
+    return std::move(allSymbols);
+}
+
 #pragma region structures
 std::unique_ptr<nodes::Node> Parser::parseVar(Token typeToken, const std::string name)
 {
@@ -32,15 +37,15 @@ std::unique_ptr<nodes::Node> Parser::parseVar(Token typeToken, const std::string
     {
         if(scopeStack.back().symbols.find(name) == scopeStack.back().symbols.end())
         {
-            allSymbols.emplace_back(std::make_unique<nodes::Symbol>(stdTypeToStr(typeToken.getType()), stackOff));
+            allSymbols.emplace_back(std::make_unique<nodes::Symbol>(stdTypeToStr(typeToken.getType()), stackOff, typeToSize(typeToken.getType())));
             scopeStack.back().symbols[name] = allSymbols.back().get();
-
-            stackOff += typeToSize(typeToken.getType());
         }
 
         if(peek().has_value() && peek().value().getType() == TokenType::semi)
         {
-            return std::make_unique<nodes::VarDecl>(stdTypeToStr(typeToken.getType()), name, stdTypeToValue(typeToken.getType()));
+            return std::make_unique<nodes::VarDecl>(stdTypeToStr(typeToken.getType()), name, stdTypeToValue(typeToken.getType()), stackOff, typeToSize(typeToken.getType()));
+
+            stackOff += typeToSize(typeToken.getType());
         }
         else if(!peek().has_value() || peek().value().getType() != TokenType::assign)
         {
@@ -72,7 +77,7 @@ std::unique_ptr<nodes::Node> Parser::parseVar(Token typeToken, const std::string
             exit(EXIT_FAILURE);
         }
 
-        return std::make_unique<nodes::VarDecl>(stdTypeToStr(typeToken.getType()), name, stdTypeToValue(peek().value().getType(), consume().getValue().value()));
+        return std::make_unique<nodes::VarDecl>(stdTypeToStr(typeToken.getType()), name, parseExpr(), stackOff, typeToSize(typeToken.getType()));
     }
 
     std::cerr << "\nCustom types not yet implemented";
@@ -132,7 +137,7 @@ std::unique_ptr<nodes::Node> Parser::parseAbort()
     }
 
     consume();
-    return std::make_unique<nodes::Exit>(parseExpr());
+    return std::make_unique<nodes::Abort>(parseExpr());
 }
 #pragma endregion
 
@@ -208,16 +213,16 @@ std::unique_ptr<nodes::Node> Parser::parseStatement()
     return statement;
 }
 
-std::unique_ptr<nodes::Node> Parser::parseExpr()
+std::unique_ptr<nodes::Node> Parser::parseExpr(const std::string& desiredType)
 {
     return parsePrimary();
 }
 
-std::unique_ptr<nodes::Node> Parser::parsePrimary()
+std::unique_ptr<nodes::Node> Parser::parsePrimary(const std::string& desiredType)
 {
     if (peek().has_value() && isStdLit(peek().value().getType()))
     {
-        return stdTypeToValue(consume().getType(), consume().getValue().value());
+        return stdTypeToValue(peek().value().getType(), consume().getValue().value());
     }
     else if (!peek().has_value() || peek().value().getType() != TokenType::identifier)
     {
@@ -237,6 +242,13 @@ std::unique_ptr<nodes::Node> Parser::parsePrimary()
     {
         updateRowCol(peek().value());
         std::cerr << "\nAn error at the line " << row << " and the column " << col << ".\n'" << peek().value().getValue().value() << "' is not a defined variable or keyword. Please correct the name or define it before it's use.";
+        exit(EXIT_FAILURE);
+    }
+
+    if(!desiredType.empty() && scopeStack.back().symbols.at(peek().value().getValue().value())->type != desiredType)
+    {
+        updateRowCol(peek().value());
+        std::cerr << "\nAn error has occurred at the line " << row << " and the column " << col << ".\nThe variable \"" << peek().value().getValue().value() <<"\" is of the type \"" << scopeStack.back().symbols.at(peek().value().getValue().value())->type << "\". However the desired type is \"" << desiredType << "\" and doesn't match.";
         exit(EXIT_FAILURE);
     }
 
@@ -368,6 +380,7 @@ std::string Parser::stdTypeToStr(TokenType token)
 {
     switch (token)
     {
+    case TokenType::intLit:
     case TokenType::intType:
         return "int";
     case TokenType::voidType:

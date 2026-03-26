@@ -43,17 +43,17 @@ int main(int argc, char* argv[])
     Parser parser(std::move(tokens));
     auto nodes = parser.parse();
 
-    // std::println("Generating assembly");
+    std::println("Generating assembly");
 
-    // Generator generator(std::move(nodes));
+    Generator generator(std::move(nodes), std::move(parser.getAllSymbols()));
     
-    // std::fstream file("out.asm", std::ios::out);
-    // file << generator.generate();
-    // file.close();
+    std::fstream file("out.asm", std::ios::out);
+    file << generator.generate();
+    file.close();
 
-    // std::println("Building file");
+    std::println("Building file");
 
-    // system("clang out.asm -o out");
+    system("clang out.asm -o out");
 
     return 0;
 }
