@@ -26,8 +26,8 @@ private:
     
 
     //structures
-    std::unique_ptr<nodes::Node> parseVar(Token typeToken, const std::string name);
-    std::unique_ptr<nodes::Node> parseFunc(std::string type, std::string name);
+    std::unique_ptr<nodes::Node> parseVar(const std::string& type, const std::string& name);
+    std::unique_ptr<nodes::Node> parseFunc(const std::string& type, const std::string& name);
 
     //keywords
     std::unique_ptr<nodes::Node> parseAbort();
@@ -42,14 +42,17 @@ private:
     std::vector<std::unique_ptr<nodes::Node>> parseBlock();
 
     //helper
-    std::optional<Token> peek(unsigned int = 0);
-    Token consume();
+    const Token* peek(unsigned int = 0);
+    const Token& consume();
     bool isStdType(const TokenType& type);
+    bool isStdType(const std::string& type);
     bool isStdLit(const TokenType& type);
     std::string stdTypeToStr(TokenType);
-    std::unique_ptr<nodes::Node> stdTypeToValue(const TokenType& type, const std::string& value = "");
+    std::unique_ptr<nodes::Node> stdTypeToValue(const TokenType& type, const TokenValue& value = 0);
+    std::unique_ptr<nodes::Node> stdTypeToValue(const std::string& type);
     bool isDefType(std::string);
-    unsigned int typeToSize(const TokenType& type);
+    unsigned int typeToSize(const std::string& type);
     void align(const int& size);
     void updateRowCol(const Token& token);
+    nodes::Symbol* findVarInScope(const Token* token);
 };

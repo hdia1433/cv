@@ -1,4 +1,5 @@
 #include "parser.hpp"
+#include "sstream"
 
 Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)), index(0), stackOff(0), row(1), col(1)
 {
@@ -15,13 +16,16 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parse()
             return nodes;
         }
     }
+    
+    std::stringstream errorStream;
 
-    std::cerr << "Couldn't find starting point. must declare void function named 'name'.\n" <<
+    errorStream << "Couldn't find starting point. must declare void function named 'name'.\n" <<
         "\tvoid main()\n" <<
         "\t{\n" <<
         "\t\t//starting code here.\n" <<
         "\t}";
-    exit(EXIT_FAILURE);
+    
+    throw std::runtime_error(errorStream.str());
 }
 
 std::vector<std::unique_ptr<nodes::Symbol>> Parser::getAllSymbols()
@@ -30,93 +34,86 @@ std::vector<std::unique_ptr<nodes::Symbol>> Parser::getAllSymbols()
 }
 
 #pragma region structures
-std::unique_ptr<nodes::Node> Parser::parseVar(Token typeToken, const std::string name)
+std::unique_ptr<nodes::Node> Parser::parseVar(const std::string& type, const std::string& name)
 {
-    align(typeToSize(typeToken.getType()));
-    if(isStdType(typeToken.getType()))
+    if(isStdType(type))
     {
+        align(typeToSize(type));
         if(scopeStack.back().symbols.find(name) == scopeStack.back().symbols.end())
         {
-            allSymbols.emplace_back(std::make_unique<nodes::Symbol>(stdTypeToStr(typeToken.getType()), stackOff, typeToSize(typeToken.getType())));
+            allSymbols.emplace_back(std::make_unique<nodes::Symbol>(type, stackOff, typeToSize(type)));
             scopeStack.back().symbols[name] = allSymbols.back().get();
         }
 
-        if(peek().has_value() && peek().value().getType() == TokenType::semi)
+        
+        const Token* tok = peek();
+        if(!tok)
         {
-            return std::make_unique<nodes::VarDecl>(stdTypeToStr(typeToken.getType()), name, stdTypeToValue(typeToken.getType()), stackOff, typeToSize(typeToken.getType()));
-
-            stackOff += typeToSize(typeToken.getType());
+            throw std::runtime_error("\nAn error has occurred.\n A '=' or ';' was expected after the declaration of a variable, but the end of the file was found instead.");
         }
-        else if(!peek().has_value() || peek().value().getType() != TokenType::assign)
+
+        if(tok->getType() == TokenType::semi)
         {
-            if(!peek().has_value())
-            {
-                std::cerr << "\nAn error has occurred.\n A '=' or ';' was expected after the declaration of a variable, but the end of the file was found instead.";
-            }
-            else
-            {
-                updateRowCol(peek().value());
-                std::cerr << "\nAn error has occurred at the line " << row << " and the column " << col << ".\nA '=' or ';' was expected to finish the declaration of a variable, but '" << peek().value().getBuffer() << "' was found instead.";
-            }
-            exit(EXIT_FAILURE);
+            int offset = stackOff;
+
+            stackOff += typeToSize(type);
+
+            return std::make_unique<nodes::VarDecl>(type, name, stdTypeToValue(type), offset, typeToSize(type));
+        }
+        else if(tok->getType() != TokenType::assign)
+        {
+            updateRowCol(*tok);
+            throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nA '=' or ';' was expected to finish the declaration of a variable, but '" + tok->getLexeme() + "' was found instead.");
         }
 
         consume();
 
-        if(!peek().has_value() || (!isStdLit(peek().value().getType()) && peek().value().getType() != TokenType::identifier))
+        const Token* next = peek();
+        if(!next)
         {
-            if(!peek().has_value())
-            {
-                std::cerr << "\nAn error has occurred.\nA value was expected to follow '=' when assigning a value to a variable, but the end of the file was found instead.";
-            }
-            else
-            {
-                updateRowCol(peek().value());
-                std::cerr << "\nAn error has occurred at the line " << row << " and the column " << col << ".\nA value was expected to follow the '=' when assigning a value to a variable, but '" << peek().value().getBuffer() << "' was found instead.";
-            }
-            exit(EXIT_FAILURE);
+            throw std::runtime_error("\nAn error has occurred.\nA value was expected to follow '=' when assigning a value to a variable, but the end of the file was found instead.");
         }
 
-        return std::make_unique<nodes::VarDecl>(stdTypeToStr(typeToken.getType()), name, parseExpr(), stackOff, typeToSize(typeToken.getType()));
+        if(!isStdLit(next->getType()) && next->getType() != TokenType::identifier)
+        {
+            updateRowCol(*tok);
+            throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nA value was expected to follow the '=' when assigning a value to a variable, but '" + tok->getLexeme() + "' was found instead.");
+        }
+
+        return std::make_unique<nodes::VarDecl>(type, name, parseExpr(), stackOff, typeToSize(type));
     }
 
-    std::cerr << "\nCustom types not yet implemented";
-    exit(EXIT_FAILURE);
+    throw std::runtime_error("\nCustom types not yet implemented");
 }
 
-std::unique_ptr<nodes::Node> Parser::parseFunc(std::string type, std::string name)
+std::unique_ptr<nodes::Node> Parser::parseFunc(const std::string& type, const std::string& name)
 {
     consume();
 
-    if(!peek().has_value() || peek().value().getType() != TokenType::rParen)
+    const Token* tok = peek();
+    if(!tok)
     {
-        if(!peek().has_value())
-        {
-            std::cerr << "An error has occurred.\n')' expected, but the end of the file was found instead.";
-        }
-        else
-        {
-            updateRowCol(peek().value());
-            std::cerr << "Parameters not implemented yet.";
-            std::cerr << "\nAn error occurred at the line " << row << " and the column " << col << ".\nA ')' was expected to close the parameter list.";
-        }
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("An error has occurred.\n')' expected, but the end of the file was found instead.");
+    }
+
+    if(tok->getType() != TokenType::rParen)
+    {
+        updateRowCol(*tok);
+        throw std::runtime_error("\nAn error occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nA ')' was expected to close the parameter list.");
     }
 
     consume();
 
-    if(!peek().has_value() || peek().value().getType() != TokenType::lBrace)
+    const Token* next = peek();
+    if(!next)
     {
-        if(!peek().has_value())
-        {
-            std::cerr << "An error has occurred. A '{' was expected after the declaration of a function, but the end of the file was found.";
-        }
-        else
-        {
-            updateRowCol(peek().value());
-            std::cerr << "\nAn error has occurred at the line " << row << " and the column " << col << ". A '{' was expected after the declaration of a function, but '" << peek().value().getBuffer() << "' was found instead.";
-        }
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("An error has occurred. A '{' was expected after the declaration of a function, but the end of the file was found.");
+    }
+
+    if(next->getType() != TokenType::lBrace)
+    {
+        updateRowCol(*next);
+        throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ". A '{' was expected after the declaration of a function, but '" + next->getLexeme() + "' was found instead.");
     }
 
     consume();
@@ -130,12 +127,6 @@ std::unique_ptr<nodes::Node> Parser::parseFunc(std::string type, std::string nam
 #pragma region keyWords
 std::unique_ptr<nodes::Node> Parser::parseAbort()
 {
-    if(!peek().has_value() || peek().value().getType() != TokenType::abortKey)
-    {
-        std::cerr << "\nThis error should not print. If it prints please contact the developer of the language at procon.loz.botw@gmail.com and mention that the \"Abort keyword expected\" error was printed.";
-        exit(EXIT_FAILURE);
-    }
-
     consume();
     return std::make_unique<nodes::Abort>(parseExpr());
 }
@@ -144,45 +135,40 @@ std::unique_ptr<nodes::Node> Parser::parseAbort()
 #pragma region statementTree
 std::unique_ptr<nodes::Node> Parser::parseStatement()
 {
-    if (!peek().has_value())
-    {
-        std::cerr << "\nThis error should never print. If printed contact the creator at procon.loz.botw@gmail.com and notify him that the \"statement expected\" error was printed.";
-    }
-
     std::unique_ptr<nodes::Node> statement;
 
-    if(isStdType(peek().value().getType()) || (peek().value().getType() == TokenType::identifier && isDefType(peek().value().getValue().value())))
+    const Token* tok = peek();
+    if(isStdType(tok->getType()) || (tok->getType() == TokenType::identifier && isDefType(tok->getLexeme())))
     {
         std::string type;
 
-        if(peek().value().getType() == TokenType::voidType)
+        if(tok->getType() == TokenType::kwVoid)
         {
-            updateRowCol(peek().value());
-            std::cerr << "\nAn error has occurred at the line " << row << " and the column " << col << ".\nA variable cannot be of the type void. Please replace 'void' with another type.";
-            exit(EXIT_FAILURE);
+            updateRowCol(*tok);
+            throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nA variable cannot be of the type void. Please replace 'void' with another type.");
+        }
+        
+        const Token* nameTok = peek(1);
+        if(!nameTok)
+        {
+            throw std::runtime_error("\nAn error has occurred. A variable name was expected after it's type, but the end of the file was found.");
         }
 
-        if(!peek(1).has_value() || peek(1).value().getType() != TokenType::identifier)
+        if(nameTok->getType() != TokenType::identifier)
         {
-            if(!peek(1).has_value())
-            {
-                std::cerr << "\nAn error has occurred. A variable name was expected after it's type, but the end of the file was found.";
-            }
-            else
-            {
-                updateRowCol(peek(1).value());
-                std::cerr << "\nAn error has occurred at the line " << row << " and the column " << col << ".\nThe name of a variable was expected to come after it's type, but '" << peek(1).value().getBuffer() << "' was found instead";
-            }
-            exit(EXIT_FAILURE);
+            updateRowCol(*nameTok);
+            throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nThe name of a variable was expected to come after it's type, but '" + nameTok->getLexeme() + "' was found instead");
         }
 
-        statement = parseVar(std::move(consume()), consume().getValue().value());
+        std::string type = consume().getLexeme();
+        std::string name = consume().getLexeme();
+        statement = parseVar(type, name);
     }
     else
     {
-        switch (peek().value().getType())
+        switch (tok->getType())
         {
-        case TokenType::abortKey:
+        case TokenType::kwAbort:
             statement = parseAbort();
             break;
         case TokenType::semi:
@@ -195,18 +181,15 @@ std::unique_ptr<nodes::Node> Parser::parseStatement()
         }
     }
 
-    if (!peek().has_value() || peek().value().getType() != TokenType::semi)
+    const Token* next = peek();
+    if(!next)
     {
-        if(!peek().has_value())
-        {
-            std::cerr << "\nAn error has occurred.\nA ';' was expected to end the statement, but the end of the file was found instead.";
-        }
-        else
-        {
-            updateRowCol(peek().value());
-            std::cerr << "\nAn error has occurred at the line " << row << " and the column " << col << ".\nA ';' was expected to end the statement, but '" << peek().value().getBuffer() << "' was found instead.";
-        }
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("\nAn error has occurred.\nA ';' was expected to end the statement, but the end of the file was found instead.");
+    }
+    if (next->getType() != TokenType::semi)
+    {
+        updateRowCol(*next);
+        throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nA ';' was expected to end the statement, but '" + next->getLexeme() + "' was found instead.");
     }
 
     consume();
@@ -220,39 +203,36 @@ std::unique_ptr<nodes::Node> Parser::parseExpr(const std::string& desiredType)
 
 std::unique_ptr<nodes::Node> Parser::parsePrimary(const std::string& desiredType)
 {
-    if (peek().has_value() && isStdLit(peek().value().getType()))
+    const Token* tok = peek();
+    if(!tok)
     {
-        return stdTypeToValue(peek().value().getType(), consume().getValue().value());
+        throw std::runtime_error("\nAn error has occurred.\nA variable or literal was expected, but the end of the file was found instead.");
     }
-    else if (!peek().has_value() || peek().value().getType() != TokenType::identifier)
+    if (isStdLit(tok->getType()))
     {
-        if(!peek().has_value())
-        {
-            std::cerr << "\nAn error has occurred.\nA variable or literal was expected, but the end of the file was found instead.";
-        }
-        else
-        {
-            updateRowCol(peek().value());
-            std::cerr << "\nAn error has occurred at the line " << row << " and the column " << col << ".\nA variable or literal was expected, but '" << peek().value().getBuffer() << "' was found instead.";
-        }
-        exit(EXIT_FAILURE);
+        return stdTypeToValue(tok->getType(), consume().getValue().value());
+    }
+    else if (tok->getType() != TokenType::identifier)
+    {
+        updateRowCol(*tok);
+        throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nA variable or literal was expected, but '" + tok->getLexeme() + "' was found instead.");
     }
 
-    if(scopeStack.back().symbols.find(peek().value().getValue().value()) == scopeStack.back().symbols.end())
+    auto symbol = findVarInScope(tok);
+    if(!symbol)
     {
-        updateRowCol(peek().value());
-        std::cerr << "\nAn error at the line " << row << " and the column " << col << ".\n'" << peek().value().getValue().value() << "' is not a defined variable or keyword. Please correct the name or define it before it's use.";
-        exit(EXIT_FAILURE);
+        updateRowCol(*tok);
+        throw std::runtime_error("\nAn error at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\n'" + tok->getLexeme() + "' is not a defined variable or keyword. Please correct the name or define it before it's use.");
     }
 
-    if(!desiredType.empty() && scopeStack.back().symbols.at(peek().value().getValue().value())->type != desiredType)
+    if(!desiredType.empty() && symbol->type != desiredType)
     {
-        updateRowCol(peek().value());
-        std::cerr << "\nAn error has occurred at the line " << row << " and the column " << col << ".\nThe variable \"" << peek().value().getValue().value() <<"\" is of the type \"" << scopeStack.back().symbols.at(peek().value().getValue().value())->type << "\". However the desired type is \"" << desiredType << "\" and doesn't match.";
-        exit(EXIT_FAILURE);
+        updateRowCol(*tok);
+        throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nThe variable \"" + tok->getLexeme() + "\" is of the type \"" + symbol->type + "\". However the desired type is \"" + desiredType + "\" and doesn't match.");
     }
 
-    return std::make_unique<nodes::VarRef>(peek().value().getValue().value(), scopeStack.back().symbols[consume().getValue().value()]);
+    consume();
+    return std::make_unique<nodes::VarRef>(tok->getLexeme(), symbol);
 }
 
 #pragma endregion
@@ -264,51 +244,50 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parseGlobal()
 
     scopeStack.emplace_back();
 
-    while(peek().has_value())
+    while(auto tok = peek())
     {
-        updateRowCol(peek().value());
-
-        if(!isStdType(peek().value().getType()) && (peek().value().getType() != TokenType::identifier || !isDefType(peek().value().getValue().value())))
+        if(!isStdType(tok->getType()) && (tok->getType() != TokenType::identifier || !isDefType(tok->getLexeme())))
         {
-            std::cerr << "\nAn error was found at line " << row << " and column " << col << ".\nA type was expected to begin the declaration of a variable or a function. However '" << peek().value().getBuffer() << "' was found instead.";
-            exit(EXIT_FAILURE);
+            updateRowCol(*tok);
+            throw std::runtime_error("\nAn error was found at line " + std::to_string(row) + " and column " + std::to_string(col) + ".\nA type was expected to begin the declaration of a variable or a function. However '" + tok->getLexeme() + "' was found instead.");
         }
 
         std::string type = "";
 
-        if(isStdType(peek().value().getType()))
+        if(isStdType(tok->getType()))
         {
             type = stdTypeToStr(consume().getType());
         }
         else
         {
-            type = consume().getValue().value();
+            type = consume().getLexeme();
         }
 
-        if(!peek().has_value() || peek().value().getType() != TokenType::identifier)
+        auto next = peek();
+        if(!next)
         {
-            if(!peek().has_value())
-            {
-                std::cerr << "\nAn error has occurred. \nA name for a variable or function was expected, but the end of file was found.";
-            }
-            else
-            {
-                updateRowCol(peek().value());
-                std::cerr << "\nAn error has occurred at the line " << row << " and the column " << col <<"\nExpected a variable or function name after a type. '" << peek().value().getBuffer() << "' was found instead.";
-            }
-            exit(EXIT_FAILURE);
+            throw std::runtime_error("\nAn error has occurred. \nA name for a variable or function was expected, but the end of file was found.");
+        }
+        if(next->getType() != TokenType::identifier)
+        {
+            updateRowCol(*next);
+            throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + "\nExpected a variable or function name after a type. '" + next->getLexeme() + "' was found instead.");
         }
 
-        std::string name = consume().getValue().value();
+        std::string name = consume().getLexeme();
 
-        if(peek().has_value() && peek().value().getType() == TokenType::lParen)
+        auto tokValue = peek();
+        if(!tokValue)
+        {
+            throw std::runtime_error("An error has occurred. Expected '(' for a function declaration or '=' or ';' for global variable declaration. The end of the file was found instead.");
+        }
+        if(tokValue->getType() == TokenType::lParen)
         {
             nodes.emplace_back(parseFunc(std::move(type), std::move(name)));
         }
         else
         {
-            std::cerr << "\nExpected '('";
-            exit(EXIT_FAILURE);
+            nodes.emplace_back(parseVar(std::move(type), std::move(name)));
         }
     }
 
@@ -325,9 +304,9 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parseBlock()
 
     scopeStack.emplace_back();
 
-    while (peek().has_value())
+    while (auto tok = peek())
     {
-        if (peek().value().getType() == TokenType::rBrace)
+        if (tok->getType() == TokenType::rBrace)
         {
             consume();
             stackOff = beginStackOff;
@@ -345,8 +324,7 @@ std::vector<std::unique_ptr<nodes::Node>> Parser::parseBlock()
         blockBody.emplace_back(std::move(statement));
     }
 
-    std::cerr << "\nAn error has occurred.\nA '}' was expected to end the scope, but the end of the file was found instead.";
-    exit(EXIT_FAILURE);
+    throw std::runtime_error("\nAn error has occurred.\nA '}' was expected to end the scope, but the end of the file was found instead.");
 }
 
 #pragma endregion
@@ -356,12 +334,21 @@ bool Parser::isStdType(const TokenType& type)
 {
     switch (type)
     {
-    case TokenType::intType:
-    case TokenType::voidType:
+    case TokenType::kwInt:
+    case TokenType::kwVoid:
         return true;
     default:
         return false;
     }
+}
+
+bool Parser::isStdType(const std::string& type)
+{
+    if(type == "int" || type == "void")
+    {
+        return true;
+    }
+    return false;
 }
 
 bool Parser::isStdLit(const TokenType& type)
@@ -381,40 +368,35 @@ std::string Parser::stdTypeToStr(TokenType token)
     switch (token)
     {
     case TokenType::intLit:
-    case TokenType::intType:
+    case TokenType::kwInt:
         return "int";
-    case TokenType::voidType:
+    case TokenType::kwVoid:
         return "void";
     default:
-        std::cerr << "\nExpected type.";
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("\nExpected type.");
     }
 }
 
-std::unique_ptr<nodes::Node> Parser::stdTypeToValue(const TokenType& type, const std::string& value)
+std::unique_ptr<nodes::Node> Parser::stdTypeToValue(const TokenType& type, const TokenValue& value)
 {
-    if(value.empty())
-    {
-        switch(type)
-        {
-            case TokenType::intLit:
-                return std::make_unique<nodes::Int>();
-            default:
-                std::cerr << "\nExpected literal.";
-                exit(EXIT_FAILURE);
-                break;
-        }
-    }
-
     switch(type)
     {
         case TokenType::intLit:
-            return std::make_unique<nodes::Int>(std::stoi(value));
+            return std::make_unique<nodes::Int>(std::get<int>(value));
         default:
-            std::cerr << "\nExpected type.";
-            exit(EXIT_FAILURE);
+            throw std::runtime_error("\nExpected type.");
             break;
     }
+}
+
+std::unique_ptr<nodes::Node> Parser::stdTypeToValue(const std::string& type)
+{
+    if(type == "int")
+    {
+        return std::make_unique<nodes::Int>();
+    }
+
+    throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nThe type \"" + type + "\" is unknown.");
 }
 
 bool Parser::isDefType(std::string type)
@@ -429,22 +411,23 @@ bool Parser::isDefType(std::string type)
     return false;
 }
 
-unsigned int Parser::typeToSize(const TokenType& type)
+unsigned int Parser::typeToSize(const std::string& type)
 {
-    switch(type)
+
+    if (type == "void")
     {
-        case TokenType::voidType:
-            std::cerr << "\nVoid type cannot contain a value.";
-            exit(EXIT_FAILURE);
-        case TokenType::intType:
-            return 4;
-        case TokenType::identifier:
-            std::cerr << "\nCustom types not implemented yet.";
-            exit(EXIT_FAILURE);
-        default:
-            std::cerr << "\nExpected type";
-            exit(EXIT_FAILURE);
+        throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nA variable cannot be of the type \"void\".");
     }
+    else if(isDefType(type))
+    {
+        throw std::runtime_error("\nCustom types not yet implemented");
+    }
+    else if(type == "int")
+    {
+        return 4;
+    }
+
+    throw std::runtime_error("\nAn error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nThe type \"" + type + "\" is unkown.");
 }
 
 void Parser::align(const int& alignment)
@@ -452,17 +435,17 @@ void Parser::align(const int& alignment)
     stackOff = (stackOff + alignment - 1) & ~(alignment - 1);
 }
 
-std::optional<Token> Parser::peek(unsigned int ahead)
+const Token* Parser::peek(unsigned int ahead)
 {
     if (index + ahead >= tokens.size())
     {
         return {};
     }
 
-    return tokens[index + ahead];
+    return &tokens[index + ahead];
 }
 
-Token Parser::consume()
+const Token& Parser::consume()
 {
     return tokens[index++];
 }
@@ -471,5 +454,19 @@ void Parser::updateRowCol(const Token& token)
 {
     row = token.getRow();
     col = token.getCol();
+}
+
+nodes::Symbol* Parser::findVarInScope(const Token* token)
+{
+    for(auto pScope = scopeStack.rbegin(); pScope != scopeStack.rend(); pScope++)
+    {
+        auto symbol = pScope->symbols.find(token->getLexeme());
+        if(symbol != pScope->symbols.end())
+        {
+            return symbol->second;
+        }
+    }
+
+    return nullptr;
 }
 #pragma endregion

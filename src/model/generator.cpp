@@ -1,5 +1,4 @@
 #include "generator.hpp"
-#include "sstream"
 
 Generator::Generator(std::vector<std::unique_ptr<nodes::Node>> nodes, std::vector<std::unique_ptr<nodes::Symbol>> symbols):
 nodes(std::move(nodes)), symbols(std::move(symbols)), indentNum(0), amountAlloc(0)
@@ -9,67 +8,71 @@ nodes(std::move(nodes)), symbols(std::move(symbols)), indentNum(0), amountAlloc(
 
 std::string Generator::generate()
 {
-    std::stringstream assembly;
+    gatherGlobalVars(nodes);
 
-    assembly <<".text\n\n";
+    assembly << ".data\n\n";
+    for(nodes::VarDecl* node: globalVars)
+    {
+        if (node->value->type == NodeType::intLit)
+        {
+            int value = ((nodes::Int*)(node->value.get()))->value;
 
-    assembly << generateGlobal(nodes);
+            assembly << std::endl << node->name << ": .word " << node->value << std::endl;
+        }
+        else
+        {
+            throw std::runtime_error("Unrecognised value");
+        }
+    }
+
+
+    assembly << ".text\n\n";
+
+    generateGlobal(nodes);
 
     return assembly.str();
 }
 
 #pragma region expressions
-std::string Generator::generateExpression(nodes::Node* node, std::string& result)
+void Generator::generateExpression(nodes::Node* node, std::string& result, int reg)
 {
-    std::stringstream assembly;
-
     switch(node->type)
     {
         case NodeType::intLit:
-            return generateInt(static_cast<nodes::Int*>(node), result);
-        case NodeType::varRef:
-            return generateVarRef(static_cast<nodes::VarRef*>(node), result);
-        default:
+            generateInt(static_cast<nodes::Int*>(node), result, reg);
             break;
+        case NodeType::varRef:
+            generateVarRef(static_cast<nodes::VarRef*>(node), result, reg);
+            break;
+        default:
+            throw std::runtime_error("Unhandled expression type.");
     }
-
-    return assembly.str();
 }
 
-std::string Generator::generateVarRef(nodes::VarRef* var, std::string& result, int reg)
+void Generator::generateVarRef(nodes::VarRef* var, std::string& result, int reg)
 {
-    std::stringstream assembly;
-
     if (var->symbol->type == "int")
     {
-        assembly << "ldr w" << reg << ", [sp, #" << var->symbol->stackOff << "]\n";
+        assembly << indent() << "ldr w" << reg << ", [sp, #" << var->symbol->stackOff << "]\n";
     }
 
     result = "w" + std::to_string(reg);
-
-    return assembly.str();
 }
 
-std::string Generator::generateInt(nodes::Int* intLit, std::string& result)
+void Generator::generateInt(nodes::Int* intLit, std::string& result, int reg)
 {
-    std::stringstream assembly;
-
-    result = intLit->value;
-
-    return assembly.str();
+    result = "w" + std::to_string(reg);
+    assembly << indent() << "mov w" << reg << ", #" << intLit->value << std::endl;
 }
 #pragma endregion
 
 #pragma region structures
-std::string Generator::generateVarDecl(nodes::VarDecl* var)
+void Generator::generateVarDecl(nodes::VarDecl* var)
 {
-    std::stringstream assembly;
-
-    std::string indent("\t", indentNum);
-
-    if(var->offset + var->size > amountAlloc)
+    int needed = (var->offset + var->size) - amountAlloc;
+    if(needed > 0)
     {
-        assembly << stackAlloc();
+        stackAlloc(align16(needed));
     }
 
     switch(var->value->type)
@@ -78,130 +81,131 @@ std::string Generator::generateVarDecl(nodes::VarDecl* var)
         {
             int value = static_cast<nodes::Int*>(var->value.get())->value;
 
-            assembly << indent << "mov w0, #" << value << std::endl;
-            assembly << indent << "str w0, [sp, #" << var->offset << "]\n";
+            assembly << indent() << "mov w0, #" << value << std::endl;
+            assembly << indent() << "str w0, [sp, #" << var->offset << "]\n";
             break;
         }
         default:
             break;
     }
-
-    
-
-    return assembly.str();
 }
 
-std::string Generator::generateFuncDecl(nodes::FunctionDecl* func)
+void Generator::generateFuncDecl(nodes::FunctionDecl* func)
 {
-    std::stringstream assembly;
-
     assembly << ".global _" << func->name <<
     "\n_" << func->name << ":\n";
 
     indentNum++;
-    assembly << generateBlock(func->body);
+    generateBlock(func->body);
     indentNum--;
 
     if(func->name == "main")
     {
         assembly << "\n\n\tmov x0, 0\n\tret";
     }
-
-    return assembly.str();
 }
 #pragma endregion
 
 #pragma region keywords
-std::string Generator::generateAbort(nodes::Abort* abort)
+void Generator::generateAbort(nodes::Abort* abort)
 {
-    std::stringstream assembly;
-
-    std::string indent("\t", indentNum);
-
     std::string result;
-    assembly << generateExpression(abort->expr.get(), result);
+    generateExpression(abort->expr.get(), result);
 
-    if (result != "w0")
+    if (result != "w0" && result != "x0")
     {
-        assembly << "mov x0, " << result << std::endl;
+        assembly << "mov w0, " << result << std::endl;
     }
-    assembly << indent << "bl _exit\n";
-
-    return assembly.str();
+    assembly << indent() << "bl _exit\n";
 }
 #pragma endregion
 
 #pragma region blocks
-std::string Generator::generateGlobal(const std::vector<std::unique_ptr<nodes::Node>>& nodes)
+void Generator::generateGlobal(const std::vector<std::unique_ptr<nodes::Node>>& nodes)
 {
-    std::stringstream assembly;
-
     for(auto& node : nodes)
     {
-        assembly << "\n" <<nodeToFunc(node.get());
+        if(node->type == NodeType::functionDecl)
+        {
+            assembly << "\n";
+            nodeToFunc(node.get());
+        }
     }
-
-    return assembly.str();
 }
 
-std::string Generator::generateBlock(const std::vector<std::unique_ptr<nodes::Node>>& nodes)
+void Generator::generateBlock(const std::vector<std::unique_ptr<nodes::Node>>& nodes)
 {
-    std::stringstream assembly;
-
-    std::string indent("\t", indentNum);
-
-    int startingMemory = amountAlloc;
+    stackFrames.emplace_back(amountAlloc);
 
     for(auto& node: nodes)
     {
-        assembly << "\n" << indent << nodeToFunc(node.get());
+        assembly << "\n" << indent();
+        nodeToFunc(node.get());
     }
 
-   assembly << stackDealloc(amountAlloc - startingMemory);
+    int target = stackFrames.back();
+    stackFrames.pop_back();
 
-    return assembly.str();
+    int diff = amountAlloc - target;
+
+    if(diff > 0)
+    {
+        stackDealloc(diff);
+    }
 }
 #pragma endregion
 
 #pragma region helpers
-std::string Generator::nodeToFunc(nodes::Node* node)
+void Generator::gatherGlobalVars(const std::vector<std::unique_ptr<nodes::Node>>& nodes)
+{
+    for(auto& node: nodes)
+    {
+        if(node->type == NodeType::varDecl)
+        {
+            globalVars.emplace_back((nodes::VarDecl*)node.get());
+        }
+    }
+}
+
+void Generator::nodeToFunc(nodes::Node* node)
 {
     switch(node->type)
     {
         case NodeType::varDecl:
-            return generateVarDecl(static_cast<nodes::VarDecl*>(node));
+            generateVarDecl(static_cast<nodes::VarDecl*>(node));
+            break;
         case NodeType::functionDecl:
-            return generateFuncDecl(static_cast<nodes::FunctionDecl*>(node));
+            generateFuncDecl(static_cast<nodes::FunctionDecl*>(node));
+            break;
         case NodeType::abort:
-            return generateAbort(static_cast<nodes::Abort*>(node));
+            generateAbort(static_cast<nodes::Abort*>(node));
+            break;
         default:
-            return "";
+            throw std::runtime_error("Unknown node type.");
     }
 }
 
-std::string Generator::stackAlloc(const int& amount)
+void Generator::stackAlloc(const int& amount)
 {
-    std::stringstream assembly;
-
-    std::string indent("\t", indentNum);
-
-    assembly << std::endl << indent << "sub sp, sp, #" << amount << std::endl;
+    assembly << indent() << "sub sp, sp, #" << amount << std::endl;
 
     amountAlloc += amount;
-
-    return assembly.str();
 }
 
-std::string Generator::stackDealloc(const int& amount)
+void Generator::stackDealloc(const int& amount)
 {
-    std::stringstream assembly;
-
-    std::string indent("\t", indentNum);
-
-    assembly << indent << "add sp, sp, #" << amount << std::endl;
+    assembly << indent() << "add sp, sp, #" << amount << std::endl;
 
     amountAlloc -= amount;
+}
 
-    return assembly.str();
+std::string Generator::indent() const
+{
+    return std::string(indentNum, '\t');
+}
+
+int Generator::align16(int x)
+{
+    return (x + 15) & ~15;
 }
 #pragma endregion

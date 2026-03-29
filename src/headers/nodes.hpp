@@ -22,7 +22,13 @@ namespace nodes
         Symbol(const std::string& type, const int& stackOff, const int& size);
     };
 
-    struct Scope: public Node
+    struct Global: public Node
+    {
+        std::string name;
+        std::string type;
+    };
+
+    struct Scope
     {
         std::unordered_map<std::string, Symbol*> symbols;
     };

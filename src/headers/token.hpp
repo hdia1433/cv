@@ -5,25 +5,25 @@
 #include <optional>
 #include <variant>
 
+using TokenValue = std::variant<int>;
+
 class Token
 {
 private:
     TokenType type;
-    std::optional<std::string> value;
+    std::string lexeme;
+    std::optional<TokenValue> value;
     int row;
     int col;
-    std::string buffer;
 
 public:
-    Token(const int& col, const int& row, const std::string& buffer, const TokenType&, const std::optional<std::string>& = std::nullopt);
+    Token(int row, int col, const std::string& lexeme, TokenType, const std::optional<TokenValue>& = std::nullopt);
 
-    const TokenType& getType() const;
-    const std::optional<std::string>& getValue() const;
-    const int& getRow() const;
-    const int& getCol() const;
-    const std::string& getBuffer() const;
-
-    void printToken();
+    TokenType getType() const;
+    const std::string& getLexeme() const;
+    const std::optional<TokenValue>& getValue() const;
+    int getRow() const;
+    int getCol() const;
 
     friend std::ostream& operator<<(std::ostream& os, const Token& token);
 };

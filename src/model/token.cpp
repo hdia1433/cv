@@ -1,53 +1,46 @@
 #include "token.hpp"
 
-Token::Token(const int& row, const int& col, const std::string& buffer, const TokenType& type, const std::optional<std::string>& value):row(row), col(col), buffer(buffer), type(type), value(value)
+Token::Token(int row, int col, const std::string& lexeme, TokenType type, const std::optional<TokenValue>& value):row(row), col(col), lexeme(lexeme), type(type), value(value)
 {
     
 }
 
-const TokenType& Token::getType() const
+TokenType Token::getType() const
 {
     return this->type;
 }
 
-const std::optional<std::string>& Token::getValue() const
+const std::string& Token::getLexeme() const
+{
+
+}
+
+const std::optional<TokenValue>& Token::getValue() const
 {
     return value;
 }
 
-const int& Token::getRow() const
+int Token::getRow() const
 {
     return row;
 }
 
-const int& Token::getCol() const
+int Token::getCol() const
 {
     return col;
-}
-
-const std::string& Token::getBuffer() const
-{
-    return buffer;
-}
-
-void Token::printToken()
-{
-    std::cout << "{" << type;
-    
-    if(value.has_value())
-    {
-        std::print(": {}", value.value());
-    }
-    std::print("}}");
 }
 
 std::ostream& operator<<(std::ostream& os, const Token& token)
 {
     os << "{" << token.type;
 
-    if(token.value.has_value())
+    if(auto vOpt = token.value)
     {
-        os << ": " << token.value.value();
+        auto v = *vOpt;
+        std::visit([&os](const auto& val)
+        {
+            os << ": " << val;
+        }, v);
     }
 
     return os << "}";
@@ -57,9 +50,9 @@ std::ostream& operator<<(std::ostream& os, TokenType type)
 {
     switch(type)
     {
-        case TokenType::voidType:
+        case TokenType::kwVoid:
             return os << "TYPE(VOID)";
-        case TokenType::intType:
+        case TokenType::kwInt:
             return os << "TYPE(INT)";
         case TokenType::intLit:
             return os << "INT";
@@ -75,10 +68,11 @@ std::ostream& operator<<(std::ostream& os, TokenType type)
             return os << "ASSIGN_OP";
         case TokenType::semi:
             return os << "SEMICOLON";
-        case TokenType::abortKey:
+        case TokenType::kwAbort:
             return os << "EXIT";
         case TokenType::identifier:
-            return os <<"IDENTIFIER";
-        
+            return os << "IDENTIFIER";
+        default:
+            return os << "UNKOWN";
     }
 }

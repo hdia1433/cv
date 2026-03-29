@@ -4,13 +4,13 @@
 
 enum class TokenType
 {
-    voidType,
-    intType,
+    kwVoid,
+    kwInt,
     intLit,
     lParen, rParen,
     lBrace, rBrace,
     assign,
     semi,
-    abortKey,
+    kwAbort,
     identifier
 };

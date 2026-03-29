@@ -1,5 +1,12 @@
 #include "lexer.hpp"
 
+
+static const std::unordered_map<std::string, TokenType> keywords = {
+        {"void", TokenType::kwVoid},
+        {"int", TokenType::kwInt},
+        {"abort", TokenType::kwAbort}
+    };
+
 Lexer::Lexer(const std::string& code):
     code(code), currentIndex(0), row(1), col(1)
 {
@@ -11,95 +18,102 @@ std::vector<Token> Lexer::tokenize()
     std::vector<Token> tokens;
     std::string buffer;
 
-    while(peek().has_value())
+    while(std::optional<char> chOpt = peek())
     {
+        char ch = *chOpt;
+
         int beginRow = row;
         int beginCol = col;
 
-        if(std::isalpha(peek().value()) || peek().value() == '_')
+        if(std::isalpha(static_cast<unsigned char>(ch)) || ch == '_' || ch == '@')
         {
             buffer.push_back(consume());
-            while(peek().has_value() && (std::isalnum(peek().value()) || peek().value() == '_' || peek().value() == '@'))
+
+
+            while(std::optional<char> nextOpt = peek())
             {
-                buffer.push_back(consume());
+                char next = *nextOpt;
+
+                if(std::isalnum((unsigned char)next) || next == '_')
+                {
+                    buffer.push_back(consume());
+                    continue;
+                }
+                break;
             }
 
-            if(buffer == "void")
+            auto word = keywords.find(buffer);
+            if(word != keywords.end())
             {
-                tokens.emplace_back(beginRow, beginCol, buffer, TokenType::voidType);
-            }
-            else if(buffer == "int")
-            {
-                tokens.emplace_back(beginRow, beginCol, buffer, TokenType::intType);
-            }
-            else if(buffer == "abort")
-            {
-                tokens.emplace_back(beginRow, beginCol, buffer, TokenType::abortKey);
+                tokens.emplace_back(beginRow, beginCol, buffer, word->second);
             }
             else
             {
-                tokens.emplace_back(beginRow, beginCol, buffer, TokenType::identifier, buffer);
+                tokens.emplace_back(beginRow, beginCol, buffer, TokenType::identifier);
             }
+            
             buffer.clear();
-            continue;
         }
-        else if(std::isdigit(peek().value()))
+        else if(std::isdigit(static_cast<unsigned char>(ch)))
         {
             buffer.push_back(consume());
-            while (peek().has_value() && std::isdigit(peek().value()))
+
+            while (std::optional<char> nextOpt = peek())
             {
-                buffer.push_back(consume());
+                char next = *nextOpt;
+
+                if(std::isdigit((unsigned char)next))
+                {
+                    buffer.push_back(consume());
+                    continue;
+                }
+                break;
             }
-            tokens.emplace_back(beginRow, beginCol, buffer, TokenType::intLit, buffer);
+            tokens.emplace_back(beginRow, beginCol, buffer, TokenType::intLit, std::stoi(buffer));
             buffer.clear();
             continue;
         }
-        else if(peek().value() == ';')
+        else if(ch == ';')
         {
             consume();
             tokens.emplace_back(beginRow, beginCol, ";", TokenType::semi);
             continue;
         }
-        else if(peek().value() == '(')
+        else if(ch == '(')
         {
             consume();
             tokens.emplace_back(beginRow, beginCol, "(", TokenType::lParen);
         }
-        else if(peek().value() == ')')
+        else if(ch == ')')
         {
             consume();
             tokens.emplace_back(beginRow, beginCol, ")", TokenType::rParen);
         }
-        else if(peek().value() == '{')
+        else if(ch == '{')
         {
             consume();
             tokens.emplace_back(beginRow, beginCol, "{", TokenType::lBrace);
         }
-        else if(peek().value() == '}')
+        else if(ch == '}')
         {
             consume();
             tokens.emplace_back(beginRow, beginCol, "}", TokenType::rBrace);
         }
-        else if(peek().value() == '=')
+        else if(ch == '=')
         {
             consume();
             tokens.emplace_back(beginRow, beginCol, "=", TokenType::assign);
         }
-        else if (peek().value() == '\n')
-        {
-            consume();
-            col = 1;
-            row++;
-        }
-        else if(std::isspace(peek().value()))
+        else if(std::isspace((unsigned char)ch))
         {
             consume();
             continue;
         }
         else
         {
-            std::cerr << "\nAn error was found at line " << row << " and column " << col << ".\nA name cannot begin with with: " << peek().value();
-            exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                "An error has occurred at the line " + std::to_string(row) + " and the column " + std::to_string(col) + ".\nYou cannot begin a variable name with '" + std::string(1, ch) + "'"
+            );
         }
     }
 
@@ -118,7 +132,17 @@ std::optional<char> Lexer::peek(int amount) const
 
 char Lexer::consume()
 {
-    col++;
+    char ch = code[currentIndex++];
 
-    return code[currentIndex++];
+    if(ch == '\n')
+    {
+        row++;
+        col = 1;
+    }
+    else
+    {
+        col++;
+    }
+
+    return ch;
 }
