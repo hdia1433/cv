@@ -23,6 +23,7 @@ private:
     std::vector<std::unique_ptr<nodes::Symbol>> allSymbols;
     int row;
     int col;
+    bool inMainFunc;
     
 
     //structures
