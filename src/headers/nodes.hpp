@@ -56,9 +56,16 @@ namespace nodes
     struct VarRef: public Node
     {
         std::string name;
-        Symbol* symbol;
+        bool isGlobal;
+
+        union
+        {
+            Symbol* symbol;
+            Global* global;
+        };
 
         VarRef(std::string, Symbol* symbol);
+        VarRef(std::string, Global* global);
     };
 
     struct Abort: public Node

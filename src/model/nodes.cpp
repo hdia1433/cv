@@ -17,10 +17,12 @@ namespace nodes
         Node::type = NodeType::varDecl;
     }
 
-    VarRef::VarRef(std::string name, Symbol* symbol):name(std::move(name)), symbol(symbol)
+    VarRef::VarRef(std::string name, Symbol* symbol):name(std::move(name)), isGlobal(false), symbol(symbol)
     {
         type = NodeType::varRef;
     }
+
+    VarRef::VarRef(std::string name, Global* global):name(std::move(name)), isGlobal(true), global(global)
 
     Abort::Abort(std::unique_ptr<Node> expr): 
     expr(std::move(expr))
