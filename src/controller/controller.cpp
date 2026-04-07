@@ -1,11 +1,11 @@
 #include "controller.hpp"
 
-Controller::Controller(const std::string& code)
+Controller::Controller(const std::string& code):code(code)
 {
 
 }
 
 void Controller::start()
 {
-
+    lexer.analyze(std::move(code));
 }
