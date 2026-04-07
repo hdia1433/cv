@@ -25,8 +25,5 @@ struct Token
     TokenType type;
     Coordinate location;
 
-    inline Coordinate operator->() const
-    {
-        return location;
-    }
+    Coordinate operator->() const;
 };

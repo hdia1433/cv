@@ -11,7 +11,7 @@ Lexer::Lexer():index(0), currentLoc({1, 1})
 
 }
 
-std::vector<Token>& Lexer::getTokens()
+std::vector<Token> Lexer::getTokens()
 {
     return tokens;
 }

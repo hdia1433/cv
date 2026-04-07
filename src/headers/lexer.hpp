@@ -11,7 +11,7 @@ private:
 public:
     Lexer();
 
-    std::vector<Token>& getTokens();
+    std::vector<Token> getTokens();
 
     void analyze(const std::string& code);
 

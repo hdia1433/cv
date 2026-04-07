@@ -9,4 +9,7 @@ void Controller::start()
 {
     lexer.analyze(std::move(code));
     lexer.print();
+
+    parser.parse(std::move(lexer.getTokens()));
+    parser.print();
 }
