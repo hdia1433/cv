@@ -103,7 +103,43 @@ void Lexer::analyze(const std::string& code)
 
 void Lexer::print()
 {
-
+    std::print("{{");
+    for(Token& tok: tokens)
+    {
+        std::print("{{");
+        switch(tok.type)
+        {
+            case TokenType::kwVoid:
+                std::print("VOID_TYPE");
+                break;
+            case TokenType::kwAbort:
+                std::print("KW_ABORT");
+                break;
+            case TokenType::ltInt:
+                std::print("INT_LITERAL: {}", tok.buffer);
+                break;
+            case TokenType::lParen:
+                std::print("LEFT_PARENTHESIS");
+                break;
+            case TokenType::rParen:
+                std::print("RIGHT_PARENTHESIS");
+                break;
+            case TokenType::lBrace:
+                std::print("LEFT_CURLY_BRACKET");
+                break;
+            case TokenType::rBrace:
+                std::print("RIGHT_CURLY_BRACKET");
+                break;
+            case TokenType::semi:
+                std::print("SEMICOLON");
+                break;
+            case TokenType::identifier:
+                std::print("IDENTIFIER: {}", tok.buffer);
+                break;
+        }
+        std::print("}}");
+    }
+    std::print("}}\n");
 }
 
 char* Lexer::peek()
