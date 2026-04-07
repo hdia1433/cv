@@ -1,12 +1,12 @@
 #include "lexer.hpp"
 #include <unordered_map>
 
-std::unordered_map<std::string, TokenType> keywords = {
+std::unordered_map<std::string_view, TokenType> keywords = {
     {"void", TokenType::kwVoid},
     {"abort", TokenType::kwAbort}
 };
 
-Lexer::Lexer():currentLoc({1, 1})
+Lexer::Lexer():index(0), currentLoc({1, 1})
 {
 
 }
@@ -22,48 +22,53 @@ void Lexer::analyze(const std::string& code)
 
     while(char* chOpt = peek())
     {
+        uint start = index;
+
         char ch = *chOpt;
 
         if(std::isalpha(ch) || ch == '_' || ch == '@')
         {
-            std::string buffer = "" + consume();
-            while(chOpt = peek())
+            consume();
+            while((chOpt = peek()))
             {
                 ch = *chOpt;
                 if(std::isalnum(ch) || ch == '_')
                 {
-                    buffer += consume();
+                    consume();
                     continue;
                 }
                 break;
             }
 
+            std::string_view buffer(code.data() + start, index - start);
+
             auto kw = keywords.find(buffer);
             if(kw != keywords.end())
             {
-                addToken(std::move(buffer), kw->second);
+                addToken(buffer, kw->second);
             }
             else
             {
-                addToken(std::move(buffer), TokenType::identifier);
+                addToken(buffer, TokenType::identifier);
             }
             
         }
         else if(std::isdigit(ch))
         {
-            std::string buffer = "" + consume();
-            while(chOpt = peek())
+            consume();
+            while((chOpt = peek()))
             {
                 ch = *chOpt;
                 if(std::isdigit(ch))
                 {
-                    buffer += consume();
+                    consume();
                     continue;
                 }
                 break;
             }
 
-            addToken(std::move(buffer), TokenType::ltInt);
+            std::string_view buffer(code.data() + start, index - start);
+            addToken(buffer, TokenType::ltInt);
         }
         else if(ch == '(')
         {
@@ -144,10 +149,14 @@ void Lexer::print()
 
 char* Lexer::peek()
 {
+    if(index >= code.size())
+    {
+        return nullptr;
+    }
     return &code[index];
 }
 
-const char& Lexer::consume()
+char Lexer::consume()
 {
     char ch = code[index++];
 
@@ -164,8 +173,8 @@ const char& Lexer::consume()
     return ch;
 }
 
-void Lexer::addToken(const std::string& buffer, const TokenType& type)
+void Lexer::addToken(std::string_view buffer, const TokenType& type)
 {
-    Token token{.buffer = std::move(buffer), .type = type, .location = currentLoc};
+    Token token{.buffer = buffer, .type = type, .location = currentLoc};
     tokens.emplace_back(std::move(token));
 }

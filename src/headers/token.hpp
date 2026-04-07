@@ -21,7 +21,7 @@ struct Coordinate
 
 struct Token
 {
-    std::string buffer;
+    std::string_view buffer;
     TokenType type;
     Coordinate location;
 

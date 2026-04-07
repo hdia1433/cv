@@ -18,6 +18,6 @@ public:
     void print();
 private:
     char* peek();
-    const char& consume();
-    void addToken(const std::string& buffer, const TokenType& type);
+    char consume();
+    void addToken(std::string_view buffer, const TokenType& type);
 };
