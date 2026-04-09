@@ -1,8 +1,22 @@
 #include "parser.hpp"
+#include <sstream>
 
 Parser::Parser():index(0)
 {
 
+}
+
+Parser::~Parser()
+{
+    for(nodes::Node* node: ast)
+    {
+        if(node)
+        {
+            delete node;
+        }
+    }
+
+    ast.clear();
 }
 
 void Parser::parse(const std::vector<Token>& tokens)
@@ -26,7 +40,66 @@ std::vector<nodes::Node*> Parser::parseGlobal()
 {
     std::vector<nodes::Node*> nodes;
 
-    
+    while(auto pTok = peek())
+    {
+        auto tok = *peek();
+        if(!isType(tok.type))
+        {
+            std::stringstream errorStream;
+            errorStream << "An error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA type was expected but '" << tok.buffer << "' was given instead. In global space, only function declarations and global variable declarations are allowed.\n";
+
+            nodes::Error error{.error = errorStream.str()};
+            errors.emplace_back(error);
+            nodes.emplace_back(&errors.back());
+            continue;
+        }
+
+        TokenType type = consume().type;
+
+        pTok = peek();
+        if(!pTok)
+        {
+            std::stringstream errorStream;
+            errorStream << "An error has occurred at the end of the file.\nA name for a function or variable was expected but the end of the file was found instead. All variables must include a name and a semi colon; while all functions must include a name, a parameter list [eg. '(int list, bool of, char parameters)'], and a function body surrounded by '{}'.\n";
+
+            nodes::Error error{.error = errorStream.str()};
+            errors.emplace_back(error);
+            nodes.emplace_back(&errors.back());
+            continue;
+        }
+
+        tok = *pTok;
+        if(tok.type != TokenType::identifier)
+        {
+            std::stringstream errorStream;
+            errorStream << "An error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA name for a variable or function was expected but '" << tok.buffer << "' was given instead. All variables must include a name and a semi colon; while all functions must include a name, a parameter list [eg. '(int list, bool of, char parameters)'], and a function body surrounded by '{}'.\n\n";
+
+            nodes::Error error{.error = errorStream.str()};
+            errors.emplace_back(error);
+            nodes.emplace_back(&errors.back());
+            continue;
+        }
+
+        std::string_view name = consume().buffer;
+
+        pTok = peek();
+        if(!pTok)
+        {
+            std::stringstream errorStream;
+            errorStream << "An error has occurred at the end of the file.\nAn assignment and a semi colon or a semi colon was expected to end a variable declaration, or a parameter list [eg. '(int list, bool of, char parameters)'] and function body were expected to end the function declaration. However, the end of the file was found instead.\n";
+
+            nodes::Error error{.error = errorStream.str()};
+            errors.emplace_back(error);
+            nodes.emplace_back(&errors.back());
+            continue;
+        }
+
+        tok = *pTok;
+        if(tok.type == TokenType::lParen)
+        {
+            nodes.emplace_back(parseFuncDecl(type, name));
+        }
+    }
 
     return nodes;
 }
@@ -41,5 +114,16 @@ Token* Parser::peek(uint ahead)
 Token Parser::consume()
 {
     return tokens[index++];
+}
+
+bool Parser::isType(TokenType type)
+{
+    switch(type)
+    {
+        case TokenType::kwVoid:
+            return true;
+        default:
+            return false;
+    }
 }
 #pragma endregion

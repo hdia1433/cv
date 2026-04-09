@@ -2,6 +2,11 @@
 
 namespace nodes
 {
+    Coordinate Node::operator->()
+    {
+        return location;
+    }
+
     //Function Declaration
     FuncDecl::FuncDecl(const std::vector<Node*>& body):body(body)
     {

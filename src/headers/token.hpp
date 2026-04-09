@@ -24,6 +24,4 @@ struct Token
     std::string_view buffer;
     TokenType type;
     Coordinate location;
-
-    Coordinate operator->() const;
 };

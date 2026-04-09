@@ -14,11 +14,13 @@ namespace nodes
     {
         NodeType type;
         Coordinate location;
+
+        Coordinate operator->();
     };
 
     struct Error: public Node
     {
-
+        std::string error;
     };
 
     struct FuncDecl: public Node
