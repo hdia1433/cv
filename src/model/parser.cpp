@@ -35,6 +35,63 @@ void Parser::print()
 
 }
 
+#pragma region structures
+nodes::Node* Parser::parseFuncDecl(TokenType type, std::string_view name)
+{
+    nodes::FuncDecl* function;
+
+    auto pTok = peek();
+    if(!pTok)
+    {
+        std::stringstream errorStream;
+        errorStream << "An error has occurred at the end of the file.\nA ')' was expected but the end of the file was found instead. In order to close off the parameter list a ')' is required before the function body.\n";
+
+        nodes::Error error{.error = errorStream.str()};
+        errors.emplace_back(std::move(error));
+        return &errors.back();
+    }
+
+    auto tok = *pTok;
+    if(tok.type != TokenType::rParen)
+    {
+        std::stringstream errorStream;
+        errorStream << "An error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA ')' was expected to end the parameter list, but '" << tok.buffer << "' was found instead. In order to close off the parameter list a ')' is required before the function body.\n";
+
+        nodes::Error error{.error = errorStream.str()};
+        errors.emplace_back(std::move(error));
+        return &errors.back();
+    }
+
+    consume();
+
+    pTok = peek();
+    if(!pTok)
+    {
+        std::stringstream errorStream;
+        errorStream << "An error has occurred at the end of the file.\nA '{' was expected but the end of the file was found instead. In order to begin the body of the function you need a '{'.\n";
+
+        nodes::Error error{.error = errorStream.str()};
+        errors.emplace_back(std::move(error));
+        return &errors.back();
+    }
+
+    tok = *pTok;
+    if(tok.type != TokenType::lBrace)
+    {
+        std::stringstream errorStream;
+        errorStream << "An error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA '{' was expected, but '" << tok.buffer << "' was given instead. In order to begin the body of a function, a '{' is needed.\n";
+
+        nodes::Error error{.error = errorStream.str()};
+        errors.emplace_back(std::move(error));
+        return &errors.back();
+    }
+
+    function = new nodes::FuncDecl(parseBody());
+
+    return function;
+}
+#pragma endregion
+
 #pragma region bodies
 std::vector<nodes::Node*> Parser::parseGlobal()
 {
