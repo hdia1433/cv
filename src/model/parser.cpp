@@ -42,7 +42,7 @@ void Parser::parse(const std::vector<Token>& tokens)
         }
 
         std::stringstream errorStream;
-        errorStream << std::endl << errorNum << " errors were generated.";
+        errorStream << std::endl << std::endl << errorNum << " errors were generated.";
         throw std::runtime_error("");
     }
 }
