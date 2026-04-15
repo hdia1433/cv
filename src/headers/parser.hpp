@@ -8,7 +8,7 @@ private:
     std::vector<Token> tokens;
     std::vector<nodes::Node*> ast;
     uint index;
-    std::vector<nodes::Error> errors;
+    std::vector<nodes::Error*> errors;
 
 public:
     Parser();

@@ -1,4 +1,4 @@
 void main()
 {
-    abort 6;
+    abort 6
 }

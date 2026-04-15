@@ -77,10 +77,14 @@ OBJECTS :=
 GENERATED += $(OBJDIR)/controller.o
 GENERATED += $(OBJDIR)/lexer.o
 GENERATED += $(OBJDIR)/main.o
+GENERATED += $(OBJDIR)/node.o
+GENERATED += $(OBJDIR)/parser.o
 GENERATED += $(OBJDIR)/pch.o
 OBJECTS += $(OBJDIR)/controller.o
 OBJECTS += $(OBJDIR)/lexer.o
 OBJECTS += $(OBJDIR)/main.o
+OBJECTS += $(OBJDIR)/node.o
+OBJECTS += $(OBJDIR)/parser.o
 OBJECTS += $(OBJDIR)/pch.o
 
 # Rules
@@ -155,6 +159,12 @@ $(OBJDIR)/pch.o: src/controller/pch.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/lexer.o: src/model/lexer.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/node.o: src/model/node.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/parser.o: src/model/parser.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 

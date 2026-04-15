@@ -5,7 +5,8 @@ enum class NodeType
 {
     funcDecl,
     kwAbort,
-    ltInt
+    ltInt,
+    empty
 };
 
 namespace nodes
@@ -15,12 +16,18 @@ namespace nodes
         NodeType type;
         Coordinate location;
 
-        Coordinate operator->();
+        virtual ~Node() = default;
+
+        virtual void print(std::string indent = "") = 0;
     };
 
     struct Error: public Node
     {
         std::string error;
+
+        Error(const std::string& error);
+
+        void print(std::string indent = "") override;
     };
 
     struct FuncDecl: public Node
@@ -29,6 +36,8 @@ namespace nodes
 
         FuncDecl(const std::vector<Node*>& body);
         ~FuncDecl();
+
+        void print(std::string indent = "") override;
     };
 
     struct Abort: public Node
@@ -37,6 +46,8 @@ namespace nodes
 
         Abort(Node* expression);
         ~Abort();
+
+        void print(std::string indent = "") override;
     };
 
     struct IntLit: public Node
@@ -44,5 +55,14 @@ namespace nodes
         int value;
 
         IntLit(int value);
+
+        void print(std::string indent = "") override;
+    };
+
+    struct Empty: public Node
+    {
+        Empty();
+
+        void print(std::string indent = "") override;
     };
 }
