@@ -20,7 +20,7 @@ public:
     void print();
 private:
     //structures
-    nodes::Node* parseFuncDecl(TokenType type, std::string_view name);
+    nodes::Node* parseFuncDecl(TokenType type, std::string_view name, const Coordinate& location);
 
 
     //bodies
@@ -28,7 +28,7 @@ private:
     std::vector<nodes::Node*> parseBody();
 
     //keywords
-    nodes::Node* parseAbort();
+    nodes::Node* parseAbort(const Coordinate& location);
 
     //statement tree
     nodes::Node* parseStatement();

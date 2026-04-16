@@ -14,9 +14,10 @@ namespace nodes
     }
 
     //Function Declaration
-    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType):body(body), name(name), returnType(returnType)
+    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType, const Coordinate& location):body(body), name(name), returnType(returnType)
     {
         type = NodeType::funcDecl;
+        this->location = location;
     }
 
     FuncDecl::~FuncDecl()
@@ -42,9 +43,10 @@ namespace nodes
     }
 
     //Abort keyword
-    Abort::Abort(Node* expression):expression(expression)
+    Abort::Abort(Node* expression, const Coordinate& location):expression(expression)
     {
         type = NodeType::kwAbort;
+        this->location = location;
     }
 
     Abort::~Abort()
@@ -62,9 +64,10 @@ namespace nodes
     }
 
     //Integer literal
-    IntLit::IntLit(int value):value(value)
+    IntLit::IntLit(int value, const Coordinate& location):value(value)
     {
         type = NodeType::ltInt;
+        this->location = location;
     }
 
     void IntLit::print(std::string indent)

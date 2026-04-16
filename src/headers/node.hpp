@@ -1,3 +1,4 @@
+#pragma once
 #include "pch.hpp"
 #include "token.hpp"
 
@@ -36,7 +37,7 @@ namespace nodes
         TokenType returnType;
         std::vector<Node*> body;
 
-        FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType);
+        FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType, const Coordinate& location);
         ~FuncDecl();
 
         void print(std::string indent = "") override;
@@ -46,7 +47,7 @@ namespace nodes
     {
         Node* expression;  
 
-        Abort(Node* expression);
+        Abort(Node* expression, const Coordinate& location);
         ~Abort();
 
         void print(std::string indent = "") override;
@@ -56,7 +57,7 @@ namespace nodes
     {
         int value;
 
-        IntLit(int value);
+        IntLit(int value, const Coordinate& location);
 
         void print(std::string indent = "") override;
     };

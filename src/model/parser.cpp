@@ -61,7 +61,7 @@ void Parser::print()
 }
 
 #pragma region structures
-nodes::Node* Parser::parseFuncDecl(TokenType type, std::string_view name)
+nodes::Node* Parser::parseFuncDecl(TokenType type, std::string_view name, const Coordinate& location)
 {
     nodes::FuncDecl* function;
 
@@ -116,7 +116,7 @@ nodes::Node* Parser::parseFuncDecl(TokenType type, std::string_view name)
     }
 
     consume();
-    function = new nodes::FuncDecl(parseBody(), name, type);
+    function = new nodes::FuncDecl(parseBody(), name, type, location);
 
     return function;
 }
@@ -130,6 +130,12 @@ std::vector<nodes::Node*> Parser::parseGlobal()
     while(auto pTok = peek())
     {
         auto tok = *pTok;
+        if(tok.type == TokenType::semi)
+        {
+            continue;
+        }
+
+        Coordinate location = tok.location;
         if(!isType(tok.type))
         {
             std::stringstream errorStream;
@@ -189,7 +195,7 @@ std::vector<nodes::Node*> Parser::parseGlobal()
         if(tok.type == TokenType::lParen)
         {
             consume();
-            nodes.emplace_back(parseFuncDecl(type, name));
+            nodes.emplace_back(parseFuncDecl(type, name, location));
         }
         else
         {
@@ -219,7 +225,13 @@ std::vector<nodes::Node*> Parser::parseBody()
             return body;
         }
 
-        body.emplace_back(parseStatement());
+        nodes::Node* node = parseStatement();
+        if(node->type == NodeType::empty)
+        {
+            continue;
+        }
+
+        body.emplace_back(node);
     }
 
     std::stringstream errorStream;
@@ -234,7 +246,7 @@ std::vector<nodes::Node*> Parser::parseBody()
 #pragma endregion
 
 #pragma region keywords
-nodes::Node* Parser::parseAbort()
+nodes::Node* Parser::parseAbort(const Coordinate& location)
 {
     auto pTok = peek();
     if(!pTok)
@@ -247,7 +259,7 @@ nodes::Node* Parser::parseAbort()
         return errors.back();
     }
 
-    return new nodes::Abort(parseExpression());
+    return new nodes::Abort(parseExpression(), location);
 }
 #pragma endregion
 
@@ -273,7 +285,7 @@ nodes::Node* Parser::parseStatement()
     {
         case TokenType::kwAbort:
             consume();
-            statement = parseAbort();
+            statement = parseAbort(tok.location);
             break;
         case TokenType::semi:
             consume();
@@ -331,7 +343,7 @@ nodes::Node* Parser::parsePrimary()
     {
         case TokenType::ltInt:
         consume();
-            return new nodes::IntLit(std::stoi(std::string(tok.buffer)));
+            return new nodes::IntLit(std::stoi(std::string(tok.buffer)), tok.location);
         default:
             break;
     }
