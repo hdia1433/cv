@@ -47,6 +47,11 @@ void Parser::parse(const std::vector<Token>& tokens)
     }
 }
 
+std::vector<nodes::Node*> Parser::getAst()
+{
+    return ast;
+}
+
 void Parser::print()
 {
     for(nodes::Node* node: ast)
@@ -111,7 +116,7 @@ nodes::Node* Parser::parseFuncDecl(TokenType type, std::string_view name)
     }
 
     consume();
-    function = new nodes::FuncDecl(parseBody());
+    function = new nodes::FuncDecl(parseBody(), name, type);
 
     return function;
 }

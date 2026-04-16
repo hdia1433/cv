@@ -32,9 +32,11 @@ namespace nodes
 
     struct FuncDecl: public Node
     {
+        std::string_view name;
+        TokenType returnType;
         std::vector<Node*> body;
 
-        FuncDecl(const std::vector<Node*>& body);
+        FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType);
         ~FuncDecl();
 
         void print(std::string indent = "") override;

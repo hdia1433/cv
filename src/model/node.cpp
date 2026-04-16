@@ -14,7 +14,7 @@ namespace nodes
     }
 
     //Function Declaration
-    FuncDecl::FuncDecl(const std::vector<Node*>& body):body(body)
+    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType):body(body), name(name), returnType(returnType)
     {
         type = NodeType::funcDecl;
     }

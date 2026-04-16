@@ -15,8 +15,9 @@ public:
     ~Parser();
     void parse(const std::vector<Token>& tokens);
 
-    void print();
+    std::vector<nodes::Node*> getAst();
 
+    void print();
 private:
     //structures
     nodes::Node* parseFuncDecl(TokenType type, std::string_view name);

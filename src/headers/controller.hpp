@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
+#include "semanticAnalyser.hpp"
 
 class Controller
 {
@@ -9,6 +10,7 @@ private:
 
     Lexer lexer;
     Parser parser;
+    SemanticAnalyser sAnalyser;
 public:
     Controller(const std::string& code);
 

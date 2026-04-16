@@ -12,6 +12,10 @@ void Controller::start()
     lexer.print();
 
     std::println("\n\nParsing:");
-    parser.parse(std::move(lexer.getTokens()));
+    parser.parse(lexer.getTokens());
     parser.print();
+
+    std::println("\n\nSemantic analysing:");
+    sAnalyser.analyse(parser.getAst());
+    std::println("No errors found.");
 }
