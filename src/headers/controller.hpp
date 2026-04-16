@@ -2,6 +2,7 @@
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "semanticAnalyser.hpp"
+#include "IRGenerator.hpp"
 
 class Controller
 {
@@ -11,6 +12,7 @@ private:
     Lexer lexer;
     Parser parser;
     SemanticAnalyser sAnalyser;
+    IRGenerator iRGenerator;
 public:
     Controller(const std::string& code);
 

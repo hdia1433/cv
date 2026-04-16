@@ -18,4 +18,8 @@ void Controller::start()
     std::println("\n\nSemantic analysing:");
     sAnalyser.analyse(parser.getAst());
     std::println("No errors found.");
+
+    std::println("\n\nGenerating intermediate code:");
+    iRGenerator.generate(parser.getAst());
+    iRGenerator.print();
 }
