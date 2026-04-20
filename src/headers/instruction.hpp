@@ -4,6 +4,7 @@
 enum class OpCode
 {
     functionBegin,
+    functionEnd,
     abort
 };
 

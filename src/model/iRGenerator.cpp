@@ -6,6 +6,11 @@ IRGenerator::IRGenerator()
 
 }
 
+std::vector<Instruction>& IRGenerator::getInstructions()
+{
+    return instructions;
+}
+
 void IRGenerator::generate(const std::vector<nodes::Node*>& ast)
 {
     for(nodes::Node* node: ast)
@@ -50,6 +55,8 @@ void IRGenerator::generate(nodes::FuncDecl* funcDecl)
     {
         generateBody(node);
     }
+
+    instructions.emplace_back(Instruction{.operation = OpCode::functionEnd});
 }
 
 void IRGenerator::generate(nodes::Abort* abort)

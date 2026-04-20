@@ -80,6 +80,7 @@ GENERATED += $(OBJDIR)/instruction.o
 GENERATED += $(OBJDIR)/lexer.o
 GENERATED += $(OBJDIR)/main.o
 GENERATED += $(OBJDIR)/node.o
+GENERATED += $(OBJDIR)/optimizer.o
 GENERATED += $(OBJDIR)/parser.o
 GENERATED += $(OBJDIR)/pch.o
 GENERATED += $(OBJDIR)/semanticAnalyser.o
@@ -89,6 +90,7 @@ OBJECTS += $(OBJDIR)/instruction.o
 OBJECTS += $(OBJDIR)/lexer.o
 OBJECTS += $(OBJDIR)/main.o
 OBJECTS += $(OBJDIR)/node.o
+OBJECTS += $(OBJDIR)/optimizer.o
 OBJECTS += $(OBJDIR)/parser.o
 OBJECTS += $(OBJDIR)/pch.o
 OBJECTS += $(OBJDIR)/semanticAnalyser.o
@@ -174,6 +176,9 @@ $(OBJDIR)/lexer.o: src/model/lexer.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/node.o: src/model/node.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/optimizer.o: src/model/optimizer.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/parser.o: src/model/parser.cpp

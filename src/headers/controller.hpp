@@ -3,6 +3,7 @@
 #include "parser.hpp"
 #include "semanticAnalyser.hpp"
 #include "iRGenerator.hpp"
+#include "optimizer.hpp"
 
 class Controller
 {
@@ -13,6 +14,7 @@ private:
     Parser parser;
     SemanticAnalyser sAnalyser;
     IRGenerator iRGenerator;
+    Optimizer optimizer;
 public:
     Controller(const std::string& code);
 

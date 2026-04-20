@@ -11,6 +11,10 @@ std::string Instruction::toString()
             line << "func " << arg1 << ":";
             return line.str();
         }
+        case OpCode::functionEnd:
+        {
+            return "endFunc";
+        }
         case OpCode::abort:
         {
             std::stringstream line;

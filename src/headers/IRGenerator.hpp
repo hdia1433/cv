@@ -11,6 +11,8 @@ private:
 public:
     IRGenerator();
 
+    std::vector<Instruction>& getInstructions();
+
     void generate(const std::vector<nodes::Node*>& ast);
 
     void printToFile(const std::string& fileName = "irg.cvirg");

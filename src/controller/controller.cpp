@@ -22,4 +22,8 @@ void Controller::start()
     std::println("\n\nGenerating intermediate code:");
     iRGenerator.generate(parser.getAst());
     iRGenerator.printToFile();
+
+    std::println("\n\nOptimizing intermediate code:");
+    optimizer.optimize(iRGenerator.getInstructions());
+    iRGenerator.printToFile();
 }
