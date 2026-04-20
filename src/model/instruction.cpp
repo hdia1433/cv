@@ -1,0 +1,21 @@
+#include "instruction.hpp"
+#include "sstream"
+
+std::string Instruction::toString()
+{
+    switch(operation)
+    {
+        case OpCode::functionBegin:
+        {
+            std::stringstream line;
+            line << "func " << arg1 << ":";
+            return line.str();
+        }
+        case OpCode::abort:
+        {
+            std::stringstream line;
+            line << "exit " << arg1;
+            return line.str();
+        }
+    }
+}

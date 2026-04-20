@@ -75,6 +75,8 @@ GENERATED :=
 OBJECTS :=
 
 GENERATED += $(OBJDIR)/controller.o
+GENERATED += $(OBJDIR)/iRGenerator.o
+GENERATED += $(OBJDIR)/instruction.o
 GENERATED += $(OBJDIR)/lexer.o
 GENERATED += $(OBJDIR)/main.o
 GENERATED += $(OBJDIR)/node.o
@@ -82,6 +84,8 @@ GENERATED += $(OBJDIR)/parser.o
 GENERATED += $(OBJDIR)/pch.o
 GENERATED += $(OBJDIR)/semanticAnalyser.o
 OBJECTS += $(OBJDIR)/controller.o
+OBJECTS += $(OBJDIR)/iRGenerator.o
+OBJECTS += $(OBJDIR)/instruction.o
 OBJECTS += $(OBJDIR)/lexer.o
 OBJECTS += $(OBJDIR)/main.o
 OBJECTS += $(OBJDIR)/node.o
@@ -158,6 +162,12 @@ $(OBJDIR)/main.o: src/controller/main.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/pch.o: src/controller/pch.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/iRGenerator.o: src/model/iRGenerator.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/instruction.o: src/model/instruction.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/lexer.o: src/model/lexer.cpp

@@ -668,7 +668,8 @@ bin-int/Debug/controller.o: \
   src/controller/controller.cpp src/headers/controller.hpp \
   src/headers/pch.hpp src/headers/lexer.hpp src/headers/token.hpp \
   src/headers/parser.hpp src/headers/node.hpp \
-  src/headers/semanticAnalyser.hpp
+  src/headers/semanticAnalyser.hpp src/headers/iRGenerator.hpp \
+  src/headers/instruction.hpp
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h:
@@ -1342,3 +1343,5 @@ src/headers/token.hpp:
 src/headers/parser.hpp:
 src/headers/node.hpp:
 src/headers/semanticAnalyser.hpp:
+src/headers/iRGenerator.hpp:
+src/headers/instruction.hpp:

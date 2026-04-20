@@ -2,7 +2,7 @@
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "semanticAnalyser.hpp"
-#include "IRGenerator.hpp"
+#include "iRGenerator.hpp"
 
 class Controller
 {

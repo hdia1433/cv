@@ -21,5 +21,5 @@ void Controller::start()
 
     std::println("\n\nGenerating intermediate code:");
     iRGenerator.generate(parser.getAst());
-    iRGenerator.print();
+    iRGenerator.printToFile();
 }
