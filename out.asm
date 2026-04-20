@@ -3,5 +3,5 @@ _main:
 	stp x29, x30, [sp, #-16]!
 	mov x29, sp
 
-	mov x0, #6
+	mov x0, #
 	bl _exit

@@ -10,6 +10,7 @@ enum class TokenType
     rParen,
     lBrace,
     rBrace,
+    opPlus,
     semi,
     identifier
 };

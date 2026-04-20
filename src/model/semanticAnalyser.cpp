@@ -26,6 +26,19 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
             }
         }
     }
+
+    if(errors.size() > 0)
+    {
+        for(std::string error: errors)
+        {
+            std::cerr << error << std::endl << std::endl;
+        }
+
+        std::stringstream errorStream;
+        errorStream << errors.size() << " errors were generated.\n";
+
+        throw std::runtime_error(errorStream.str());
+    }
 }
 
 void SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)

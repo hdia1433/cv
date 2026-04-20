@@ -75,6 +75,26 @@ namespace nodes
         std::println("{}Integer Literal({})", indent, value);
     }
 
+    //binary expression
+    Binary::Binary(std::string op, Node* left, Node* right): op(op), left(left), right(right)
+    {
+
+    }
+
+    Binary::~Binary()
+    {
+        delete left;
+        delete right;
+    }
+
+    void Binary::print(std::string indent)
+    {
+        std::println("{}Binary Operation:", indent);
+        left->print(indent + "\t");
+        std::println("{}{}", indent + "\t", op);
+        right->print(indent + "\t");
+    }
+
     //Empty
     Empty::Empty()
     {

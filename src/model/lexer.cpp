@@ -90,6 +90,11 @@ void Lexer::analyze(const std::string& code)
             consume();
             addToken("}", TokenType::rBrace);
         }
+        else if(ch == '+')
+        {
+            consume();
+            addToken("+", TokenType::opPlus);
+        }
         else if(ch == ';')
         {
             consume();
@@ -134,6 +139,9 @@ void Lexer::print()
                 break;
             case TokenType::rBrace:
                 std::print("RIGHT_CURLY_BRACKET");
+                break;
+            case TokenType::opPlus:
+                std::print("PLUS_OPERATOR");
                 break;
             case TokenType::semi:
                 std::print("SEMICOLON");

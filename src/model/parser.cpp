@@ -38,12 +38,12 @@ void Parser::parse(const std::vector<Token>& tokens)
         for(nodes::Error* error: errors)
         {
             errorNum++;
-            std::cerr << error->error << std::endl;
+            std::cerr << error->error << std::endl << std::endl;
         }
 
         std::stringstream errorStream;
-        errorStream << std::endl << std::endl << errorNum << " errors were generated.";
-        throw std::runtime_error("");
+        errorStream << errorNum << " errors were generated.";
+        throw std::runtime_error(errorStream.str());
     }
 }
 
@@ -322,7 +322,23 @@ nodes::Node* Parser::parseStatement()
 
 nodes::Node* Parser::parseExpression()
 {
-    return parsePrimary();
+    return parseTerm();
+}
+
+nodes::Node* Parser::parseTerm()
+{
+    nodes::Node* left = parsePrimary();
+
+    auto pTok = peek();
+    if(pTok && pTok->type == TokenType::opPlus)
+    {
+        std::string op = std::string(consume().buffer);
+
+        nodes::Node* right = parsePrimary();
+        left = new nodes::Binary(op, left, right);
+    }
+
+    return left;
 }
 
 nodes::Node* Parser::parsePrimary()
@@ -331,7 +347,7 @@ nodes::Node* Parser::parsePrimary()
     if(!pTok)
     {
         std::stringstream errorStream;
-        errorStream << "An error has occurred at the end of the file.\nA number or variable name was expected, but the end of the file was found instead. A value is needed for the abort keyword.";
+        errorStream << "An error has occurred at the end of the file.\nA number or variable name was expected, but the end of the file was found instead.";
         nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
         errors.emplace_back(error);
         consume();
@@ -342,7 +358,7 @@ nodes::Node* Parser::parsePrimary()
     switch(tok.type)
     {
         case TokenType::ltInt:
-        consume();
+            consume();
             return new nodes::IntLit(std::stoi(std::string(tok.buffer)), tok.location);
         default:
             break;

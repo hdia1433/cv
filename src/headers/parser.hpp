@@ -33,6 +33,7 @@ private:
     //statement tree
     nodes::Node* parseStatement();
     nodes::Node* parseExpression();
+    nodes::Node* parseTerm();
     nodes::Node* parsePrimary();
 
     //helper

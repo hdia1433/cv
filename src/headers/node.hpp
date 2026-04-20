@@ -7,6 +7,7 @@ enum class NodeType
     funcDecl,
     kwAbort,
     ltInt,
+    binary,
     empty
 };
 
@@ -38,7 +39,7 @@ namespace nodes
         std::vector<Node*> body;
 
         FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType, const Coordinate& location);
-        ~FuncDecl();
+        ~FuncDecl() override;
 
         void print(std::string indent = "") override;
     };
@@ -48,7 +49,7 @@ namespace nodes
         Node* expression;  
 
         Abort(Node* expression, const Coordinate& location);
-        ~Abort();
+        ~Abort() override;
 
         void print(std::string indent = "") override;
     };
@@ -58,6 +59,17 @@ namespace nodes
         int value;
 
         IntLit(int value, const Coordinate& location);
+
+        void print(std::string indent = "") override;
+    };
+
+    struct Binary: public Node{
+        std::string op;
+        Node* left;
+        Node* right;
+
+        Binary(std::string op, Node* left, Node* right);
+        ~Binary() override;
 
         void print(std::string indent = "") override;
     };
