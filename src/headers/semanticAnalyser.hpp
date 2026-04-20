@@ -18,4 +18,7 @@ private:
 
     //keywords
     void visit(nodes::Abort* abort);
+
+    //statement tree
+    void visit(nodes::Binary* binary);
 };

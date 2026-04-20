@@ -63,5 +63,17 @@ void SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
 
 void SemanticAnalyser::visit(nodes::Abort* abort)
 {
+    switch(abort->expression->type)
+    {
+        case NodeType::binary:
+            visit((nodes::Binary*)abort->expression);
+            break;
+        default:
+            break;
+    }
+}
+
+void SemanticAnalyser::visit(nodes::Binary* binary)
+{
     
 }
