@@ -5,6 +5,11 @@ AsmGenerator::AsmGenerator():indentNum(0), index(0)
 
 }
 
+std::string AsmGenerator::getAssembly()
+{
+    return assembly.str();
+}
+
 void AsmGenerator::generate(std::vector<Instruction>& irCode)
 {
     this->irCode = &irCode;
@@ -53,8 +58,10 @@ void AsmGenerator::generateFunctionDecl()
 
     if(!exited)
     {
-        generatePrologue();
+        generateEpilogue();
     }
+
+    consume();
 }
 
 void AsmGenerator::generatePrologue()
@@ -82,14 +89,14 @@ void AsmGenerator::generateAbort()
     std::string indent(indentNum, '\t');
 
     assembly << indent << "mov x0, #" <<  abort.arg1 << std::endl;
-    assembly << indent << "bl exit\n";
+    assembly << indent << "bl _exit\n";
 }
 #pragma endregion
 
 
 Instruction* AsmGenerator::peek()
 {
-    if(index > irCode->size())
+    if(index >= irCode->size())
     {
         return nullptr;
     }
