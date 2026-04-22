@@ -8,6 +8,7 @@ class IRGenerator
 {
 private:
     std::vector<Instruction> instructions;
+    uint tempNum;
 public:
     IRGenerator();
 
@@ -20,6 +21,7 @@ private:
     void generate(nodes::FuncDecl* funcDecl);
     void generate(nodes::Abort* abort);
 
+    std::string generateBinary(nodes::Binary* binary);
     void generateBody(nodes::Node* node);
     std::string generateExpression(nodes::Node* node);
 };

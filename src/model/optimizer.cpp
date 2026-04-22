@@ -1,5 +1,6 @@
 #include "optimizer.hpp"
 #include <ranges>
+#include "helpers.hpp"
 
 Optimizer::Optimizer()
 {
@@ -22,7 +23,22 @@ bool Optimizer::fold(std::vector<Instruction>& iRCode)
 {
     bool changed = false;
 
-
+    for(Instruction& instr: iRCode)
+    {
+        if(instr.operation == OpCode::plus)
+        {
+            try
+            {
+                instr = Instruction{.operation = OpCode::assign, .result = instr.result, .arg1 = std::to_string(std::stoi(instr.arg1) + std::stoi(instr.arg2))};
+                changed = true;
+            }
+            catch(const std::exception& e)
+            {
+                
+            }
+            
+        }
+    }
 
     return changed;
 }
@@ -31,7 +47,28 @@ bool Optimizer::propagate(std::vector<Instruction>& iRCode)
 {
     bool changed = false;
 
+    for(Instruction& instr: iRCode)
+    {
+        if(instr.operation == OpCode::assign && helpers::isNumber(instr.arg1))
+        {
+            std::string temp = instr.result;
 
+            for(Instruction& instr2: iRCode)
+            {
+                if(instr2.arg1 == temp)
+                {
+                    instr2.arg1 = instr.arg1;
+                    changed = true;
+                }
+                
+                if(instr2.arg2 == temp)
+                {
+                    instr2.arg2 = instr.arg1;
+                    changed = true;
+                }
+            }
+        }
+    }
 
     return changed;
 }
@@ -51,6 +88,22 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
                 deadIndexes.emplace_back(next++);
             }
             i = next;
+        }
+        else if(helpers::equalsOr(iRCode[i].operation, {OpCode::assign, OpCode::plus}))
+        {
+            changed = true;
+            for(Instruction& instr: iRCode)
+            {
+                if(helpers::equalsOr(iRCode[i].result, {instr.arg1, instr.arg2}))
+                {
+                    changed = false;
+                    break;
+                }
+            }
+            if(changed)
+            {
+                deadIndexes.emplace_back(i);
+            }
         }
     }
 

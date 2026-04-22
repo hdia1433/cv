@@ -68,7 +68,7 @@ namespace nodes
         Node* left;
         Node* right;
 
-        Binary(std::string op, Node* left, Node* right);
+        Binary(std::string op, Node* left, Node* right, const Coordinate& location);
         ~Binary() override;
 
         void print(std::string indent = "") override;

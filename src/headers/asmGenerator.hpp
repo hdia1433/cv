@@ -25,6 +25,10 @@ private:
     //keywords
     void generateAbort();
 
+    //Expression tree
+    void generatePlus();
+
     Instruction* peek();
     Instruction consume();
+    std::string getReg(const std::string& temp);
 };

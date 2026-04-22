@@ -26,7 +26,7 @@ void Controller::start()
 
     std::println("\n\nOptimizing intermediate code:");
     optimizer.optimize(iRGenerator.getInstructions());
-    iRGenerator.printToFile();
+    iRGenerator.printToFile("irgo.cvirg");
 
     std::println("\n\nGenerating assembly:");
     asmGenerator.generate(iRGenerator.getInstructions());

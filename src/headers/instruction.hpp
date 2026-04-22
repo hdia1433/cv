@@ -5,6 +5,8 @@ enum class OpCode
 {
     functionBegin,
     functionEnd,
+    plus,
+    assign,
     abort
 };
 

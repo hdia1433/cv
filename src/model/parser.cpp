@@ -335,7 +335,7 @@ nodes::Node* Parser::parseTerm()
         std::string op = std::string(consume().buffer);
 
         nodes::Node* right = parsePrimary();
-        left = new nodes::Binary(op, left, right);
+        left = new nodes::Binary(op, left, right, left->location);
     }
 
     return left;

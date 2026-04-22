@@ -667,7 +667,8 @@ bin-int/Debug/asmGenerator.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print \
   src/model/asmGenerator.cpp src/headers/asmGenerator.hpp \
   src/headers/pch.hpp src/headers/instruction.hpp \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/sstream
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/sstream \
+  src/headers/helpers.hpp
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h:
@@ -1338,3 +1339,4 @@ src/headers/asmGenerator.hpp:
 src/headers/pch.hpp:
 src/headers/instruction.hpp:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/sstream:
+src/headers/helpers.hpp:

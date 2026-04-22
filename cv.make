@@ -76,6 +76,7 @@ OBJECTS :=
 
 GENERATED += $(OBJDIR)/asmGenerator.o
 GENERATED += $(OBJDIR)/controller.o
+GENERATED += $(OBJDIR)/helpers.o
 GENERATED += $(OBJDIR)/iRGenerator.o
 GENERATED += $(OBJDIR)/instruction.o
 GENERATED += $(OBJDIR)/lexer.o
@@ -87,6 +88,7 @@ GENERATED += $(OBJDIR)/pch.o
 GENERATED += $(OBJDIR)/semanticAnalyser.o
 OBJECTS += $(OBJDIR)/asmGenerator.o
 OBJECTS += $(OBJDIR)/controller.o
+OBJECTS += $(OBJDIR)/helpers.o
 OBJECTS += $(OBJDIR)/iRGenerator.o
 OBJECTS += $(OBJDIR)/instruction.o
 OBJECTS += $(OBJDIR)/lexer.o
@@ -166,6 +168,9 @@ $(OBJDIR)/main.o: src/controller/main.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/pch.o: src/controller/pch.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/helpers.o: src/helpers/helpers.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/asmGenerator.o: src/model/asmGenerator.cpp

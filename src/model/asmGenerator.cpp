@@ -1,4 +1,5 @@
 #include "asmGenerator.hpp"
+#include "helpers.hpp"
 
 AsmGenerator::AsmGenerator():indentNum(0), index(0)
 {
@@ -45,6 +46,9 @@ void AsmGenerator::generateFunctionDecl()
     {
         switch(instr.operation)
         {
+            case OpCode::plus:
+                generatePlus();
+                break;
             case OpCode::abort:
                 generateAbort();
                 exited = true;
@@ -93,6 +97,43 @@ void AsmGenerator::generateAbort()
 }
 #pragma endregion
 
+#pragma region Expression tree
+void AsmGenerator::generatePlus()
+{
+    Instruction plus = consume();
+    std::string indent(indentNum, '\t');
+
+    std::string reg;
+    std::string arg1;
+    std::string arg2;
+
+    if(plus.result[0] == 't')
+    {
+        reg = getReg(plus.result);
+    }
+
+    if(plus.arg1[0] == 't')
+    {
+        arg1 = getReg(plus.arg1);
+    }
+    else if(helpers::isNumber(plus.arg1))
+    {
+        arg1 = "#" + plus.arg1;
+    }
+
+    if(plus.arg2[0] == 't')
+    {
+        arg2 = getReg(plus.arg2);
+    }
+    else if(helpers::isNumber(plus.arg2))
+    {
+        arg2 = "#" + plus.arg2;
+    }
+
+    assembly << "\nadd " << reg << ", " << arg1 << ", " << arg2;
+}
+#pragma endregion
+
 
 Instruction* AsmGenerator::peek()
 {
@@ -106,4 +147,9 @@ Instruction* AsmGenerator::peek()
 Instruction AsmGenerator::consume()
 {
     return irCode->at(index++);
+}
+
+std::string AsmGenerator::getReg(const std::string& temp)
+{
+    return "w" + temp.substr(1);
 }

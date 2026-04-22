@@ -15,6 +15,14 @@ std::string Instruction::toString()
         {
             return "endFunc";
         }
+        case OpCode::plus:
+        {
+            return result + " = " + arg1 + " + " + arg2;
+        }
+        case OpCode::assign:
+        {
+            return result + " = " + arg1;
+        }
         case OpCode::abort:
         {
             std::stringstream line;

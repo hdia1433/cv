@@ -1,7 +1,7 @@
 #include "iRGenerator.hpp"
 #include "fstream"
 
-IRGenerator::IRGenerator()
+IRGenerator::IRGenerator():tempNum(0)
 {
 
 }
@@ -61,8 +61,19 @@ void IRGenerator::generate(nodes::FuncDecl* funcDecl)
 
 void IRGenerator::generate(nodes::Abort* abort)
 {
-    std::string expression = generateExpression(abort->expression);
-    instructions.emplace_back(Instruction{.operation = OpCode::abort, .arg1 = expression});
+    instructions.emplace_back(Instruction{.operation = OpCode::abort, .arg1 = generateExpression(abort->expression)});
+}
+
+std::string IRGenerator::generateBinary(nodes::Binary* binary)
+{
+    std::string temp = "t" + std::to_string(tempNum++);
+
+    if(binary->op == "+")
+    {
+        instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = temp, .arg1 = generateExpression(binary->left), .arg2 = generateExpression(binary->right)});
+    }
+
+    return temp;
 }
 
 void IRGenerator::generateBody(nodes::Node* node)
@@ -85,7 +96,10 @@ std::string IRGenerator::generateExpression(nodes::Node* node)
     {
         case NodeType::ltInt:
             return std::to_string(((nodes::IntLit*)node)->value);
+        case NodeType::binary:
+            return generateBinary((nodes::Binary*)node);
         default:
+            std::println("Broken!");
             return "";
     }
 }

@@ -76,9 +76,10 @@ namespace nodes
     }
 
     //binary expression
-    Binary::Binary(std::string op, Node* left, Node* right): op(op), left(left), right(right)
+    Binary::Binary(std::string op, Node* left, Node* right, const Coordinate& location): op(op), left(left), right(right)
     {
-
+        type = NodeType::binary;
+        this->location = location;
     }
 
     Binary::~Binary()
