@@ -1,6 +1,7 @@
 #include "optimizer.hpp"
 #include <ranges>
 #include "helpers.hpp"
+#include <unordered_set>
 
 Optimizer::Optimizer()
 {
@@ -77,39 +78,59 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
 {
     bool changed = false;
 
+    std::unordered_set<std::string> live;
+
     std::vector<int> deadIndexes;
+
     for(uint i = 0; i < iRCode.size(); i++)
     {
-        if(iRCode[i].operation == OpCode::abort)
+        switch(iRCode[i].operation)
         {
-            uint next = i + 1;
-            while(iRCode[next].operation != OpCode::functionEnd)
+            case OpCode::abort:
             {
-                deadIndexes.emplace_back(next++);
-            }
-            i = next;
-        }
-        else if(helpers::equalsOr(iRCode[i].operation, {OpCode::assign, OpCode::plus}))
-        {
-            changed = true;
-            for(Instruction& instr: iRCode)
-            {
-                if(helpers::equalsOr(iRCode[i].result, {instr.arg1, instr.arg2}))
+                uint next = i + 1;
+                while(!helpers::equalsOr(iRCode[i].operation, {OpCode::functionEnd}))
                 {
-                    changed = false;
-                    break;
+                    changed = true;
+                    deadIndexes.emplace_back(next++);
                 }
+                i = next;
+                break;
             }
-            if(changed)
-            {
-                deadIndexes.emplace_back(i);
-            }
+            default:
+                break;
         }
     }
 
-    if(deadIndexes.size() > 0)
+    for(uint i = iRCode.size() - 1; i >= 0; i--)
     {
-        changed = true;
+        Instruction& instr = iRCode[i];
+        bool keep = false;
+        if(helpers::equalsOr(instr.operation, {OpCode::functionBegin, OpCode::functionEnd, OpCode::abort}))
+        {
+            keep = true;
+        }
+        else if(!instr.result.empty() && live.find(instr.result) != live.end())
+        {
+            keep = true;
+        }
+
+        if(keep)
+        {
+            if(!instr.arg1.empty())
+            {
+                live.emplace(instr.arg1);
+            }
+
+            if(!instr.arg2.empty())
+            {
+                live.emplace(instr.arg2);
+            }
+        }
+        else
+        {
+            deadIndexes.emplace_back(i);
+        }
     }
 
     for(int index: deadIndexes | std::views::reverse)
