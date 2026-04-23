@@ -436,6 +436,9 @@ nodes::Node* Parser::parsePrimary()
         case TokenType::ltInt:
             consume();
             return new nodes::IntLit(std::stoi(std::string(tok.buffer)), tok.location);
+        case TokenType::identifier:
+            tok = consume();
+            return new nodes::VarRef(tok.buffer, tok.location);
         default:
             break;
     }

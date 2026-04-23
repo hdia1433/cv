@@ -48,10 +48,10 @@ namespace nodes
 
     void FuncDecl::print(const std::string& indent)
     {
-        std::println("{}FunctionDeclaration({}, {}):", indent, name, typeToString(returnType));
+        std::println("{}Function Declaration({}, {}):", indent, name, typeToString(returnType));
         for (Node* node: body)
         {
-            node->print(indent + "\t");
+            node->print(indent + "|-");
         }
     }
 
@@ -69,7 +69,7 @@ namespace nodes
 
     void VarDecl::print(const std::string& indent)
     {
-        std::println("{}VariableDeclaration({}, {}):", indent, name, typeToString(varType));
+        std::println("{}Variable Declaration({}, {}):", indent, name, typeToString(varType));
         value->print("\t" + indent);
     }
 
@@ -82,7 +82,7 @@ namespace nodes
 
     void VarRef::print(const std::string& indent)
     {
-        std::println("{}VariableReference({})", indent, name);
+        std::println("{}Variable Reference({})", indent, name);
     }
 
     //Abort keyword
