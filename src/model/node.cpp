@@ -2,13 +2,26 @@
 
 namespace nodes
 {
+    std::string typeToString(TokenType type)
+    {
+        switch(type)
+        {
+            case TokenType::kwVoid:
+                return "void";
+            case TokenType::kwInt:
+                return "int";
+            default:
+                return "error";
+        }
+    }
+    
     //Error
     Error::Error(const std::string& error):error(std::move(error))
     {
 
     }
 
-    void Error::print(std::string indent)
+    void Error::print(const std::string& indent)
     {
         std::println("{}Error({})", indent, error);
     }
@@ -33,13 +46,43 @@ namespace nodes
         body.clear();
     }
 
-    void FuncDecl::print(std::string indent)
+    void FuncDecl::print(const std::string& indent)
     {
-        std::println("{}FunctionDeclaration:", indent);
+        std::println("{}FunctionDeclaration({}, {}):", indent, name, typeToString(returnType));
         for (Node* node: body)
         {
             node->print(indent + "\t");
         }
+    }
+
+    //Variable declaration
+    VarDecl::VarDecl(std::string_view name, TokenType varType, Node* value, const Coordinate& location):name(name), varType(varType), value(value)
+    {
+        type = NodeType::varDecl;
+        this->location = location;
+    }
+
+    VarDecl::~VarDecl()
+    {
+        delete value;
+    }
+
+    void VarDecl::print(const std::string& indent)
+    {
+        std::println("{}VariableDeclaration({}, {}):", indent, name, typeToString(varType));
+        value->print("\t" + indent);
+    }
+
+    //Variable reference
+    VarRef::VarRef(std::string_view name, const Coordinate& location):name(name)
+    {
+        type = NodeType::varRef;
+        this->location = location;
+    }
+
+    void VarRef::print(const std::string& indent)
+    {
+        std::println("{}VariableReference({})", indent, name);
     }
 
     //Abort keyword
@@ -57,7 +100,7 @@ namespace nodes
         }
     }
 
-    void Abort::print(std::string indent)
+    void Abort::print(const std::string& indent)
     {
         std::println("{}Abort:", indent);
         expression->print(indent + "\t");
@@ -70,7 +113,7 @@ namespace nodes
         this->location = location;
     }
 
-    void IntLit::print(std::string indent)
+    void IntLit::print(const std::string& indent)
     {
         std::println("{}Integer Literal({})", indent, value);
     }
@@ -88,7 +131,7 @@ namespace nodes
         delete right;
     }
 
-    void Binary::print(std::string indent)
+    void Binary::print(const std::string& indent)
     {
         std::println("{}Binary Operation:", indent);
         left->print(indent + "\t");
@@ -102,7 +145,7 @@ namespace nodes
         type = NodeType::empty;
     }
 
-    void Empty::print(std::string indent)
+    void Empty::print(const std::string& indent)
     {
         std::println("{}Empty", indent);
     }

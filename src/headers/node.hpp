@@ -5,6 +5,8 @@
 enum class NodeType
 {
     funcDecl,
+    varDecl,
+    varRef,
     kwAbort,
     ltInt,
     binary,
@@ -20,7 +22,7 @@ namespace nodes
 
         virtual ~Node() = default;
 
-        virtual void print(std::string indent = "") = 0;
+        virtual void print(const std::string& indent = "") = 0;
     };
 
     struct Error: public Node
@@ -29,7 +31,7 @@ namespace nodes
 
         Error(const std::string& error);
 
-        void print(std::string indent = "") override;
+        void print(const std::string& indent = "") override;
     };
 
     struct FuncDecl: public Node
@@ -41,7 +43,28 @@ namespace nodes
         FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType, const Coordinate& location);
         ~FuncDecl() override;
 
-        void print(std::string indent = "") override;
+        void print(const std::string& indent = "") override;
+    };
+
+    struct VarDecl: public Node
+    {
+        std::string_view name;
+        TokenType varType;
+        Node* value;
+
+        VarDecl(std::string_view name, TokenType varType, Node* value, const Coordinate& location);
+        ~VarDecl() override;
+
+        void print(const std::string& indent = "") override;
+    };
+
+    struct VarRef: public Node
+    {
+        std::string_view name;
+
+        VarRef(std::string_view name, const Coordinate& location);
+
+        void print(const std::string& indent = "") override;
     };
 
     struct Abort: public Node
@@ -51,7 +74,7 @@ namespace nodes
         Abort(Node* expression, const Coordinate& location);
         ~Abort() override;
 
-        void print(std::string indent = "") override;
+        void print(const std::string& indent = "") override;
     };
 
     struct IntLit: public Node
@@ -60,7 +83,7 @@ namespace nodes
 
         IntLit(int value, const Coordinate& location);
 
-        void print(std::string indent = "") override;
+        void print(const std::string& indent = "") override;
     };
 
     struct Binary: public Node{
@@ -71,13 +94,13 @@ namespace nodes
         Binary(std::string op, Node* left, Node* right, const Coordinate& location);
         ~Binary() override;
 
-        void print(std::string indent = "") override;
+        void print(const std::string& indent = "") override;
     };
 
     struct Empty: public Node
     {
         Empty();
 
-        void print(std::string indent = "") override;
+        void print(const std::string& indent = "") override;
     };
 }
