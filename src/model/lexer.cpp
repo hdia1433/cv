@@ -1,5 +1,6 @@
 #include "lexer.hpp"
 #include <unordered_map>
+#include <sstream>
 
 std::unordered_map<std::string_view, TokenType> keywords = {
     {"void", TokenType::kwVoid},
@@ -108,7 +109,8 @@ void Lexer::analyze(const std::string& code)
         }
         else
         {
-            throw std::runtime_error("An error has occurred. The character '" + std::to_string(ch) + "' cannot be used to begin an identifier");
+            std::cerr << "An error has occurred at the line " << currentLoc.row << " and the column " << currentLoc.col << ".\nThe character '" << ch << "' cannot be used to begin an identifier.\n\n";
+            throw std::runtime_error("1 error was generated.");
         }
     }
 }

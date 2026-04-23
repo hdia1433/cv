@@ -1,4 +1,5 @@
 void main()
 {
-    abort 6 + 8;
+    int x = 4 + 2;
+    abort x + 8;
 }
