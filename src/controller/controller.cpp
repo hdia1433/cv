@@ -10,7 +10,7 @@ void Controller::start()
 {
     std::println("Lexing:");
     lexer.analyze(std::move(code));
-    lexer.print();
+    lexer.printToFile();
 
     std::println("\n\nParsing:");
     parser.parse(lexer.getTokens());

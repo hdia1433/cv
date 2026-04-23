@@ -1,6 +1,7 @@
 #include "lexer.hpp"
 #include <unordered_map>
 #include <sstream>
+#include <fstream>
 
 std::unordered_map<std::string_view, TokenType> keywords = {
     {"void", TokenType::kwVoid},
@@ -121,54 +122,59 @@ void Lexer::analyze(const std::string& code)
     }
 }
 
-void Lexer::print()
+void Lexer::printToFile()
 {
-    std::print("{{");
+    std::ofstream file("tokens.txt");
+    if(!file)
+    {
+        std::println("Error loading file tokens.txt");
+    }
+    file << "{";
     for(Token& tok: tokens)
     {
-        std::print("{{");
+        file << "{";
         switch(tok.type)
         {
             case TokenType::kwVoid:
-                std::print("VOID_TYPE");
+                file << "VOID_TYPE";
                 break;
             case TokenType::kwInt:
-                std::print("INTEGER_TYPE");
+                file << "INTEGER_TYPE";
                 break;
             case TokenType::kwAbort:
-                std::print("KW_ABORT");
+                file << "KW_ABORT";
                 break;
             case TokenType::ltInt:
-                std::print("INT_LITERAL: {}", tok.buffer);
+                file << "INT_LITERAL: " << tok.buffer;
                 break;
             case TokenType::lParen:
-                std::print("LEFT_PARENTHESIS");
+                file << "LEFT_PARENTHESIS";
                 break;
             case TokenType::rParen:
-                std::print("RIGHT_PARENTHESIS");
+                file << "RIGHT_PARENTHESIS";
                 break;
             case TokenType::lBrace:
-                std::print("LEFT_CURLY_BRACKET");
+                file << "LEFT_CURLY_BRACKET";
                 break;
             case TokenType::rBrace:
-                std::print("RIGHT_CURLY_BRACKET");
+                file << "RIGHT_CURLY_BRACKET";
                 break;
             case TokenType::opAssign:
-                std::print("ASSIGNMENT_OPERATOR");
+                file << "ASSIGNMENT_OPERATOR";
                 break;
             case TokenType::opPlus:
-                std::print("PLUS_OPERATOR");
+                file << "PLUS_OPERATOR";
                 break;
             case TokenType::semi:
-                std::print("SEMICOLON");
+                file << "SEMICOLON";
                 break;
             case TokenType::identifier:
-                std::print("IDENTIFIER: {}", tok.buffer);
+                file << "IDENTIFIER: " << tok.buffer;
                 break;
         }
-        std::print("}}");
+        file << "}, ";
     }
-    std::print("}}\n");
+    file << "}";
 }
 
 char* Lexer::peek()

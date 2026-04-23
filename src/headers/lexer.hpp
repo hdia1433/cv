@@ -15,7 +15,7 @@ public:
 
     void analyze(const std::string& code);
 
-    void print();
+    void printToFile();
 private:
     char* peek();
     char consume();
