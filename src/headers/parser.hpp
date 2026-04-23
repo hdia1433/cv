@@ -21,11 +21,11 @@ public:
 private:
     //structures
     nodes::Node* parseFuncDecl(TokenType type, std::string_view name, const Coordinate& location);
-
+    nodes::Node* parseVarDecl(TokenType type, std::string_view name, const Coordinate& location);
 
     //bodies
     std::vector<nodes::Node*> parseGlobal();
-    std::vector<nodes::Node*> parseBody();
+    std::vector<nodes::Node*> parseScope();
 
     //keywords
     nodes::Node* parseAbort(const Coordinate& location);

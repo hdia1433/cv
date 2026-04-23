@@ -123,9 +123,38 @@ nodes::Node* Parser::parseFuncDecl(TokenType type, std::string_view name, const 
     }
 
     consume();
-    function = new nodes::FuncDecl(parseBody(), name, type, location);
+    function = new nodes::FuncDecl(parseScope(), name, type, location);
 
     return function;
+}
+
+nodes::Node* Parser::parseVarDecl(TokenType type, std::string_view name, const Coordinate& location)
+{
+    Token* pTok = peek();
+    if(!pTok)
+    {
+        std::stringstream errorStream;
+        errorStream << "An error has occurred at the end of the file.\nAn '=' for variable assignment or ';' for default declaration was expected, but the end of the file was found instead.";
+        nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+        errors.emplace_back(error);
+        return errors.back();
+    }
+
+    Token tok = *pTok;
+    if(tok.type != TokenType::opAssign)
+    {
+        switch(type)
+        {
+            case TokenType::kwInt:
+                return new nodes::VarDecl(name, type, new nodes::IntLit(0, {0, 0}), location);
+            default:
+                break;
+        }
+    }
+
+    consume();
+
+   return new nodes::VarDecl(name, type, parseExpression(), location);
 }
 #pragma endregion
 
@@ -218,9 +247,9 @@ std::vector<nodes::Node*> Parser::parseGlobal()
     return nodes;
 }
 
-std::vector<nodes::Node*> Parser::parseBody()
+std::vector<nodes::Node*> Parser::parseScope()
 {
-    std::vector<nodes::Node*> body;
+    std::vector<nodes::Node*> statements;
 
     while(auto pTok = peek())
     {
@@ -229,7 +258,7 @@ std::vector<nodes::Node*> Parser::parseBody()
         if(tok.type == TokenType::rBrace)
         {
             consume();
-            return body;
+            return statements;
         }
 
         nodes::Node* node = parseStatement();
@@ -238,17 +267,17 @@ std::vector<nodes::Node*> Parser::parseBody()
             continue;
         }
 
-        body.emplace_back(node);
+        statements.emplace_back(node);
     }
 
     std::stringstream errorStream;
     errorStream << "An error has occurred at the end of the file. A '}' was expected but the end of the file was found instead. A '}' is needed to end a scope or body.\n";
     nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
     errors.emplace_back(std::move(error));
-    body.emplace_back(errors.back());
+    statements.emplace_back(errors.back());
     consume();
 
-    return body;
+    return statements;
 }
 #pragma endregion
 
@@ -297,8 +326,48 @@ nodes::Node* Parser::parseStatement()
         case TokenType::semi:
             consume();
             return new nodes::Empty;
+        case TokenType::kwVoid:
+        {
+            std::stringstream errorStream;
+            errorStream << "An error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA variable cannot be of the type 'void'.";
+            nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+            errors.emplace_back(error);
+            return errors.back();
+        }
         default:
+        {
+            if(!isType(tok.type))
+            {
+                break;
+            }
+            
+            Coordinate location = tok.location;
+            TokenType type = consume().type;
+
+            pTok = peek();
+            if(!pTok)
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the line end of the file.\nA name for a variable was expected, but the end of the file was found instead. A variable's declaration must contain a name.";
+                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                errors.emplace_back(error);
+                return errors.back();
+            }
+
+            tok = *pTok;
+            if(tok.type != TokenType::identifier)
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA variable name was expected, but '" << tok.buffer << "' was found instead. A variable's declaration must contain a name.";
+                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                errors.emplace_back(error);
+                return errors.back();
+            }
+
+            std::string_view name = consume().buffer;
+            statement = parseVarDecl(type, name, location);
             break;
+        }
     }
 
     pTok = peek();
@@ -395,6 +464,7 @@ bool Parser::isType(TokenType type)
 {
     switch(type)
     {
+        case TokenType::kwInt:
         case TokenType::kwVoid:
             return true;
         default:
