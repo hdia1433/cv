@@ -4,12 +4,14 @@
 enum class TokenType
 {
     kwVoid,
+    kwInt,
     kwAbort,
     ltInt,
     lParen,
     rParen,
     lBrace,
     rBrace,
+    opAssign,
     opPlus,
     semi,
     identifier

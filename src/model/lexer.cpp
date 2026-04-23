@@ -4,6 +4,7 @@
 
 std::unordered_map<std::string_view, TokenType> keywords = {
     {"void", TokenType::kwVoid},
+    {"int", TokenType::kwInt},
     {"abort", TokenType::kwAbort}
 };
 
@@ -93,6 +94,11 @@ void Lexer::analyze(const std::string& code)
             consume();
             addToken("}", TokenType::rBrace, startLoc);
         }
+        else if(ch == '=')
+        {
+            consume();
+            addToken("=", TokenType::opAssign, startLoc);
+        }
         else if(ch == '+')
         {
             consume();
@@ -126,6 +132,9 @@ void Lexer::print()
             case TokenType::kwVoid:
                 std::print("VOID_TYPE");
                 break;
+            case TokenType::kwInt:
+                std::print("INTEGER_TYPE");
+                break;
             case TokenType::kwAbort:
                 std::print("KW_ABORT");
                 break;
@@ -143,6 +152,9 @@ void Lexer::print()
                 break;
             case TokenType::rBrace:
                 std::print("RIGHT_CURLY_BRACKET");
+                break;
+            case TokenType::opAssign:
+                std::print("ASSIGNMENT_OPERATOR");
                 break;
             case TokenType::opPlus:
                 std::print("PLUS_OPERATOR");
