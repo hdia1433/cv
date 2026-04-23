@@ -24,10 +24,16 @@ namespace nodes
 
     std::string Error::printToFile(int indentNum)
     {
-        std::string indent("| ", indentNum);
-        if(!indent.empty())
+        std::string indent = "";
+        indent.reserve(indentNum * 2);
+        if(indentNum > 0)
         {
-            indent[indent.size() - 1] = '-';
+            for(uint i = 0; i < indentNum - 1; i++)
+            {
+                indent += "| ";
+
+            }
+            indent += "|-";
         }
         std::stringstream result;
         result << indent << "Error(" << error << ")\n";
@@ -56,10 +62,16 @@ namespace nodes
 
     std::string FuncDecl::printToFile(int indentNum)
     {
-        std::string indent("| ", indentNum);
-        if(!indent.empty())
+        std::string indent = "";
+        indent.reserve(indentNum * 2);
+        if(indentNum > 0)
         {
-            indent[indent.size() - 1] = '-';
+            for(uint i = 0; i < indentNum - 1; i++)
+            {
+                indent += "| ";
+
+            }
+            indent += "|-";
         }
         std::stringstream result;
 
@@ -86,10 +98,16 @@ namespace nodes
 
     std::string VarDecl::printToFile(int indentNum)
     {
-        std::string indent("| ", indentNum);
-        if(!indent.empty())
+        std::string indent = "";
+        indent.reserve(indentNum * 2);
+        if(indentNum > 0)
         {
-            indent[indent.size() - 1] = '-';
+            for(uint i = 0; i < indentNum - 1; i++)
+            {
+                indent += "| ";
+
+            }
+            indent += "|-";
         }
         std::stringstream result;
 
@@ -108,10 +126,16 @@ namespace nodes
 
     std::string VarRef::printToFile(int indentNum)
     {
-        std::string indent("| ", indentNum);
-        if(!indent.empty())
+        std::string indent = "";
+        indent.reserve(indentNum * 2);
+        if(indentNum > 0)
         {
-            indent[indent.size() - 1] = '-';
+            for(uint i = 0; i < indentNum - 1; i++)
+            {
+                indent += "| ";
+
+            }
+            indent += "|-";
         }
         std::stringstream result;
 
@@ -137,10 +161,16 @@ namespace nodes
 
     std::string Abort::printToFile(int indentNum)
     {
-        std::string indent("| ", indentNum);
-        if(!indent.empty())
+        std::string indent = "";
+        indent.reserve(indentNum * 2);
+        if(indentNum > 0)
         {
-            indent[indent.size() - 1] = '-';
+            for(uint i = 0; i < indentNum - 1; i++)
+            {
+                indent += "| ";
+
+            }
+            indent += "|-";
         }
         std::stringstream result;
 
@@ -159,10 +189,16 @@ namespace nodes
 
     std::string IntLit::printToFile(int indentNum)
     {
-        std::string indent("| ", indentNum);
-        if(!indent.empty())
+        std::string indent = "";
+        indent.reserve(indentNum * 2);
+        if(indentNum > 0)
         {
-            indent[indent.size() - 1] = '-';
+            for(uint i = 0; i < indentNum - 1; i++)
+            {
+                indent += "| ";
+
+            }
+            indent += "|-";
         }
         std::stringstream result;
 
@@ -186,10 +222,16 @@ namespace nodes
 
     std::string Binary::printToFile(int indentNum)
     {
-        std::string indent("| ", indentNum);
-        if(!indent.empty())
+        std::string indent = "";
+        indent.reserve(indentNum * 2);
+        if(indentNum > 0)
         {
-            indent[indent.size() - 1] = '-';
+            for(uint i = 0; i < indentNum - 1; i++)
+            {
+                indent += "| ";
+
+            }
+            indent += "|-";
         }
         std::stringstream result;
 
@@ -209,10 +251,16 @@ namespace nodes
 
     std::string Empty::printToFile(int indentNum)
     {
-        std::string indent("| ", indentNum);
-        if(!indent.empty())
+        std::string indent = "";
+        indent.reserve(indentNum * 2);
+        if(indentNum > 0)
         {
-            indent[indent.size() - 1] = '-';
+            for(uint i = 0; i < indentNum - 1; i++)
+            {
+                indent += "| ";
+
+            }
+            indent += "|-";
         }
         std::stringstream result;
 

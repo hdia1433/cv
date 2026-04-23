@@ -1,0 +1,11 @@
+Function Declaration(main, void):
+|-Variable Declaration(x, int):
+| |-Binary Operation:
+| | |-Integer Literal(4)
+| | |-+
+| | |-Integer Literal(2)
+|-Abort:
+| |-Binary Operation:
+| | |-Variable Reference(x)
+| | |-+
+| | |-Integer Literal(8)
