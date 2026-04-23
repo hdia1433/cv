@@ -19,5 +19,5 @@ public:
 private:
     char* peek();
     char consume();
-    void addToken(std::string_view buffer, const TokenType& type);
+    void addToken(std::string_view buffer, const TokenType& type, const Coordinate& location);
 };

@@ -24,6 +24,8 @@ void Lexer::analyze(const std::string& code)
     {
         uint start = index;
 
+        Coordinate startLoc = currentLoc;
+
         char ch = *chOpt;
 
         if(std::isalpha(ch) || ch == '_' || ch == '@')
@@ -45,11 +47,11 @@ void Lexer::analyze(const std::string& code)
             auto kw = keywords.find(buffer);
             if(kw != keywords.end())
             {
-                addToken(buffer, kw->second);
+                addToken(buffer, kw->second, startLoc);
             }
             else
             {
-                addToken(buffer, TokenType::identifier);
+                addToken(buffer, TokenType::identifier, startLoc);
             }
             
         }
@@ -68,37 +70,37 @@ void Lexer::analyze(const std::string& code)
             }
 
             std::string_view buffer(code.data() + start, index - start);
-            addToken(buffer, TokenType::ltInt);
+            addToken(buffer, TokenType::ltInt, startLoc);
         }
         else if(ch == '(')
         {
             consume();
-            addToken("(", TokenType::lParen);
+            addToken("(", TokenType::lParen, startLoc);
         }
         else if(ch == ')')
         {
             consume();
-            addToken(")", TokenType::rParen);
+            addToken(")", TokenType::rParen, startLoc);
         }
         else if(ch == '{')
         {
             consume();
-            addToken("{", TokenType::lBrace);
+            addToken("{", TokenType::lBrace, startLoc);
         }
         else if(ch == '}')
         {
             consume();
-            addToken("}", TokenType::rBrace);
+            addToken("}", TokenType::rBrace, startLoc);
         }
         else if(ch == '+')
         {
             consume();
-            addToken("+", TokenType::opPlus);
+            addToken("+", TokenType::opPlus, startLoc);
         }
         else if(ch == ';')
         {
             consume();
-            addToken(";", TokenType::semi);
+            addToken(";", TokenType::semi, startLoc);
         }
         else if(std::isspace(ch))
         {
@@ -181,8 +183,8 @@ char Lexer::consume()
     return ch;
 }
 
-void Lexer::addToken(std::string_view buffer, const TokenType& type)
+void Lexer::addToken(std::string_view buffer, const TokenType& type, const Coordinate& location)
 {
-    Token token{.buffer = buffer, .type = type, .location = currentLoc};
+    Token token{.buffer = buffer, .type = type, .location = location};
     tokens.emplace_back(std::move(token));
 }

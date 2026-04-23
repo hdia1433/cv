@@ -42,7 +42,14 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
         }
 
         std::stringstream errorStream;
-        errorStream << errors.size() << " errors were generated.\n";
+        if(errors.size() > 1)
+        {
+            errorStream << errors.size() << " errors were generated.\n";
+        }
+        else
+        {
+            errorStream << "1 error was generated.\n";
+        }
 
         throw std::runtime_error(errorStream.str());
     }
