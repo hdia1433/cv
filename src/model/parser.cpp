@@ -1,5 +1,6 @@
 #include "parser.hpp"
 #include <sstream>
+#include <fstream>
 
 Parser::Parser():index(0)
 {
@@ -61,9 +62,14 @@ std::vector<nodes::Node*> Parser::getAst()
 
 void Parser::print()
 {
+    std::ofstream file("ast.txt");
+    if(!file)
+    {
+        std::println("Couldn't open file 'ast.txt'");
+    }
     for(nodes::Node* node: ast)
     {
-        node->print();
+        file << node->printToFile();
     }
 }
 

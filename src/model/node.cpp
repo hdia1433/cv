@@ -1,4 +1,5 @@
 #include "node.hpp"
+#include <sstream>
 
 namespace nodes
 {
@@ -21,9 +22,16 @@ namespace nodes
 
     }
 
-    void Error::print(const std::string& indent)
+    std::string Error::printToFile(int indentNum)
     {
-        std::println("{}Error({})", indent, error);
+        std::string indent("| ", indentNum);
+        if(!indent.empty())
+        {
+            indent[indent.size() - 1] = '-';
+        }
+        std::stringstream result;
+        result << indent << "Error(" << error << ")\n";
+        return result.str();
     }
 
     //Function Declaration
@@ -46,13 +54,22 @@ namespace nodes
         body.clear();
     }
 
-    void FuncDecl::print(const std::string& indent)
+    std::string FuncDecl::printToFile(int indentNum)
     {
-        std::println("{}Function Declaration({}, {}):", indent, name, typeToString(returnType));
+        std::string indent("| ", indentNum);
+        if(!indent.empty())
+        {
+            indent[indent.size() - 1] = '-';
+        }
+        std::stringstream result;
+
+        result << indent << "Function Declaration(" << name << ", " << typeToString(returnType) << "):\n";
         for (Node* node: body)
         {
-            node->print(indent + "|-");
+            result << node->printToFile(indentNum + 1);
         }
+
+        return result.str();
     }
 
     //Variable declaration
@@ -67,10 +84,19 @@ namespace nodes
         delete value;
     }
 
-    void VarDecl::print(const std::string& indent)
+    std::string VarDecl::printToFile(int indentNum)
     {
-        std::println("{}Variable Declaration({}, {}):", indent, name, typeToString(varType));
-        value->print("\t" + indent);
+        std::string indent("| ", indentNum);
+        if(!indent.empty())
+        {
+            indent[indent.size() - 1] = '-';
+        }
+        std::stringstream result;
+
+        result << indent << "Variable Declaration(" << name << ", " << typeToString(varType) << "):\n";
+        result << value->printToFile(indentNum + 1);
+
+        return result.str();
     }
 
     //Variable reference
@@ -80,9 +106,18 @@ namespace nodes
         this->location = location;
     }
 
-    void VarRef::print(const std::string& indent)
+    std::string VarRef::printToFile(int indentNum)
     {
-        std::println("{}Variable Reference({})", indent, name);
+        std::string indent("| ", indentNum);
+        if(!indent.empty())
+        {
+            indent[indent.size() - 1] = '-';
+        }
+        std::stringstream result;
+
+        result << indent << "Variable Reference(" << name << ")\n";
+
+        return result.str();
     }
 
     //Abort keyword
@@ -100,10 +135,19 @@ namespace nodes
         }
     }
 
-    void Abort::print(const std::string& indent)
+    std::string Abort::printToFile(int indentNum)
     {
-        std::println("{}Abort:", indent);
-        expression->print(indent + "\t");
+        std::string indent("| ", indentNum);
+        if(!indent.empty())
+        {
+            indent[indent.size() - 1] = '-';
+        }
+        std::stringstream result;
+
+        result << indent << "Abort:\n";
+        result << expression->printToFile(indentNum + 1);
+
+        return result.str();
     }
 
     //Integer literal
@@ -113,9 +157,18 @@ namespace nodes
         this->location = location;
     }
 
-    void IntLit::print(const std::string& indent)
+    std::string IntLit::printToFile(int indentNum)
     {
-        std::println("{}Integer Literal({})", indent, value);
+        std::string indent("| ", indentNum);
+        if(!indent.empty())
+        {
+            indent[indent.size() - 1] = '-';
+        }
+        std::stringstream result;
+
+        result << indent << "Integer Literal(" << value << ")\n";
+
+        return result.str();
     }
 
     //binary expression
@@ -131,12 +184,21 @@ namespace nodes
         delete right;
     }
 
-    void Binary::print(const std::string& indent)
+    std::string Binary::printToFile(int indentNum)
     {
-        std::println("{}Binary Operation:", indent);
-        left->print(indent + "\t");
-        std::println("{}{}", indent + "\t", op);
-        right->print(indent + "\t");
+        std::string indent("| ", indentNum);
+        if(!indent.empty())
+        {
+            indent[indent.size() - 1] = '-';
+        }
+        std::stringstream result;
+
+        result << indent << "Binary Operation:\n";
+        result << left->printToFile(indentNum + 1);
+        result << "| " << indent << op << std::endl;
+        result << right->printToFile(indentNum + 1);
+
+        return result.str();
     }
 
     //Empty
@@ -145,8 +207,18 @@ namespace nodes
         type = NodeType::empty;
     }
 
-    void Empty::print(const std::string& indent)
+    std::string Empty::printToFile(int indentNum)
     {
+        std::string indent("| ", indentNum);
+        if(!indent.empty())
+        {
+            indent[indent.size() - 1] = '-';
+        }
+        std::stringstream result;
+
         std::println("{}Empty", indent);
+        result << indent << "Empty\n";
+
+        return result.str();
     }
 }

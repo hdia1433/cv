@@ -175,6 +175,7 @@ void Lexer::printToFile()
         file << "}, ";
     }
     file << "}";
+    std::println("Token list printed to tokens.txt");
 }
 
 char* Lexer::peek()
