@@ -6,7 +6,7 @@ class SemanticAnalyser
 {
 private:
     std::vector<std::string> errors;
-
+    bool main;
     
 public:
     SemanticAnalyser();
