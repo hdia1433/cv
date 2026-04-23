@@ -49,6 +49,9 @@ void IRGenerator::printToFile(const std::string& fileName)
 
 void IRGenerator::generate(nodes::FuncDecl* funcDecl)
 {
+    uint startTempNum = tempNum;
+    tempNum = 0;
+
     instructions.emplace_back(Instruction{.operation = OpCode::functionBegin, .arg1 = std::string(funcDecl->name)});
 
     for(nodes::Node* node: funcDecl->body)
@@ -57,6 +60,8 @@ void IRGenerator::generate(nodes::FuncDecl* funcDecl)
     }
 
     instructions.emplace_back(Instruction{.operation = OpCode::functionEnd});
+
+    tempNum = startTempNum;
 }
 
 void IRGenerator::generate(nodes::Abort* abort)
