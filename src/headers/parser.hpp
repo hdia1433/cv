@@ -8,6 +8,7 @@ private:
     std::vector<Token> tokens;
     std::vector<nodes::Node*> ast;
     uint index;
+    uint varId;
     std::vector<nodes::Error*> errors;
 
 public:
@@ -17,11 +18,12 @@ public:
 
     std::vector<nodes::Node*> getAst();
 
-    void print();
+    void printToFile();
 private:
     //structures
     nodes::Node* parseFuncDecl(TokenType type, std::string_view name, const Coordinate& location);
     nodes::Node* parseVarDecl(TokenType type, std::string_view name, const Coordinate& location);
+    nodes::Node* parseVarRef(std::string_view name, const Coordinate& location);
 
     //bodies
     std::vector<nodes::Node*> parseGlobal();
@@ -33,6 +35,7 @@ private:
     //statement tree
     nodes::Node* parseStatement();
     nodes::Node* parseExpression();
+    nodes::Node* parseAssign();
     nodes::Node* parseTerm();
     nodes::Node* parsePrimary();
 

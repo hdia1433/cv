@@ -16,7 +16,7 @@ void Controller::start()
     std::println("\nParsing.");
     parser.parse(lexer.getTokens());
     std::println("Printing to ast.txt");
-    parser.print();
+    parser.printToFile();
 
     std::println("\nSemantic analysing.");
     sAnalyser.analyse(parser.getAst());

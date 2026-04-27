@@ -1,5 +1,6 @@
 #include "semanticAnalyser.hpp"
 #include <sstream>
+#include "symbol.hpp"
 
 SemanticAnalyser::SemanticAnalyser():main(false)
 {
@@ -57,6 +58,8 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
 
 void SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
 {
+    scopeStack.emplace_back();
+
     if(funcDecl->name == "main" && funcDecl->returnType == TokenType::kwVoid)
     {
         if(main)
@@ -80,6 +83,9 @@ void SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
                 visit((nodes::Abort*)node);
                 break;
             }
+            case NodeType::varDecl:
+                visit((nodes::VarDecl*)node);
+                break;
             default:
             {
                 std::stringstream errorStream;
@@ -88,6 +94,13 @@ void SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
             }
         }
     }
+
+    scopeStack.pop_back();
+}
+
+void SemanticAnalyser::visit(nodes::VarDecl* varDecl)
+{
+    
 }
 
 void SemanticAnalyser::visit(nodes::Abort* abort)

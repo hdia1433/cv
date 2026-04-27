@@ -22,7 +22,7 @@ namespace nodes
 
     }
 
-    std::string Error::printToFile(int indentNum)
+    std::string Error::printToFile(int indentNum, int space, bool last)
     {
         std::string indent = "";
         indent.reserve(indentNum * 2);
@@ -30,10 +30,28 @@ namespace nodes
         {
             for(uint i = 0; i < indentNum - 1; i++)
             {
-                indent += "| ";
+                if((space >> i) & 1)
+                {
+                    indent += "    ";
+                }
+                else
+                {
+                    indent += "│   ";
+                }
 
             }
-            indent += "|-";
+            if(last)
+            {
+                indent += "└── ";
+            }
+            else
+            {
+                indent += "├── ";
+            }
+        }
+        if(last && indentNum > 0)
+        {
+            space |= (1 << (indentNum - 1));
         }
         std::stringstream result;
         result << indent << "Error(" << error << ")\n";
@@ -60,7 +78,7 @@ namespace nodes
         body.clear();
     }
 
-    std::string FuncDecl::printToFile(int indentNum)
+    std::string FuncDecl::printToFile(int indentNum, int space, bool last)
     {
         std::string indent = "";
         indent.reserve(indentNum * 2);
@@ -68,35 +86,53 @@ namespace nodes
         {
             for(uint i = 0; i < indentNum - 1; i++)
             {
-                indent += "| ";
+                if((space >> i) & 1)
+                {
+                    indent += "    ";
+                }
+                else
+                {
+                    indent += "│   ";
+                }
 
             }
-            indent += "|-";
+            if(last)
+            {
+                indent += "└── ";
+            }
+            else
+            {
+                indent += "├── ";
+            }
+        }
+        if(last && indentNum > 0)
+        {
+            space |= (1 << (indentNum - 1));
         }
         std::stringstream result;
 
         result << indent << "Function Declaration(" << name << ", " << typeToString(returnType) << "):\n";
-        for (Node* node: body)
+        for (uint i = 0; i < body.size(); i++)
         {
-            result << node->printToFile(indentNum + 1);
+            if(i == body.size() - 1)
+            {
+                result << body[i]->printToFile(indentNum + 1, space, true);
+                break;
+            }
+            result << body[i]->printToFile(indentNum + 1, space);
         }
 
         return result.str();
     }
 
     //Variable declaration
-    VarDecl::VarDecl(std::string_view name, TokenType varType, Node* value, const Coordinate& location):name(name), varType(varType), value(value)
+    VarDecl::VarDecl(std::string_view name, TokenType varType,  uint id, const Coordinate& location):name(name), varType(varType), id(id)
     {
         type = NodeType::varDecl;
         this->location = location;
     }
 
-    VarDecl::~VarDecl()
-    {
-        delete value;
-    }
-
-    std::string VarDecl::printToFile(int indentNum)
+    std::string VarDecl::printToFile(int indentNum, int space, bool last)
     {
         std::string indent = "";
         indent.reserve(indentNum * 2);
@@ -104,15 +140,54 @@ namespace nodes
         {
             for(uint i = 0; i < indentNum - 1; i++)
             {
-                indent += "| ";
+                if((space >> i) & 1)
+                {
+                    indent += "    ";
+                }
+                else
+                {
+                    indent += "│   ";
+                }
 
             }
-            indent += "|-";
+            if(last)
+            {
+                indent += "└── ";
+            }
+            else
+            {
+                indent += "├── ";
+            }
+        }
+        if(last && indentNum > 0)
+        {
+            space |= (1 << (indentNum - 1));
         }
         std::stringstream result;
 
         result << indent << "Variable Declaration(" << name << ", " << typeToString(varType) << "):\n";
-        result << value->printToFile(indentNum + 1);
+
+        std::string newIndent = "";
+        int newIndentNum = indentNum + 1;
+        newIndent.reserve(newIndentNum * 2);
+        if(newIndentNum > 0)
+        {
+            for(uint i = 0; i < newIndentNum - 1; i++)
+            {
+                if((space >> i) & 1)
+                {
+                    newIndent += "    ";
+                }
+                else
+                {
+                    newIndent += "│   ";
+                }
+
+            }
+            
+            newIndent += "└── ";
+        }
+        result << newIndent << "ID: " << id << std::endl;
 
         return result.str();
     }
@@ -124,7 +199,7 @@ namespace nodes
         this->location = location;
     }
 
-    std::string VarRef::printToFile(int indentNum)
+    std::string VarRef::printToFile(int indentNum, int space, bool last)
     {
         std::string indent = "";
         indent.reserve(indentNum * 2);
@@ -132,10 +207,28 @@ namespace nodes
         {
             for(uint i = 0; i < indentNum - 1; i++)
             {
-                indent += "| ";
+                if((space >> i) & 1)
+                {
+                    indent += "    ";
+                }
+                else
+                {
+                    indent += "│   ";
+                }
 
             }
-            indent += "|-";
+            if(last)
+            {
+                indent += "└── ";
+            }
+            else
+            {
+                indent += "├── ";
+            }
+        }
+        if(last && indentNum > 0)
+        {
+            space |= (1 << (indentNum - 1));
         }
         std::stringstream result;
 
@@ -159,7 +252,7 @@ namespace nodes
         }
     }
 
-    std::string Abort::printToFile(int indentNum)
+    std::string Abort::printToFile(int indentNum, int space, bool last)
     {
         std::string indent = "";
         indent.reserve(indentNum * 2);
@@ -167,15 +260,33 @@ namespace nodes
         {
             for(uint i = 0; i < indentNum - 1; i++)
             {
-                indent += "| ";
+                if((space >> i) & 1)
+                {
+                    indent += "    ";
+                }
+                else
+                {
+                    indent += "│   ";
+                }
 
             }
-            indent += "|-";
+            if(last)
+            {
+                indent += "└── ";
+            }
+            else
+            {
+                indent += "├── ";
+            }
+        }
+        if(last && indentNum > 0)
+        {
+            space |= (1 << (indentNum - 1));
         }
         std::stringstream result;
 
         result << indent << "Abort:\n";
-        result << expression->printToFile(indentNum + 1);
+        result << expression->printToFile(indentNum + 1, space, true);
 
         return result.str();
     }
@@ -187,7 +298,7 @@ namespace nodes
         this->location = location;
     }
 
-    std::string IntLit::printToFile(int indentNum)
+    std::string IntLit::printToFile(int indentNum, int space, bool last)
     {
         std::string indent = "";
         indent.reserve(indentNum * 2);
@@ -195,10 +306,28 @@ namespace nodes
         {
             for(uint i = 0; i < indentNum - 1; i++)
             {
-                indent += "| ";
+                if((space >> i) & 1)
+                {
+                    indent += "    ";
+                }
+                else
+                {
+                    indent += "│   ";
+                }
 
             }
-            indent += "|-";
+            if(last)
+            {
+                indent += "└── ";
+            }
+            else
+            {
+                indent += "├── ";
+            }
+        }
+        if(last && indentNum > 0)
+        {
+            space |= (1 << (indentNum - 1));
         }
         std::stringstream result;
 
@@ -220,7 +349,7 @@ namespace nodes
         delete right;
     }
 
-    std::string Binary::printToFile(int indentNum)
+    std::string Binary::printToFile(int indentNum, int space, bool last)
     {
         std::string indent = "";
         indent.reserve(indentNum * 2);
@@ -228,17 +357,55 @@ namespace nodes
         {
             for(uint i = 0; i < indentNum - 1; i++)
             {
-                indent += "| ";
+                if((space >> i) & 1)
+                {
+                    indent += "    ";
+                }
+                else
+                {
+                    indent += "│   ";
+                }
 
             }
-            indent += "|-";
+            if(last)
+            {
+                indent += "└── ";
+            }
+            else
+            {
+                indent += "├── ";
+            }
+        }
+        if(last && indentNum > 0)
+        {
+            space |= (1 << (indentNum - 1));
         }
         std::stringstream result;
 
         result << indent << "Binary Operation:\n";
-        result << left->printToFile(indentNum + 1);
-        result << "| " << indent << op << std::endl;
-        result << right->printToFile(indentNum + 1);
+        result << left->printToFile(indentNum + 1, space);
+        std::string newIndent = "";
+        int newIndentNum = indentNum + 1;
+        newIndent.reserve(newIndentNum * 2);
+        if(newIndentNum > 0)
+        {
+            for(uint i = 0; i < newIndentNum - 1; i++)
+            {
+                if((space >> i) & 1)
+                {
+                    newIndent += "    ";
+                }
+                else
+                {
+                    newIndent += "│   ";
+                }
+
+            }
+            
+            newIndent += "├── ";
+        }
+        result << newIndent << op << std::endl;
+        result << right->printToFile(indentNum + 1, space, true);
 
         return result.str();
     }
@@ -249,7 +416,7 @@ namespace nodes
         type = NodeType::empty;
     }
 
-    std::string Empty::printToFile(int indentNum)
+    std::string Empty::printToFile(int indentNum, int space, bool last)
     {
         std::string indent = "";
         indent.reserve(indentNum * 2);
@@ -257,14 +424,31 @@ namespace nodes
         {
             for(uint i = 0; i < indentNum - 1; i++)
             {
-                indent += "| ";
+                if((space >> i) & 1)
+                {
+                    indent += "    ";
+                }
+                else
+                {
+                    indent += "│   ";
+                }
 
             }
-            indent += "|-";
+            if(last)
+            {
+                indent += "└── ";
+            }
+            else
+            {
+                indent += "├── ";
+            }
+        }
+        if(last && indentNum > 0)
+        {
+            space |= (1 << (indentNum - 1));
         }
         std::stringstream result;
 
-        std::println("{}Empty", indent);
         result << indent << "Empty\n";
 
         return result.str();

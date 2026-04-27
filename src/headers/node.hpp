@@ -22,7 +22,7 @@ namespace nodes
 
         virtual ~Node() = default;
 
-        virtual std::string printToFile(int indentNum = 0) = 0;
+        virtual std::string printToFile(int indentNum = 0, int space = 0, bool last = false) = 0;
     };
 
     struct Error: public Node
@@ -31,7 +31,7 @@ namespace nodes
 
         Error(const std::string& error);
 
-        std::string printToFile(int indentNum = 0) override;
+        std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
 
     struct FuncDecl: public Node
@@ -43,28 +43,28 @@ namespace nodes
         FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType, const Coordinate& location);
         ~FuncDecl() override;
 
-        std::string printToFile(int indentNum = 0) override;
+        std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
 
     struct VarDecl: public Node
     {
         std::string_view name;
         TokenType varType;
-        Node* value;
+        uint id;
 
-        VarDecl(std::string_view name, TokenType varType, Node* value, const Coordinate& location);
-        ~VarDecl() override;
+        VarDecl(std::string_view name, TokenType varType, uint id, const Coordinate& location);
 
-        std::string printToFile(int indentNum = 0) override;
+        std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
 
     struct VarRef: public Node
     {
         std::string_view name;
+        uint id;
 
         VarRef(std::string_view name, const Coordinate& location);
 
-        std::string printToFile(int indentNum = 0) override;
+        std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
 
     struct Abort: public Node
@@ -74,7 +74,7 @@ namespace nodes
         Abort(Node* expression, const Coordinate& location);
         ~Abort() override;
 
-        std::string printToFile(int indentNum = 0) override;
+        std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
 
     struct IntLit: public Node
@@ -83,7 +83,7 @@ namespace nodes
 
         IntLit(int value, const Coordinate& location);
 
-        std::string printToFile(int indentNum = 0) override;
+        std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
 
     struct Binary: public Node{
@@ -94,13 +94,13 @@ namespace nodes
         Binary(std::string op, Node* left, Node* right, const Coordinate& location);
         ~Binary() override;
 
-        std::string printToFile(int indentNum = 0) override;
+        std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
 
     struct Empty: public Node
     {
         Empty();
 
-        std::string printToFile(int indentNum = 0) override;
+        std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
 }

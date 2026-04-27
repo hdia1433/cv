@@ -1,11 +1,14 @@
 Function Declaration(main, void):
-|-Variable Declaration(x, int):
-| |-Binary Operation:
-| | |-Integer Literal(4)
-| | |-+
-| | |-Integer Literal(2)
-|-Abort:
-| |-Binary Operation:
-| | |-Variable Reference(x)
-| | |-+
-| | |-Integer Literal(8)
+├── Binary Operation:
+│   ├── Variable Declaration(x, int):
+│   │   └── ID: 0
+│   ├── =
+│   └── Binary Operation:
+│       ├── Integer Literal(4)
+│       ├── +
+│       └── Integer Literal(2)
+└── Abort:
+    └── Binary Operation:
+        ├── Empty
+        ├── +
+        └── Integer Literal(8)
