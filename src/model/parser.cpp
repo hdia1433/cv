@@ -243,12 +243,18 @@ std::vector<nodes::Node*> Parser::parseGlobal()
         }
         else
         {
-            std::stringstream errorStream;
-            errorStream << "Variables are not implemented yet.\n";
-            nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
-            errors.emplace_back(error);
-            nodes.emplace_back(error);
-            consume();
+            if(type == TokenType::kwVoid)
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the line " << location.row << " and the column " << location.col << ".\nA variable cannot be declared as type \"void\".\n";
+                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                errors.emplace_back(error);
+                nodes.emplace_back(errors.back());
+                consume();
+                continue;
+            }
+
+            nodes.emplace_back(parseVarDecl(type, name, location));
         }
     }
 
