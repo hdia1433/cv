@@ -340,6 +340,7 @@ nodes::Node* Parser::parseStatement()
         case TokenType::semi:
             consume();
             statement = new nodes::Empty;
+            break;
         case TokenType::kwVoid:
         {
             std::stringstream errorStream;
@@ -347,6 +348,7 @@ nodes::Node* Parser::parseStatement()
             nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
             errors.emplace_back(error);
             statement = errors.back();
+            break;
         }
         default:
             statement = parseExpression();
@@ -438,8 +440,8 @@ nodes::Node* Parser::parseAssign()
     }
     else if(tok.type == TokenType::identifier)
     {
-        tok = consume();
-        left = parseVarRef(tok.buffer, tok.location);
+        
+        return parseTerm();
     }
     else
     {

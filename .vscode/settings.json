@@ -1,5 +1,12 @@
 {
     "cSpell.words": [
         "cvirg"
+    ],
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/Users/heberdiamond/cppProjects/cv/bin/Debug",
+            "binaryPath": "/Users/heberdiamond/cppProjects/cv/bin/Debug/cv",
+            "binaryArgs": []
+        }
     ]
 }

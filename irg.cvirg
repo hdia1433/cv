@@ -1,4 +1,2 @@
 func main:
-t0 = 6 + 8
-exit t0
 endFunc

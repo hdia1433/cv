@@ -9,6 +9,6 @@ Function Declaration(main, void):
 │       └── Integer Literal(2)
 └── Abort:
     └── Binary Operation:
-        ├── Empty
+        ├── Variable Reference(x)
         ├── +
         └── Integer Literal(8)

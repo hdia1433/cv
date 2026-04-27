@@ -18,6 +18,11 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
                 visit((nodes::FuncDecl*)node);
                 break;
             }
+            case NodeType::varDecl:
+            {
+                visit((nodes::VarDecl*)node);
+                break;
+            }
             default:
             {
                 std::stringstream errorStream;
@@ -86,10 +91,13 @@ void SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
             case NodeType::varDecl:
                 visit((nodes::VarDecl*)node);
                 break;
+            case NodeType::binary:
+                visit((nodes::Binary*)node);
+                break;
             default:
             {
                 std::stringstream errorStream;
-                errorStream << "An error has occurred at the line " << node->location.row << " and the column " << node->location.col << ".\nA statement was expected.";
+                errorStream << "An error has occurred at the line " << node->location.row << " and the column " << node->location.col << ".\nA valid statement was expected.";
                 errors.emplace_back(errorStream.str());
             }
         }
