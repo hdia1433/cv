@@ -17,6 +17,13 @@ enum class TokenType
     identifier
 };
 
+enum class Primitive
+{
+    voidTp,
+    intTp,
+    custom
+};
+
 struct Coordinate
 {
     uint col;

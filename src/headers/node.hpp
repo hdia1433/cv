@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.hpp"
 #include "token.hpp"
+#include <variant>
 
 enum class NodeType
 {
@@ -8,7 +9,7 @@ enum class NodeType
     varDecl,
     varRef,
     kwAbort,
-    ltInt,
+    literal,
     binary,
     empty
 };
@@ -37,10 +38,10 @@ namespace nodes
     struct FuncDecl: public Node
     {
         std::string_view name;
-        TokenType returnType;
+        Primitive returnType;
         std::vector<Node*> body;
 
-        FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType, const Coordinate& location);
+        FuncDecl(const std::vector<Node*>& body, std::string_view name, Primitive returnType, const Coordinate& location);
         ~FuncDecl() override;
 
         std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
@@ -49,10 +50,10 @@ namespace nodes
     struct VarDecl: public Node
     {
         std::string_view name;
-        TokenType varType;
+        Primitive varType;
         uint id;
 
-        VarDecl(std::string_view name, TokenType varType, uint id, const Coordinate& location);
+        VarDecl(std::string_view name, Primitive varType, uint id, const Coordinate& location);
 
         std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
@@ -77,16 +78,28 @@ namespace nodes
         std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
 
-    struct IntLit: public Node
+    struct Literal: public Node
     {
-        int value;
+        Primitive litType;
+        std::variant<int> value;
 
-        IntLit(int value, const Coordinate& location);
+        template <typename T>
+        Literal(T value, const Coordinate& location):value(value)
+        {
+            type = NodeType::literal;
+            this->location = location;
+
+            if(std::is_same_v<T, int>)
+            {
+                litType = Primitive::intTp;
+            }
+        }
 
         std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
 
     struct Binary: public Node{
+        Primitive overallType;
         std::string op;
         Node* left;
         Node* right;

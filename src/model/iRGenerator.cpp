@@ -99,8 +99,8 @@ std::string IRGenerator::generateExpression(nodes::Node* node)
 {
     switch(node->type)
     {
-        case NodeType::ltInt:
-            return std::to_string(((nodes::IntLit*)node)->value);
+        case NodeType::literal:
+            return ""; //std::to_string(((nodes::Literal*)node)->value);
         case NodeType::binary:
             return generateBinary((nodes::Binary*)node);
         default:

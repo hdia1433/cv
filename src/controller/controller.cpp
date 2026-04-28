@@ -18,8 +18,8 @@ void Controller::start()
     std::println("Printing to ast.txt");
     parser.printToFile();
 
-    // std::println("\nSemantic analysing.");
-    // sAnalyser.analyse(parser.getAst());
+    std::println("\nSemantic analysing.");
+    sAnalyser.analyse(parser.getAst());
 
     // std::println("\nGenerating intermediate code.");
     // iRGenerator.generate(parser.getAst());

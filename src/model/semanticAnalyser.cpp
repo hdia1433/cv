@@ -1,5 +1,6 @@
 #include "semanticAnalyser.hpp"
 #include <sstream>
+#include <ranges>
 #include "symbol.hpp"
 
 SemanticAnalyser::SemanticAnalyser():main(false)
@@ -9,18 +10,20 @@ SemanticAnalyser::SemanticAnalyser():main(false)
 
 void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
 {
+    bool noError = true;
+
     for(nodes::Node* node: ast)
     {
         switch(node->type)
         {
             case NodeType::funcDecl:
             {
-                visit((nodes::FuncDecl*)node);
+                noError &= visit((nodes::FuncDecl*)node);
                 break;
             }
             case NodeType::varDecl:
             {
-                visit((nodes::VarDecl*)node);
+                noError &= visit((nodes::VarDecl*)node);
                 break;
             }
             default:
@@ -28,7 +31,7 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
                 std::stringstream errorStream;
                 errorStream << "An error has occurred at the line " << node->location.row << " and the column " << node->location.col << ".\nA function declaration or a variable declaration was expected.";
                 errors.emplace_back(errorStream.str());
-                break;
+                noError = false;
             }
         }
     }
@@ -38,6 +41,7 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
         std::stringstream errorStream;
         errorStream << "An error has occurred.\nThe entry point was not found. A void function named \"main\" must be created as the entry point.";
         errors.insert(errors.begin(), errorStream.str());
+        noError = false;
     }
 
     if(errors.size() > 0)
@@ -61,17 +65,20 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
     }
 }
 
-void SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
+bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
 {
+    bool result = true;
+
     scopeStack.emplace_back();
 
-    if(funcDecl->name == "main" && funcDecl->returnType == TokenType::kwVoid)
+    if(funcDecl->name == "main" && funcDecl->returnType == Primitive::voidTp)
     {
         if(main)
         {
             std::stringstream errorStream;
             errorStream << "An error has occurred at the line " << funcDecl->location.row << " and the column " << funcDecl->location.col << ".\nThe main function has already been declared. Only 1 entry point can be defined per project.";
             errors.emplace_back(errorStream.str());
+            result = false;
         }
         else
         {
@@ -81,49 +88,296 @@ void SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
 
     for(nodes::Node* node: funcDecl->body)
     {
+        bool result = true;
+
         switch(node->type)
         {
             case NodeType::kwAbort:
             {
-                visit((nodes::Abort*)node);
+                result &= visit((nodes::Abort*)node);
                 break;
             }
             case NodeType::varDecl:
-                visit((nodes::VarDecl*)node);
+                result &= visit((nodes::VarDecl*)node);
                 break;
             case NodeType::binary:
-                visit((nodes::Binary*)node);
+                result &= visit((nodes::Binary*)node);
                 break;
             default:
             {
                 std::stringstream errorStream;
                 errorStream << "An error has occurred at the line " << node->location.row << " and the column " << node->location.col << ".\nA valid statement was expected.";
                 errors.emplace_back(errorStream.str());
+                result = false;
             }
         }
     }
 
     scopeStack.pop_back();
-}
-
-void SemanticAnalyser::visit(nodes::VarDecl* varDecl)
-{
     
+    return result;
 }
 
-void SemanticAnalyser::visit(nodes::Abort* abort)
+bool SemanticAnalyser::visit(nodes::VarDecl* varDecl)
+{
+    for(const auto& [key, value]: scopeStack.back())
+    {
+        if(key == varDecl->name)
+        {
+            std::stringstream errorStream;
+            errorStream << "An error has occurred at the line " << varDecl->location.row << " and the column " << varDecl->location.col << ".\nA variable with the name \"" << varDecl->name << "\" has already been declared at the line " << value.location.row << ".\nA variable cannot have the same name as another variable already declared within the same scope.";
+            errors.emplace_back(errorStream.str());
+            return false;
+        }
+    }
+
+    scopeStack.back().emplace(varDecl->name, VarInfo{.name = varDecl->name, .id = varDecl->id, .type = varDecl->varType, .location = varDecl->location});
+    
+    return true;
+}
+
+bool SemanticAnalyser::visit(nodes::VarRef* varRef)
+{
+    for(auto& scope: scopeStack | std::views::reverse)
+    {
+        if(scope.find(std::string(varRef->name)) != scope.end())
+        {
+            varRef->id = scope.at(std::string(varRef->name)).id;
+            return true;
+        }
+    }
+
+    std::stringstream errorStream;
+    errorStream << "An error has occurred at the line " << varRef->location.row << " and the column " << varRef->location.col << ".\nA variable of this name has not been defined. A variable cannot be used before it is defined.";
+    errors.emplace_back(errorStream.str());
+    return false;
+}
+
+bool SemanticAnalyser::visit(nodes::Abort* abort)
 {
     switch(abort->expression->type)
     {
         case NodeType::binary:
-            visit((nodes::Binary*)abort->expression);
-            break;
+            return visit((nodes::Binary*)abort->expression);
         default:
             break;
     }
+    
+    return false;
 }
 
-void SemanticAnalyser::visit(nodes::Binary* binary)
+bool SemanticAnalyser::visit(nodes::Binary* binary)
 {
+    bool result = true;
+
+    if(binary->op == "=")
+    {
+        Primitive type1;
+
+        switch(binary->left->type)
+        {
+            case NodeType::varDecl:
+            {
+                nodes::VarDecl* varDecl = (nodes::VarDecl*)binary->left;
+                if(visit(varDecl))
+                {
+                    type1 = varDecl->varType;
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::varRef:
+            {
+                nodes::VarRef* varRef = (nodes::VarRef*)binary->left;
+                if(!visit(varRef))
+                {
+                    result = false;
+                }
+                else
+                {
+                    for(auto& scope: scopeStack | std::views::reverse)
+                    {
+                        auto varInfo = scope.find(std::string(varRef->name));
+                        if(varInfo != scope.end())
+                        {
+                            type1 = varInfo->second.type;
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            default:
+                break;
+        }
+
+        Primitive type2;
+
+        type2 = Primitive::custom;
+
+        switch(binary->right->type)
+        {
+            case NodeType::binary:
+            {
+                auto innerBinary = (nodes::Binary*)binary->right;
+                if(visit(innerBinary))
+                {
+                    type2 = innerBinary->overallType;
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::varRef:
+            {
+                auto varRef = (nodes::VarRef*)binary->right;
+                if(visit(varRef))
+                {
+                    for(auto& scope: scopeStack | std::views::reverse)
+                    {
+                        auto variable = scope.find(std::string(varRef->name));
+                        if(variable != scope.end())
+                        {
+                            type2 = variable->second.type;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::literal:
+            {
+                auto literal = (nodes::Literal*)binary->right;
+                type2 = literal->litType;
+                break;
+            }
+            default:
+                break;
+        }
+
+        binary->overallType = checkTypes(type1, type2);
+    }
+    else
+    {
+        Primitive type1;
+
+        switch(binary->right->type)
+        {
+            case NodeType::binary:
+            {
+                auto innerBinary = (nodes::Binary*)binary->right;
+                if(visit(innerBinary))
+                {
+                    type1 = innerBinary->overallType;
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::varRef:
+            {
+                auto varRef = (nodes::VarRef*)binary->right;
+                if(visit(varRef))
+                {
+                    for(auto& scope: scopeStack | std::views::reverse)
+                    {
+                        auto variable = scope.find(std::string(varRef->name));
+                        if(variable != scope.end())
+                        {
+                            type1 = variable->second.type;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::literal:
+            {
+                auto literal = (nodes::Literal*)binary->right;
+                type1 = literal->litType;
+                break;
+            }
+            default:
+                break;
+        }
+
+        Primitive type2;
+
+        switch(binary->right->type)
+        {
+            case NodeType::binary:
+            {
+                auto innerBinary = (nodes::Binary*)binary->right;
+                if(visit(innerBinary))
+                {
+                    type2 = innerBinary->overallType;
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::varRef:
+            {
+                auto varRef = (nodes::VarRef*)binary->right;
+                if(visit(varRef))
+                {
+                    for(auto& scope: scopeStack | std::views::reverse)
+                    {
+                        auto variable = scope.find(std::string(varRef->name));
+                        if(variable != scope.end())
+                        {
+                            type2 = variable->second.type;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::literal:
+            {
+                auto literal = (nodes::Literal*)binary->right;
+                type2 = literal->litType;
+                break;
+            }
+            default:
+                break;
+        }
+
+        binary->overallType = checkTypes(type1, type2);
+    }
     
+    return result;
 }
+
+#pragma region helpers
+Primitive SemanticAnalyser::checkTypes(Primitive type1, Primitive type2)
+{
+    if(type1 == type2)
+    {
+        return type1;
+    }
+
+    return Primitive::custom;
+}
+#pragma endregion

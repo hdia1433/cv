@@ -3,13 +3,13 @@
 
 namespace nodes
 {
-    std::string typeToString(TokenType type)
+    std::string typeToString(Primitive type)
     {
         switch(type)
         {
-            case TokenType::kwVoid:
+            case Primitive::voidTp:
                 return "void";
-            case TokenType::kwInt:
+            case Primitive::intTp:
                 return "int";
             default:
                 return "error";
@@ -59,7 +59,7 @@ namespace nodes
     }
 
     //Function Declaration
-    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, TokenType returnType, const Coordinate& location):body(body), name(name), returnType(returnType)
+    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, Primitive returnType, const Coordinate& location):body(body), name(name), returnType(returnType)
     {
         type = NodeType::funcDecl;
         this->location = location;
@@ -126,7 +126,7 @@ namespace nodes
     }
 
     //Variable declaration
-    VarDecl::VarDecl(std::string_view name, TokenType varType,  uint id, const Coordinate& location):name(name), varType(varType), id(id)
+    VarDecl::VarDecl(std::string_view name, Primitive varType,  uint id, const Coordinate& location):name(name), varType(varType), id(id)
     {
         type = NodeType::varDecl;
         this->location = location;
@@ -292,13 +292,7 @@ namespace nodes
     }
 
     //Integer literal
-    IntLit::IntLit(int value, const Coordinate& location):value(value)
-    {
-        type = NodeType::ltInt;
-        this->location = location;
-    }
-
-    std::string IntLit::printToFile(int indentNum, int space, bool last)
+    std::string Literal::printToFile(int indentNum, int space, bool last)
     {
         std::string indent = "";
         indent.reserve(indentNum * 2);
@@ -331,7 +325,14 @@ namespace nodes
         }
         std::stringstream result;
 
-        result << indent << "Integer Literal(" << value << ")\n";
+        result << indent << "Integer Literal(";
+        
+        if(auto* integer = std::get_if<int>(&value))
+        {
+            result << integer;
+        }
+        
+        result << ")\n";
 
         return result.str();
     }

@@ -134,7 +134,7 @@ nodes::Node* Parser::parseFuncDecl(TokenType type, std::string_view name, const 
     }
 
     consume();
-    function = new nodes::FuncDecl(parseScope(), name, type, location);
+    function = new nodes::FuncDecl(parseScope(), name, tokenTypeToPrimitive(type), location);
 
     return function;
 }
@@ -151,17 +151,11 @@ nodes::Node* Parser::parseVarDecl(TokenType type, std::string_view name, const C
         return errors.back();
     }
 
-    return new nodes::VarDecl(name, type, varId++, location);
+    return new nodes::VarDecl(name, tokenTypeToPrimitive(type), varId++, location);
 }
 
 nodes::Node* Parser::parseVarRef(std::string_view name, const Coordinate& location)
 {
-    Token* pTok = peek();
-    if(pTok && pTok->type == TokenType::opAssign)
-    {
-        consume();
-        return new nodes::Binary("=", new nodes::VarRef(name, location), parseExpression(), location);
-    }
     return new nodes::VarRef(name, location);
 }
 #pragma endregion
@@ -440,8 +434,7 @@ nodes::Node* Parser::parseAssign()
     }
     else if(tok.type == TokenType::identifier)
     {
-        
-        return parseTerm();
+        left = parseVarRef(tok.buffer, consume().location);
     }
     else
     {
@@ -493,7 +486,7 @@ nodes::Node* Parser::parsePrimary()
     {
         case TokenType::ltInt:
             consume();
-            return new nodes::IntLit(std::stoi(std::string(tok.buffer)), tok.location);
+            return new nodes::Literal(std::stoi(std::string(tok.buffer)), tok.location);
         case TokenType::identifier:
             tok = consume();
             return new nodes::VarRef(tok.buffer, tok.location);
@@ -530,6 +523,20 @@ bool Parser::isType(TokenType type)
             return true;
         default:
             return false;
+    }
+}
+
+Primitive Parser::tokenTypeToPrimitive(TokenType type)
+{
+    switch(type)
+    {
+        case TokenType::ltInt:
+        case TokenType::kwInt:
+            return Primitive::intTp;
+        case TokenType::kwVoid:
+            return Primitive::voidTp;
+        default:
+            return Primitive::custom;
     }
 }
 #pragma endregion

@@ -1,8 +1,17 @@
 #pragma once
 #include "pch.hpp"
 #include "node.hpp"
+#include <unordered_map>
 
-using ScopeStack = std::vector<std::vector<std::string>>;
+struct VarInfo
+{
+    std::string_view name;
+    uint id;
+    Primitive type;
+    Coordinate location;
+};
+
+using ScopeStack = std::vector<std::unordered_map<std::string, VarInfo>>;
 
 class SemanticAnalyser
 {
@@ -17,13 +26,16 @@ public:
     void analyse(const std::vector<nodes::Node*>& ast);
 private:
     //structures
-    void visit(nodes::FuncDecl* funcDecl);
-    void visit(nodes::VarDecl* varDecl);
+    bool visit(nodes::FuncDecl* funcDecl);
+    bool visit(nodes::VarDecl* varDecl);
 
     //keywords
-    void visit(nodes::Abort* abort);
+    bool visit(nodes::Abort* abort);
 
     //statement tree
-    void visit(nodes::Binary* binary);
-    void visit(nodes::VarRef* varRef);
+    bool visit(nodes::Binary* binary);
+    bool visit(nodes::VarRef* varRef);
+
+    //helper
+    Primitive checkTypes(Primitive type1, Primitive type2);
 };
