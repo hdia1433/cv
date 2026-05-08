@@ -12,6 +12,8 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
 {
     bool noError = true;
 
+    currentSymbolTable = &globalScope.variables;
+
     for(nodes::Node* node: ast)
     {
         switch(node->type)
@@ -86,6 +88,21 @@ bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
         }
     }
 
+    if(globalScope.functions.find(FunctionSignature{.name = std::string(funcDecl->name), .returnType = funcDecl->returnType}) != globalScope.functions.end())
+    {
+        std::stringstream errorStream;
+        errorStream << "An error has occurred at the line " << funcDecl->location.row << " and the column " << funcDecl->location.col << ".\nA function has already been declared with the same signature as the function: " << funcDecl->name << ". Only 1 function can be declared with 1 signature per scope.";
+        errors.emplace_back(errorStream.str());
+        result = result && false;
+    }
+
+    Function* symbol = new Function(std::string(funcDecl->name), funcDecl->returnType, funcDecl->location);
+    funcDecl->symbol = symbol;
+    globalScope.functions.emplace(FunctionSignature{.name = std::string(funcDecl->name), .returnType = funcDecl->returnType}, symbol);
+
+    auto oldSymbolTable = currentSymbolTable;
+    currentSymbolTable = &symbol->locals;
+
     for(nodes::Node* node: funcDecl->body)
     {
         bool result = true;
@@ -114,6 +131,7 @@ bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
     }
 
     scopeStack.pop_back();
+    currentSymbolTable = oldSymbolTable;
     
     return result;
 }
@@ -125,14 +143,18 @@ bool SemanticAnalyser::visit(nodes::VarDecl* varDecl)
         if(key == varDecl->name)
         {
             std::stringstream errorStream;
-            errorStream << "An error has occurred at the line " << varDecl->location.row << " and the column " << varDecl->location.col << ".\nA variable with the name \"" << varDecl->name << "\" has already been declared at the line " << value.location.row << ".\nA variable cannot have the same name as another variable already declared within the same scope.";
+            errorStream << "An error has occurred at the line " << varDecl->location.row << " and the column " << varDecl->location.col << ".\nA variable with the name \"" << varDecl->name << "\" has already been declared at the line " << value->location.row << ".\nA variable cannot have the same name as another variable already declared within the same scope.";
             errors.emplace_back(errorStream.str());
             return false;
         }
     }
 
-    scopeStack.back().emplace(varDecl->name, VarInfo{.name = varDecl->name, .id = varDecl->id, .type = varDecl->varType, .location = varDecl->location});
-    
+    Variable* variable = new Variable(std::string(varDecl->name), varDecl->varType, varDecl->location);
+
+    scopeStack.back().emplace(varDecl->name, variable);
+    varDecl->symbol = variable;
+    currentSymbolTable->emplace(variable->name, variable);
+
     return true;
 }
 
@@ -142,7 +164,6 @@ bool SemanticAnalyser::visit(nodes::VarRef* varRef)
     {
         if(scope.find(std::string(varRef->name)) != scope.end())
         {
-            varRef->id = scope.at(std::string(varRef->name)).id;
             return true;
         }
     }
@@ -203,7 +224,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary)
                         auto varInfo = scope.find(std::string(varRef->name));
                         if(varInfo != scope.end())
                         {
-                            type1 = varInfo->second.type;
+                            type1 = varInfo->second->type;
                             break;
                         }
                     }
@@ -243,7 +264,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary)
                         auto variable = scope.find(std::string(varRef->name));
                         if(variable != scope.end())
                         {
-                            type2 = variable->second.type;
+                            type2 = variable->second->type;
                             break;
                         }
                     }
@@ -295,7 +316,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary)
                         auto variable = scope.find(std::string(varRef->name));
                         if(variable != scope.end())
                         {
-                            type1 = variable->second.type;
+                            type1 = variable->second->type;
                             break;
                         }
                     }
@@ -343,7 +364,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary)
                         auto variable = scope.find(std::string(varRef->name));
                         if(variable != scope.end())
                         {
-                            type2 = variable->second.type;
+                            type2 = variable->second->type;
                             break;
                         }
                     }

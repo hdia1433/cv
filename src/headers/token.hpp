@@ -21,6 +21,7 @@ enum class Primitive
 {
     voidTp,
     intTp,
+    pFunc,
     custom
 };
 

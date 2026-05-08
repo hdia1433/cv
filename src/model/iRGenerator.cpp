@@ -13,6 +13,8 @@ std::vector<Instruction>& IRGenerator::getInstructions()
 
 void IRGenerator::generate(const std::vector<nodes::Node*>& ast)
 {
+    currentSymbolTable = &globalScope.variables;
+
     for(nodes::Node* node: ast)
     {
         switch(node->type)
@@ -22,6 +24,12 @@ void IRGenerator::generate(const std::vector<nodes::Node*>& ast)
                 generate((nodes::FuncDecl*)node);
                 break;
             }
+            case NodeType::varDecl:
+                generateVarDecl((nodes::VarDecl*)node);
+                break;
+            case NodeType::binary:
+                generateBinary((nodes::Binary*)node);
+                break;
             default:
                 break;
         }
@@ -51,8 +59,10 @@ void IRGenerator::generate(nodes::FuncDecl* funcDecl)
 {
     uint startTempNum = tempNum;
     tempNum = 0;
+    auto oldSymbolTable = currentSymbolTable;
+    currentSymbolTable = &funcDecl->symbol->locals;
 
-    instructions.emplace_back(Instruction{.operation = OpCode::functionBegin, .arg1 = std::string(funcDecl->name)});
+    instructions.emplace_back(Instruction{.operation = OpCode::functionBegin, .arg1 = Operand{.kind = OperandKind::symbol, .symbol = funcDecl->symbol}});
 
     for(nodes::Node* node: funcDecl->body)
     {
@@ -62,23 +72,62 @@ void IRGenerator::generate(nodes::FuncDecl* funcDecl)
     instructions.emplace_back(Instruction{.operation = OpCode::functionEnd});
 
     tempNum = startTempNum;
+    currentSymbolTable = oldSymbolTable;
 }
 
 void IRGenerator::generate(nodes::Abort* abort)
 {
-    instructions.emplace_back(Instruction{.operation = OpCode::abort, .arg1 = generateExpression(abort->expression)});
+    Operand arg1 = generateExpression(abort->expression);
+
+    instructions.emplace_back(Instruction{.operation = OpCode::abort, .arg1 = arg1});
 }
 
-std::string IRGenerator::generateBinary(nodes::Binary* binary)
+Operand IRGenerator::generateVarDecl(nodes::VarDecl* varDecl)
 {
-    std::string temp = "t" + std::to_string(tempNum++);
+    instructions.emplace_back(Instruction{.operation = OpCode::define, .arg1 = Operand{.kind = OperandKind::symbol, .symbol = varDecl->symbol}});
+    return Operand{.kind = OperandKind::symbol, .symbol = varDecl->symbol};
+}
 
+Operand IRGenerator::generateVarRef(nodes::VarRef* varRef)
+{
+    return Operand{.kind = OperandKind::symbol, .symbol = currentSymbolTable->find(std::string(varRef->name))->second};
+}
+
+Operand IRGenerator::generateBinary(nodes::Binary* binary)
+{
     if(binary->op == "+")
     {
-        instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = temp, .arg1 = generateExpression(binary->left), .arg2 = generateExpression(binary->right)});
+        Operand arg1 = generateExpression(binary->left);
+        Operand arg2 = generateExpression(binary->right);
+
+        instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++}, .arg1 = arg1, .arg2 = arg2});
+    }
+    else if(binary->op == "=")
+    {
+        switch(binary->left->type)
+        {
+            case NodeType::varDecl:
+            {
+                Operand result = generateVarDecl((nodes::VarDecl*)binary->left);
+                Operand arg1 = generateExpression(binary->right);
+
+                instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
+                break;
+            }
+            case NodeType::varRef:
+            {
+                Operand result = generateVarRef((nodes::VarRef*)binary->left);
+                Operand arg1 = generateExpression(binary->right);
+
+                instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
+                break;
+            }
+            default:
+                break;
+        }
     }
 
-    return temp;
+    return instructions.back().result;
 }
 
 void IRGenerator::generateBody(nodes::Node* node)
@@ -90,21 +139,42 @@ void IRGenerator::generateBody(nodes::Node* node)
             generate((nodes::Abort*)node);
             break;
         }
+        case NodeType::binary:
+            generateBinary((nodes::Binary*)node);
+            break;
         default:
             break;
     }
 }
 
-std::string IRGenerator::generateExpression(nodes::Node* node)
+Operand IRGenerator::generateExpression(nodes::Node* node)
 {
     switch(node->type)
     {
         case NodeType::literal:
-            return ""; //std::to_string(((nodes::Literal*)node)->value);
+        {
+            Operand value{.kind = OperandKind::immediate};
+
+            std::visit([&](const auto& arg)
+            {
+                using T = std::decay_t<decltype(arg)>;
+
+                if(std::is_same_v<T, int>)
+                {
+                    value.immediate = arg;
+                }
+            }, ((nodes::Literal*)node)->value);
+
+            return value;
+        }
+        case NodeType::varDecl:
+            return generateVarDecl((nodes::VarDecl*)node);
+        case NodeType::varRef:
+            return generateVarRef((nodes::VarRef*)node);
         case NodeType::binary:
             return generateBinary((nodes::Binary*)node);
         default:
             std::println("Broken!");
-            return "";
+            return Operand{};
     }
 }

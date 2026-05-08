@@ -3,11 +3,13 @@
 #include "node.hpp"
 #include "instruction.hpp"
 #include "node.hpp"
+#include <unordered_map>
 
 class IRGenerator
 {
 private:
     std::vector<Instruction> instructions;
+    std::unordered_map<std::string, Variable*>* currentSymbolTable;
     uint tempNum;
 public:
     IRGenerator();
@@ -21,7 +23,9 @@ private:
     void generate(nodes::FuncDecl* funcDecl);
     void generate(nodes::Abort* abort);
 
-    std::string generateBinary(nodes::Binary* binary);
+    Operand generateBinary(nodes::Binary* binary);
     void generateBody(nodes::Node* node);
-    std::string generateExpression(nodes::Node* node);
+    Operand generateVarDecl(nodes::VarDecl* varDecl);
+    Operand generateVarRef(nodes::VarRef* varRef);
+    Operand generateExpression(nodes::Node* node);
 };

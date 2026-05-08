@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.hpp"
 #include "token.hpp"
+#include "symbol.hpp"
 #include <variant>
 
 enum class NodeType
@@ -40,6 +41,7 @@ namespace nodes
         std::string_view name;
         Primitive returnType;
         std::vector<Node*> body;
+        Function* symbol;
 
         FuncDecl(const std::vector<Node*>& body, std::string_view name, Primitive returnType, const Coordinate& location);
         ~FuncDecl() override;
@@ -51,9 +53,9 @@ namespace nodes
     {
         std::string_view name;
         Primitive varType;
-        uint id;
+        Variable* symbol;
 
-        VarDecl(std::string_view name, Primitive varType, uint id, const Coordinate& location);
+        VarDecl(std::string_view name, Primitive varType, const Coordinate& location);
 
         std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };

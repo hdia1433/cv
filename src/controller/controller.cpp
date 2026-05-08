@@ -21,9 +21,9 @@ void Controller::start()
     std::println("\nSemantic analysing.");
     sAnalyser.analyse(parser.getAst());
 
-    // std::println("\nGenerating intermediate code.");
-    // iRGenerator.generate(parser.getAst());
-    // iRGenerator.printToFile();
+    std::println("\nGenerating intermediate code.");
+    iRGenerator.generate(parser.getAst());
+    iRGenerator.printToFile();
 
     // std::println("\nOptimizing intermediate code.");
     // optimizer.optimize(iRGenerator.getInstructions());

@@ -30,5 +30,5 @@ private:
 
     Instruction* peek();
     Instruction consume();
-    std::string getReg(const std::string& temp);
+    std::string getReg(int temp);
 };

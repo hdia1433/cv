@@ -2,7 +2,7 @@
 #include <sstream>
 #include <fstream>
 
-Parser::Parser():index(0), varId(0)
+Parser::Parser():index(0)
 {
 
 }
@@ -151,7 +151,7 @@ nodes::Node* Parser::parseVarDecl(TokenType type, std::string_view name, const C
         return errors.back();
     }
 
-    return new nodes::VarDecl(name, tokenTypeToPrimitive(type), varId++, location);
+    return new nodes::VarDecl(name, tokenTypeToPrimitive(type), location);
 }
 
 nodes::Node* Parser::parseVarRef(std::string_view name, const Coordinate& location)
@@ -431,17 +431,26 @@ nodes::Node* Parser::parseAssign()
 
         std::string_view name = consume().buffer;
         left = parseVarDecl(type, name, location);
+        pTok = peek();
     }
     else if(tok.type == TokenType::identifier)
     {
-        left = parseVarRef(tok.buffer, consume().location);
+        left = parseVarRef(tok.buffer, tok.location);
+        pTok = peek(1);
+        if(pTok && pTok->type == TokenType::opAssign)
+        {
+            consume();
+            consume();
+            nodes::Node* right = parseExpression();
+            left = new nodes::Binary("=", left, right, left->location);
+            return left;
+        }
     }
     else
     {
         return parseTerm();
     }
 
-    pTok = peek();
     if(pTok && pTok->type == TokenType::opAssign)
     {
         consume();

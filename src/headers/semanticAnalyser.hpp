@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.hpp"
 #include "node.hpp"
+#include "symbol.hpp"
 #include <unordered_map>
 
 struct VarInfo
@@ -11,13 +12,14 @@ struct VarInfo
     Coordinate location;
 };
 
-using ScopeStack = std::vector<std::unordered_map<std::string, VarInfo>>;
+using ScopeStack = std::vector<std::unordered_map<std::string, Variable*>>;
 
 class SemanticAnalyser
 {
 private:
     std::vector<std::string> errors;
     ScopeStack scopeStack;
+    std::unordered_map<std::string, Variable*>* currentSymbolTable;
     bool main;
     
 public:

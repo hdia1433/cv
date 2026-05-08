@@ -126,7 +126,7 @@ namespace nodes
     }
 
     //Variable declaration
-    VarDecl::VarDecl(std::string_view name, Primitive varType,  uint id, const Coordinate& location):name(name), varType(varType), id(id)
+    VarDecl::VarDecl(std::string_view name, Primitive varType, const Coordinate& location):name(name), varType(varType)
     {
         type = NodeType::varDecl;
         this->location = location;
@@ -166,28 +166,6 @@ namespace nodes
         std::stringstream result;
 
         result << indent << "Variable Declaration(" << name << ", " << typeToString(varType) << "):\n";
-
-        std::string newIndent = "";
-        int newIndentNum = indentNum + 1;
-        newIndent.reserve(newIndentNum * 2);
-        if(newIndentNum > 0)
-        {
-            for(uint i = 0; i < newIndentNum - 1; i++)
-            {
-                if((space >> i) & 1)
-                {
-                    newIndent += "    ";
-                }
-                else
-                {
-                    newIndent += "│   ";
-                }
-
-            }
-            
-            newIndent += "└── ";
-        }
-        result << newIndent << "ID: " << id << std::endl;
 
         return result.str();
     }
@@ -327,9 +305,9 @@ namespace nodes
 
         result << indent << "Integer Literal(";
         
-        if(auto* integer = std::get_if<int>(&value))
+        if(auto integer = std::get_if<int>(&value))
         {
-            result << integer;
+            result << *integer;
         }
         
         result << ")\n";

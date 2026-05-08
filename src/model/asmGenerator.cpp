@@ -35,8 +35,10 @@ void AsmGenerator::generateFunctionDecl()
 {
     Instruction functionDecl = consume();
 
-    assembly << ".global _" << functionDecl.arg1 << std::endl;
-    assembly << "_" << functionDecl.arg1 << ":\n";
+    std::string name = ((Function*)(functionDecl.arg1.symbol))->name;
+
+    assembly << ".global _" << name << std::endl;
+    assembly << "_" << name << ":\n";
     indentNum++;
     generatePrologue();
     
@@ -92,7 +94,7 @@ void AsmGenerator::generateAbort()
     Instruction abort = consume();
     std::string indent(indentNum, '\t');
 
-    assembly << indent << "mov x0, #" <<  abort.arg1 << std::endl;
+    assembly << indent << "mov x0, #" <<  std::get<int>(abort.arg1.immediate) << std::endl;
     assembly << indent << "bl _exit\n";
 }
 #pragma endregion
@@ -107,27 +109,27 @@ void AsmGenerator::generatePlus()
     std::string arg1;
     std::string arg2;
 
-    if(plus.result[0] == 't')
+    if(plus.result.kind == OperandKind::temporary)
     {
-        reg = getReg(plus.result);
+        reg = getReg(plus.result.temporary);
     }
 
-    if(plus.arg1[0] == 't')
+    if(plus.arg1.kind == OperandKind::temporary)
     {
-        arg1 = getReg(plus.arg1);
+        arg1 = getReg(plus.arg1.temporary);
     }
-    else if(helpers::isNumber(plus.arg1))
+    else if(plus.arg1.kind == OperandKind::immediate)
     {
-        arg1 = "#" + plus.arg1;
+        arg1 = "#" + std::to_string(std::get<int>(plus.arg1.immediate));
     }
 
-    if(plus.arg2[0] == 't')
+    if(plus.arg2.kind == OperandKind::temporary)
     {
-        arg2 = getReg(plus.arg2);
+        arg2 = getReg(plus.arg2.temporary);
     }
-    else if(helpers::isNumber(plus.arg2))
+    else if(plus.arg2.kind == OperandKind::immediate)
     {
-        arg2 = "#" + plus.arg2;
+        arg2 = "#" + std::to_string(std::get<int>(plus.arg2.immediate));
     }
 
     assembly << "\nadd " << reg << ", " << arg1 << ", " << arg2;
@@ -149,7 +151,7 @@ Instruction AsmGenerator::consume()
     return irCode->at(index++);
 }
 
-std::string AsmGenerator::getReg(const std::string& temp)
+std::string AsmGenerator::getReg(int temp)
 {
-    return "w" + temp.substr(1);
+    return "w" + std::to_string(temp);
 }

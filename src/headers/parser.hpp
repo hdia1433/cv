@@ -8,7 +8,6 @@ private:
     std::vector<Token> tokens;
     std::vector<nodes::Node*> ast;
     uint index;
-    uint varId;
     std::vector<nodes::Error*> errors;
 
 public:

@@ -30,7 +30,7 @@ bool Optimizer::fold(std::vector<Instruction>& iRCode)
         {
             try
             {
-                instr = Instruction{.operation = OpCode::assign, .result = instr.result, .arg1 = std::to_string(std::stoi(instr.arg1) + std::stoi(instr.arg2))};
+                instr = Instruction{.operation = OpCode::assign, .result = instr.result, .arg1 = Operand{.kind = OperandKind::immediate, .immediate = std::get<int>(instr.arg1.immediate) + std::get<int>(instr.arg2.immediate)}};
                 changed = true;
             }
             catch(const std::exception& e)
@@ -50,9 +50,9 @@ bool Optimizer::propagate(std::vector<Instruction>& iRCode)
 
     for(Instruction& instr: iRCode)
     {
-        if(instr.operation == OpCode::assign && helpers::isNumber(instr.arg1))
+        if(instr.operation == OpCode::assign && instr.arg1.kind == OperandKind::immediate)
         {
-            std::string temp = instr.result;
+            Operand temp = instr.result;
 
             for(Instruction& instr2: iRCode)
             {
@@ -78,7 +78,7 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
 {
     bool changed = false;
 
-    std::unordered_set<std::string> live;
+    std::unordered_set<Operand> live;
 
     std::vector<int> deadIndexes;
 
@@ -110,22 +110,16 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
         {
             keep = true;
         }
-        else if(!instr.result.empty() && live.find(instr.result) != live.end())
+        else if(live.find(instr.result) != live.end())
         {
             keep = true;
         }
 
         if(keep)
         {
-            if(!instr.arg1.empty())
-            {
-                live.emplace(instr.arg1);
-            }
+            live.emplace(instr.arg1);
 
-            if(!instr.arg2.empty())
-            {
-                live.emplace(instr.arg2);
-            }
+            live.emplace(instr.arg2);
         }
         else
         {
