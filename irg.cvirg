@@ -1,6 +1,8 @@
 func main:
 t0 = 4+2
 x = t0
-t1 = x+8
-exit t1
+t1 = 4+2
+t2 = x+t1
+y = t2
+exit y
 endFunc

@@ -43,7 +43,10 @@ void AsmGenerator::generateFunctionDecl()
 
     for(const auto& [_, var]: function->locals)
     {
-        localSize += helpers::typeToSize(var->type);
+        if(var->used)
+        {
+            localSize += helpers::typeToSize(var->type);
+        }
     }
 
     localSize = align16(localSize);
@@ -92,7 +95,13 @@ void AsmGenerator::generatePrologue(int localSize)
 
     assembly << indent << "stp x29, x30, [sp, #-16]!\n";
     assembly << indent << "mov x29, sp\n";
-    assembly << indent << "add sp, sp, #" << localSize << std::endl << std::endl;
+
+    if(localSize > 0)
+    {
+        assembly << indent << "add sp, sp, #" << localSize << std::endl;
+    }
+    
+    assembly << std::endl;
 }
 
 void AsmGenerator::generateEpilogue(int localSize)
@@ -112,7 +121,22 @@ void AsmGenerator::generateAbort()
     Instruction abort = consume();
     std::string indent(indentNum, '\t');
 
-    assembly << indent << "mov w0, w" << abort.arg1.temporary << std::endl;
+    std::stringstream value;
+    if(abort.arg1.kind == OperandKind::temporary)
+    {
+        value << "w" << abort.arg1.temporary;
+    }
+    else if(abort.arg1.kind == OperandKind::immediate)
+    {
+        value << "#" << std::get<int>(abort.arg1.immediate);
+    }
+    else if(abort.arg1.kind == OperandKind::symbol)
+    {
+        assembly << indent << "ldr w28, [sp, #" << ((Variable*)abort.arg1.symbol)->offset << "]\n";
+        value << "w28";
+    }
+
+    assembly << indent << "mov w0, " << value.str() << std::endl;
     assembly << indent << "bl _exit\n";
 }
 #pragma endregion

@@ -5,7 +5,7 @@ bool FunctionSignature::operator==(const FunctionSignature& other) const
     return name == other.name && returnType == other.returnType;
 }
 
-Variable::Variable(const std::string& name, Primitive type, const Coordinate& location):name(name), type(type), location(location)
+Variable::Variable(const std::string& name, Primitive type, const Coordinate& location):name(name), type(type), location(location), used(true)
 {
     kind = SymbolType::var;
 }

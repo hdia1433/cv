@@ -26,18 +26,10 @@ bool Optimizer::fold(std::vector<Instruction>& iRCode)
 
     for(Instruction& instr: iRCode)
     {
-        if(instr.operation == OpCode::plus)
+        if(instr.operation == OpCode::plus && instr.arg1.kind == OperandKind::immediate && instr.arg2.kind == OperandKind::immediate)
         {
-            try
-            {
-                instr = Instruction{.operation = OpCode::assign, .result = instr.result, .arg1 = Operand{.kind = OperandKind::immediate, .immediate = std::get<int>(instr.arg1.immediate) + std::get<int>(instr.arg2.immediate)}};
-                changed = true;
-            }
-            catch(const std::exception& e)
-            {
-                
-            }
-            
+            instr = Instruction{.operation = OpCode::assign, .result = instr.result, .arg1 = Operand{.kind = OperandKind::immediate, .immediate = std::get<int>(instr.arg1.immediate) + std::get<int>(instr.arg2.immediate)}};
+            changed = true;
         }
     }
 
@@ -48,21 +40,25 @@ bool Optimizer::propagate(std::vector<Instruction>& iRCode)
 {
     bool changed = false;
 
-    for(Instruction& instr: iRCode)
+    for(uint i = 0; i < iRCode.size(); i++)
     {
+        Instruction& instr = iRCode[i];
+
         if(instr.operation == OpCode::assign && instr.arg1.kind == OperandKind::immediate)
         {
-            Operand temp = instr.result;
+            Operand assignee = instr.result;
 
-            for(Instruction& instr2: iRCode)
+            for(uint j = i + 1; j < iRCode.size(); j++)
             {
-                if(instr2.arg1 == temp)
+                Instruction& instr2 = iRCode[j];
+
+                if(instr2.arg1 == assignee)
                 {
                     instr2.arg1 = instr.arg1;
                     changed = true;
                 }
                 
-                if(instr2.arg2 == temp)
+                if(instr2.arg2 == assignee)
                 {
                     instr2.arg2 = instr.arg1;
                     changed = true;
@@ -78,18 +74,21 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
 {
     bool changed = false;
 
-    std::unordered_set<Operand> live;
+    std::unordered_set<int> liveTemp;
+    std::unordered_set<Symbol*> liveVar;
 
     std::vector<int> deadIndexes;
 
     for(uint i = 0; i < iRCode.size(); i++)
     {
-        switch(iRCode[i].operation)
+        Instruction& instr = iRCode[i];
+
+        switch(instr.operation)
         {
             case OpCode::abort:
             {
                 uint next = i + 1;
-                while(!helpers::equalsOr(iRCode[i].operation, {OpCode::functionEnd}))
+                while(!helpers::equalsOr(iRCode[next].operation, {OpCode::functionEnd}))
                 {
                     changed = true;
                     deadIndexes.emplace_back(next++);
@@ -102,34 +101,64 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
         }
     }
 
-    for(uint i = iRCode.size() - 1; i >= 0; i--)
+    for(int i = iRCode.size() - 1; i >= 0; i--)
     {
         Instruction& instr = iRCode[i];
+
         bool keep = false;
         if(helpers::equalsOr(instr.operation, {OpCode::functionBegin, OpCode::functionEnd, OpCode::abort}))
         {
             keep = true;
         }
-        else if(live.find(instr.result) != live.end())
+        else if((instr.result.kind == OperandKind::temporary && liveTemp.find(instr.result.temporary) != liveTemp.end()) ||
+                (instr.result.kind == OperandKind::symbol && liveVar.find(instr.result.symbol) != liveVar.end()))
         {
             keep = true;
         }
 
         if(keep)
         {
-            live.emplace(instr.arg1);
+            if(instr.result.kind == OperandKind::temporary && liveTemp.find(instr.result.temporary) != liveTemp.end())
+            {
+                liveTemp.erase(instr.result.temporary);
+            }
+            else if(instr.result.kind == OperandKind::symbol && liveVar.find(instr.result.symbol) != liveVar.end())
+            {
+                liveVar.erase(instr.result.symbol);
+            }
 
-            live.emplace(instr.arg2);
+            if(instr.arg1.kind == OperandKind::temporary)
+            {
+                liveTemp.emplace(instr.arg1.temporary);
+            }
+            else if(instr.arg1.kind == OperandKind::symbol)
+            {
+                liveVar.emplace(instr.arg1.symbol);
+            }
+
+            if(instr.arg2.kind == OperandKind::temporary)
+            {
+                liveTemp.emplace(instr.arg2.temporary);
+            }
+            else if(instr.arg2.kind == OperandKind::symbol)
+            {
+                liveVar.emplace(instr.arg2.symbol);
+            }
         }
         else
         {
+            if(instr.result.kind == OperandKind::symbol)
+            {
+                ((Variable*)instr.result.symbol)->used = false;
+            }
             deadIndexes.emplace_back(i);
         }
     }
 
-    for(int index: deadIndexes | std::views::reverse)
+    for(int index: deadIndexes)
     {
         iRCode.erase(iRCode.begin() + index);
+        changed = changed || true;
     }
 
     return changed;

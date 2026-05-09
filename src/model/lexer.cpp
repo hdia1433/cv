@@ -172,7 +172,7 @@ void Lexer::printToFile()
                 file << "IDENTIFIER: " << tok.buffer;
                 break;
         }
-        file << "}, ";
+        file << "}, \n";
     }
     file << "}";
     std::println("Token list printed to tokens.txt");

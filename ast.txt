@@ -6,8 +6,15 @@ Function Declaration(main, void):
 │       ├── Integer Literal(4)
 │       ├── +
 │       └── Integer Literal(2)
+├── Binary Operation:
+│   ├── Variable Declaration(y, int):
+│   ├── =
+│   └── Binary Operation:
+│       ├── Variable Reference(x)
+│       ├── +
+│       └── Binary Operation:
+│           ├── Integer Literal(4)
+│           ├── +
+│           └── Integer Literal(2)
 └── Abort:
-    └── Binary Operation:
-        ├── Variable Reference(x)
-        ├── +
-        └── Integer Literal(8)
+    └── Variable Reference(y)
