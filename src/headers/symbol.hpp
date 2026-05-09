@@ -38,6 +38,7 @@ struct Symbol
 
 struct Variable: public Symbol
 {
+    uint offset;
     std::string name;
     Primitive type;
     Coordinate location;

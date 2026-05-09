@@ -665,7 +665,8 @@ bin-int/Debug/helpers.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_string.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_tuple.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print \
-  src/helpers/helpers.cpp src/headers/helpers.hpp src/headers/pch.hpp
+  src/helpers/helpers.cpp src/headers/helpers.hpp src/headers/pch.hpp \
+  src/headers/token.hpp
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h:
@@ -1334,3 +1335,4 @@ bin-int/Debug/helpers.o: \
 src/helpers/helpers.cpp:
 src/headers/helpers.hpp:
 src/headers/pch.hpp:
+src/headers/token.hpp:

@@ -41,13 +41,6 @@ std::string Instruction::toString()
 
             return line.str();
         }
-        case OpCode::define:
-        {
-            std::stringstream line;
-
-            line << "define " << ((Variable*)(arg1.symbol))->name;
-            return line.str();
-        }
         case OpCode::assign:
         {
             return opToString(result) + " = " + opToString(arg1);

@@ -11,6 +11,7 @@ private:
     std::vector<Instruction> instructions;
     std::unordered_map<std::string, Variable*>* currentSymbolTable;
     uint tempNum;
+    uint offset;
 public:
     IRGenerator();
 

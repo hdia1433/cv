@@ -62,4 +62,15 @@ namespace helpers
             return false;
         }
     }
+
+    int typeToSize(Primitive type)
+    {
+        switch(type)
+        {
+            case Primitive::intTp:
+                return 4;
+            default:
+                return 0;
+        }
+    }
 }

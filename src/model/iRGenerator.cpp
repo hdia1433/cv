@@ -1,7 +1,8 @@
 #include "iRGenerator.hpp"
 #include "fstream"
+#include "helpers.hpp"
 
-IRGenerator::IRGenerator():tempNum(0)
+IRGenerator::IRGenerator():tempNum(0), offset(0)
 {
 
 }
@@ -84,7 +85,8 @@ void IRGenerator::generate(nodes::Abort* abort)
 
 Operand IRGenerator::generateVarDecl(nodes::VarDecl* varDecl)
 {
-    instructions.emplace_back(Instruction{.operation = OpCode::define, .arg1 = Operand{.kind = OperandKind::symbol, .symbol = varDecl->symbol}});
+    varDecl->symbol->offset = offset;
+    offset += helpers::typeToSize(varDecl->symbol->type);
     return Operand{.kind = OperandKind::symbol, .symbol = varDecl->symbol};
 }
 

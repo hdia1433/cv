@@ -10,6 +10,7 @@ private:
     std::vector<Instruction>* irCode;
     int indentNum;
     uint index;
+    uint regNum;
 public:
     AsmGenerator();
 
@@ -19,16 +20,18 @@ public:
 private:
     //Structures
     void generateFunctionDecl();
-    void generatePrologue();
-    void generateEpilogue();
+    void generatePrologue(int localSize);
+    void generateEpilogue(int localSize);
 
     //keywords
     void generateAbort();
 
     //Expression tree
     void generatePlus();
+    void generateAssign();
 
     Instruction* peek();
     Instruction consume();
     std::string getReg(int temp);
+    int align16(int value);
 };

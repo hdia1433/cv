@@ -1,5 +1,4 @@
 func main:
-define x
 t0 = 4+2
 x = t0
 t1 = x+8

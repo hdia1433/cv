@@ -1,5 +1,7 @@
 #pragma once
 #include "pch.hpp"
+#include "token.hpp"
+
 
 namespace helpers
 {
@@ -23,4 +25,6 @@ namespace helpers
     bool isDouble(std::string str);
 
     bool isNumber(std::string str);
+
+    int typeToSize(Primitive type);
 }

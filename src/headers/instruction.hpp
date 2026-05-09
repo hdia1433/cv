@@ -10,7 +10,6 @@ enum class OpCode
     functionEnd,
     plus,
     assign,
-    define,
     abort
 };
 
