@@ -3,47 +3,6 @@ workspace "cv"
     configurations { "Debug", "Release" }
     startproject "cv"
 
-project "cvLib"
-    kind "StaticLib"
-    language "C++"
-    cppdialect "C++23"
-    targetdir "bin/%{cfg.buildcfg}"
-    objdir "bin-int/%{cfg.buildcfg}"
-
-    buildoptions { "-std=c++23" }
-
-    -- Source files
-    files {
-        "src/**.cpp",
-        "src/headers/**.hpp"
-    }
-
-    removefiles {
-        "src/controller/main.cpp"
-    }
-
-    includedirs {
-        "src/headers"
-    }
-    pchheader "src/headers/pch.hpp"
-    pchsource "src/controller/pch.cpp"
-    excludes { "src/headers/*.gch" }
-    -- Platform-specific settings
-    filter "system:macosx"
-        libdirs { }
-        links {
-            
-        }
-
-    filter "configurations:Debug"
-        defines { "DEBUG" }
-        symbols "On"
-
-    filter "configurations:Release"
-        defines { "NDEBUG" }
-        optimize "On"
-
-
 project "cv"
     kind "ConsoleApp"
     language "C++"
