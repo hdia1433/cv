@@ -1,5 +1,5 @@
-bin-int/Debug/Debug/cvLib/node.o: \
-  /Users/heberdiamond/cppProjects/cv/src/headers/pch.hpp \
+cv/bin-int/Debug/Debug/cvLib/node.o: \
+  /Users/heberdiamond/cppProjects/compiler/cv/src/headers/pch.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \
@@ -665,8 +665,8 @@ bin-int/Debug/Debug/cvLib/node.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_string.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_tuple.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print \
-  src/model/node.cpp src/headers/node.hpp src/headers/pch.hpp \
-  src/headers/token.hpp src/headers/symbol.hpp \
+  cv/src/model/node.cpp cv/src/headers/node.hpp cv/src/headers/pch.hpp \
+  cv/src/headers/token.hpp cv/src/headers/symbol.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/unordered_map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/is_permutation.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/is_transparent.h \
@@ -1365,11 +1365,11 @@ bin-int/Debug/Debug/cvLib/node.o: \
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_string.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_tuple.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print:
-src/model/node.cpp:
-src/headers/node.hpp:
-src/headers/pch.hpp:
-src/headers/token.hpp:
-src/headers/symbol.hpp:
+cv/src/model/node.cpp:
+cv/src/headers/node.hpp:
+cv/src/headers/pch.hpp:
+cv/src/headers/token.hpp:
+cv/src/headers/symbol.hpp:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/unordered_map:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/is_permutation.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/is_transparent.h:

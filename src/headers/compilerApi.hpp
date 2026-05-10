@@ -5,12 +5,8 @@ struct Error
 {
     std::string message;
     int line;
-    int column;
+    int startChar;
+    int endChar;
 };
 
-struct AnalysisResult
-{
-    std::vector<Error> errors;
-};
-
-AnalysisResult analyse(const std::string& source);
+std::vector<Error> analyse(const std::string& source);

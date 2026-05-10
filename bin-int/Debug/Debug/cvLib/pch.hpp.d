@@ -1,4 +1,4 @@
-bin-int/Debug/Debug/cvLib/pch.hpp.gch: src/headers/pch.hpp \
+cv/bin-int/Debug/Debug/cvLib/pch.hpp.gch: cv/src/headers/pch.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \

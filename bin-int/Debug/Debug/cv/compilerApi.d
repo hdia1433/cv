@@ -1,5 +1,5 @@
-bin-int/Debug/Debug/cv/compilerApi.o: \
-  /Users/heberdiamond/cppProjects/cv/src/headers/pch.hpp \
+cv/bin-int/Debug/Debug/cv/compilerApi.o: \
+  /Users/heberdiamond/cppProjects/compiler/cv/src/headers/pch.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \
@@ -665,8 +665,8 @@ bin-int/Debug/Debug/cv/compilerApi.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_string.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_tuple.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print \
-  src/api/compilerApi.cpp src/headers/compilerApi.hpp \
-  src/headers/pch.hpp
+  cv/src/api/compilerApi.cpp cv/src/headers/compilerApi.hpp \
+  cv/src/headers/pch.hpp
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h:
@@ -1332,6 +1332,6 @@ bin-int/Debug/Debug/cv/compilerApi.o: \
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_string.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_tuple.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print:
-src/api/compilerApi.cpp:
-src/headers/compilerApi.hpp:
-src/headers/pch.hpp:
+cv/src/api/compilerApi.cpp:
+cv/src/headers/compilerApi.hpp:
+cv/src/headers/pch.hpp:

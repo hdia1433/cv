@@ -1,5 +1,5 @@
-bin-int/Debug/Debug/cv/controller.o: \
-  /Users/heberdiamond/cppProjects/cv/src/headers/pch.hpp \
+cv/bin-int/Debug/Debug/cv/controller.o: \
+  /Users/heberdiamond/cppProjects/compiler/cv/src/headers/pch.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \
@@ -665,9 +665,10 @@ bin-int/Debug/Debug/cv/controller.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_string.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_tuple.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print \
-  src/controller/controller.cpp src/headers/controller.hpp \
-  src/headers/pch.hpp src/headers/lexer.hpp src/headers/token.hpp \
-  src/headers/parser.hpp src/headers/node.hpp src/headers/symbol.hpp \
+  cv/src/controller/controller.cpp cv/src/headers/controller.hpp \
+  cv/src/headers/pch.hpp cv/src/headers/lexer.hpp \
+  cv/src/headers/token.hpp cv/src/headers/parser.hpp \
+  cv/src/headers/node.hpp cv/src/headers/symbol.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/unordered_map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/is_permutation.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/is_transparent.h \
@@ -700,9 +701,9 @@ bin-int/Debug/Debug/cv/controller.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/add_cv.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/add_volatile.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__utility/forward_like.h \
-  src/headers/semanticAnalyser.hpp src/headers/iRGenerator.hpp \
-  src/headers/instruction.hpp src/headers/optimizer.hpp \
-  src/headers/asmGenerator.hpp \
+  cv/src/headers/semanticAnalyser.hpp cv/src/headers/iRGenerator.hpp \
+  cv/src/headers/instruction.hpp cv/src/headers/optimizer.hpp \
+  cv/src/headers/asmGenerator.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/sstream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/fstream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/filesystem \
@@ -1391,14 +1392,14 @@ bin-int/Debug/Debug/cv/controller.o: \
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_string.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__format/formatter_tuple.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print:
-src/controller/controller.cpp:
-src/headers/controller.hpp:
-src/headers/pch.hpp:
-src/headers/lexer.hpp:
-src/headers/token.hpp:
-src/headers/parser.hpp:
-src/headers/node.hpp:
-src/headers/symbol.hpp:
+cv/src/controller/controller.cpp:
+cv/src/headers/controller.hpp:
+cv/src/headers/pch.hpp:
+cv/src/headers/lexer.hpp:
+cv/src/headers/token.hpp:
+cv/src/headers/parser.hpp:
+cv/src/headers/node.hpp:
+cv/src/headers/symbol.hpp:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/unordered_map:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/is_permutation.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/is_transparent.h:
@@ -1431,11 +1432,11 @@ src/headers/symbol.hpp:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/add_cv.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/add_volatile.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__utility/forward_like.h:
-src/headers/semanticAnalyser.hpp:
-src/headers/iRGenerator.hpp:
-src/headers/instruction.hpp:
-src/headers/optimizer.hpp:
-src/headers/asmGenerator.hpp:
+cv/src/headers/semanticAnalyser.hpp:
+cv/src/headers/iRGenerator.hpp:
+cv/src/headers/instruction.hpp:
+cv/src/headers/optimizer.hpp:
+cv/src/headers/asmGenerator.hpp:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/sstream:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/fstream:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/filesystem:

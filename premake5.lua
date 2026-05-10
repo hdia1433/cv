@@ -30,12 +30,9 @@ project "cvLib"
     excludes { "src/headers/*.gch" }
     -- Platform-specific settings
     filter "system:macosx"
-        libdirs { "/opt/homebrew/Cellar/sfml/3.0.1/lib" }
+        libdirs { }
         links {
-            "sfml-graphics",
-            "sfml-window",
-            "sfml-system",
-            "OpenGL.framework"
+            
         }
 
     filter "configurations:Debug"
@@ -69,12 +66,9 @@ project "cv"
     excludes { "src/headers/*.gch" }
     -- Platform-specific settings
     filter "system:macosx"
-        libdirs { "/opt/homebrew/Cellar/sfml/3.0.1/lib" }
+        libdirs { }
         links {
-            "sfml-graphics",
-            "sfml-window",
-            "sfml-system",
-            "OpenGL.framework"
+
         }
 
     filter "configurations:Debug"

@@ -35,9 +35,9 @@ INCLUDES += -Isrc/headers
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-LIBS += -framework OpenGL -lsfml-graphics -lsfml-window -lsfml-system
+LIBS +=
 LDDEPS +=
-ALL_LDFLAGS += $(LDFLAGS) -L/opt/homebrew/Cellar/sfml/3.0.1/lib
+ALL_LDFLAGS += $(LDFLAGS)
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
 define PREBUILDCMDS
 endef
