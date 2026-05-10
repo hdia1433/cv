@@ -1,6 +1,4 @@
 void main()
 {
-    int x = 4 + 2;
-    int y = x + 4 + 2;
-    abort y;
+    abort 4 - 2;
 }
