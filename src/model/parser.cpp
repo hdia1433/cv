@@ -467,7 +467,7 @@ nodes::Node* Parser::parseTerm()
     nodes::Node* left = parsePrimary();
 
     auto pTok = peek();
-    if(pTok && pTok->type == TokenType::opPlus)
+    if(pTok && pTok->type == TokenType::opPlus || pTok->type == TokenType::opMinus)
     {
         std::string op = std::string(consume().buffer);
 

@@ -25,9 +25,9 @@ void Controller::start()
     iRGenerator.generate(parser.getAst());
     iRGenerator.printToFile();
 
-    std::println("\nOptimizing intermediate code.");
-    optimizer.optimize(iRGenerator.getInstructions());
-    iRGenerator.printToFile("irgo.cvirg");
+    // std::println("\nOptimizing intermediate code.");
+    // optimizer.optimize(iRGenerator.getInstructions());
+    // iRGenerator.printToFile("irgo.cvirg");
 
     std::println("\nGenerating assembly.");
     asmGenerator.generate(iRGenerator.getInstructions());
