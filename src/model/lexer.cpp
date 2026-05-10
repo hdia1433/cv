@@ -105,6 +105,11 @@ void Lexer::analyze(const std::string& code)
             consume();
             addToken("+", TokenType::opPlus, startLoc);
         }
+        else if(ch == '-')
+        {
+            consume();
+            addToken("-", TokenType::opMinus, startLoc);
+        }
         else if(ch == ';')
         {
             consume();

@@ -13,6 +13,7 @@ enum class TokenType
     rBrace,
     opAssign,
     opPlus,
+    opMinus,
     semi,
     identifier
 };
