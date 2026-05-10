@@ -38,7 +38,7 @@ ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
 LIBS += -framework OpenGL -lsfml-graphics -lsfml-window -lsfml-system
 LDDEPS +=
 ALL_LDFLAGS += $(LDFLAGS) -L/opt/homebrew/Cellar/sfml/3.0.1/lib
-LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
+LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
 define PREBUILDCMDS
 endef
 define PRELINKCMDS
@@ -48,16 +48,16 @@ endef
 
 ifeq ($(config),debug)
 TARGETDIR = bin/Debug
-TARGET = $(TARGETDIR)/cv
-OBJDIR = bin-int/Debug/Debug/cv
+TARGET = $(TARGETDIR)/libcvLib.a
+OBJDIR = bin-int/Debug/Debug/cvLib
 DEFINES += -DDEBUG
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -std=c++23
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -std=c++23 -std=c++23
 
 else ifeq ($(config),release)
 TARGETDIR = bin/Release
-TARGET = $(TARGETDIR)/cv
-OBJDIR = bin-int/Release/Release/cv
+TARGET = $(TARGETDIR)/libcvLib.a
+OBJDIR = bin-int/Release/Release/cvLib
 DEFINES += -DNDEBUG
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -std=c++23
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -std=c++23 -std=c++23
@@ -81,7 +81,6 @@ GENERATED += $(OBJDIR)/helpers.o
 GENERATED += $(OBJDIR)/iRGenerator.o
 GENERATED += $(OBJDIR)/instruction.o
 GENERATED += $(OBJDIR)/lexer.o
-GENERATED += $(OBJDIR)/main.o
 GENERATED += $(OBJDIR)/node.o
 GENERATED += $(OBJDIR)/optimizer.o
 GENERATED += $(OBJDIR)/parser.o
@@ -95,7 +94,6 @@ OBJECTS += $(OBJDIR)/helpers.o
 OBJECTS += $(OBJDIR)/iRGenerator.o
 OBJECTS += $(OBJDIR)/instruction.o
 OBJECTS += $(OBJDIR)/lexer.o
-OBJECTS += $(OBJDIR)/main.o
 OBJECTS += $(OBJDIR)/node.o
 OBJECTS += $(OBJDIR)/optimizer.o
 OBJECTS += $(OBJDIR)/parser.o
@@ -111,7 +109,7 @@ all: $(TARGET)
 
 $(TARGET): $(GENERATED) $(OBJECTS) $(LDDEPS) | $(TARGETDIR)
 	$(PRELINKCMDS)
-	@echo Linking cv
+	@echo Linking cvLib
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
@@ -132,7 +130,7 @@ else
 endif
 
 clean:
-	@echo Cleaning cv
+	@echo Cleaning cvLib
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(GENERATED)
@@ -169,9 +167,6 @@ $(OBJDIR)/compilerApi.o: src/api/compilerApi.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/controller.o: src/controller/controller.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/main.o: src/controller/main.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/pch.o: src/controller/pch.cpp
