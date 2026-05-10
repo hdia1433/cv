@@ -49,7 +49,7 @@ endef
 ifeq ($(config),debug)
 TARGETDIR = bin/Debug
 TARGET = $(TARGETDIR)/cv
-OBJDIR = bin-int/Debug/Debug/cv
+OBJDIR = bin-int/Debug
 DEFINES += -DDEBUG
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -std=c++23
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -std=c++23 -std=c++23
@@ -57,7 +57,7 @@ ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -std=c++23 -std=c++23
 else ifeq ($(config),release)
 TARGETDIR = bin/Release
 TARGET = $(TARGETDIR)/cv
-OBJDIR = bin-int/Release/Release/cv
+OBJDIR = bin-int/Release
 DEFINES += -DNDEBUG
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -std=c++23
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -std=c++23 -std=c++23
@@ -75,7 +75,6 @@ GENERATED :=
 OBJECTS :=
 
 GENERATED += $(OBJDIR)/asmGenerator.o
-GENERATED += $(OBJDIR)/compilerApi.o
 GENERATED += $(OBJDIR)/controller.o
 GENERATED += $(OBJDIR)/helpers.o
 GENERATED += $(OBJDIR)/iRGenerator.o
@@ -89,7 +88,6 @@ GENERATED += $(OBJDIR)/pch.o
 GENERATED += $(OBJDIR)/semanticAnalyser.o
 GENERATED += $(OBJDIR)/symbol.o
 OBJECTS += $(OBJDIR)/asmGenerator.o
-OBJECTS += $(OBJDIR)/compilerApi.o
 OBJECTS += $(OBJDIR)/controller.o
 OBJECTS += $(OBJDIR)/helpers.o
 OBJECTS += $(OBJDIR)/iRGenerator.o
@@ -165,9 +163,6 @@ endif
 # File Rules
 # #############################################
 
-$(OBJDIR)/compilerApi.o: src/api/compilerApi.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/controller.o: src/controller/controller.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"

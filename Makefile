@@ -9,28 +9,20 @@ ifndef verbose
 endif
 
 ifeq ($(config),debug)
-  cvLib_config = debug
   cv_config = debug
 
 else ifeq ($(config),release)
-  cvLib_config = release
   cv_config = release
 
 else
   $(error "invalid configuration $(config)")
 endif
 
-PROJECTS := cvLib cv
+PROJECTS := cv
 
 .PHONY: all clean help $(PROJECTS) 
 
 all: $(PROJECTS)
-
-cvLib:
-ifneq (,$(cvLib_config))
-	@echo "==== Building cvLib ($(cvLib_config)) ===="
-	@${MAKE} --no-print-directory -C . -f cvLib.make config=$(cvLib_config)
-endif
 
 cv:
 ifneq (,$(cv_config))
@@ -39,7 +31,6 @@ ifneq (,$(cv_config))
 endif
 
 clean:
-	@${MAKE} --no-print-directory -C . -f cvLib.make clean
 	@${MAKE} --no-print-directory -C . -f cv.make clean
 
 help:
@@ -52,7 +43,6 @@ help:
 	@echo "TARGETS:"
 	@echo "   all (default)"
 	@echo "   clean"
-	@echo "   cvLib"
 	@echo "   cv"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"

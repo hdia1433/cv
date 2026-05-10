@@ -170,6 +170,9 @@ void Lexer::printToFile()
             case TokenType::opPlus:
                 file << "PLUS_OPERATOR";
                 break;
+            case TokenType::opMinus:
+                file << "MINUS_OPERATOR";
+                break;
             case TokenType::semi:
                 file << "SEMICOLON";
                 break;
