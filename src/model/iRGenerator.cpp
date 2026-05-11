@@ -92,7 +92,7 @@ Operand IRGenerator::generateVarDecl(nodes::VarDecl* varDecl)
 
 Operand IRGenerator::generateVarRef(nodes::VarRef* varRef)
 {
-    return Operand{.kind = OperandKind::symbol, .symbol = currentSymbolTable->find(std::string(varRef->name))->second};
+    return Operand{.kind = OperandKind::symbol, .symbol = varRef->symbol};
 }
 
 Operand IRGenerator::generateBinary(nodes::Binary* binary)
@@ -103,6 +103,13 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
         Operand arg2 = generateExpression(binary->right);
 
         instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++}, .arg1 = arg1, .arg2 = arg2});
+    }
+    else if(binary->op == "-")
+    {
+        Operand arg1 = generateExpression(binary->left);
+        Operand arg2 = generateExpression(binary->right);
+
+        instructions.emplace_back(Instruction{.operation = OpCode::minus, .result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++}, .arg1 = arg1, .arg2 = arg2});
     }
     else if(binary->op == "=")
     {

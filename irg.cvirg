@@ -1,1 +1,5 @@
+t0=4-2
+x = t0
 func main:
+exit x
+endFunc

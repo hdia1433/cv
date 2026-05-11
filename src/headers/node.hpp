@@ -63,7 +63,7 @@ namespace nodes
     struct VarRef: public Node
     {
         std::string_view name;
-        uint id;
+        Symbol* symbol;
 
         VarRef(std::string_view name, const Coordinate& location);
 

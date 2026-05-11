@@ -41,6 +41,14 @@ std::string Instruction::toString()
 
             return line.str();
         }
+        case OpCode::minus:
+        {
+            std::stringstream line;
+
+            line << opToString(result) << "=" << opToString(arg1) << "-" << opToString(arg2);
+
+            return line.str();
+        }
         case OpCode::assign:
         {
             return opToString(result) + " = " + opToString(arg1);

@@ -42,6 +42,7 @@ struct Variable: public Symbol
     std::string name;
     Primitive type;
     Coordinate location;
+    bool global;
     bool used;
 
     Variable(const std::string& name, Primitive type, const Coordinate& location);

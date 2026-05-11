@@ -26,7 +26,9 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
             }
             case NodeType::varDecl:
             {
-                noError &= visit((nodes::VarDecl*)node);
+                nodes::VarDecl* varDecl = ((nodes::VarDecl*)node);
+                varDecl->symbol->global = true;
+                noError &= visit(varDecl);
                 break;
             }
             case NodeType::binary:
@@ -166,8 +168,10 @@ bool SemanticAnalyser::visit(nodes::VarRef* varRef)
 {
     for(auto& scope: scopeStack | std::views::reverse)
     {
-        if(scope.find(std::string(varRef->name)) != scope.end())
+        auto symbol = scope.find(std::string(varRef->name));
+        if(symbol != scope.end())
         {
+            varRef->symbol = symbol->second;
             return true;
         }
     }
@@ -184,6 +188,17 @@ bool SemanticAnalyser::visit(nodes::Abort* abort)
     {
         case NodeType::binary:
             return visit((nodes::Binary*)abort->expression);
+        case NodeType::varRef:
+            return visit((nodes::VarRef*)abort->expression);
+        case NodeType::literal:
+        {
+            nodes::Literal* literal = (nodes::Literal*)abort->expression;
+            if(checkTypes(literal->litType, {Primitive::intTp}) != Primitive::custom)
+            {
+                return true;
+            }
+            break;
+        }
         default:
             break;
     }
@@ -401,6 +416,19 @@ Primitive SemanticAnalyser::checkTypes(Primitive type1, Primitive type2)
     if(type1 == type2)
     {
         return type1;
+    }
+
+    return Primitive::custom;
+}
+
+Primitive SemanticAnalyser::checkTypes(Primitive type, std::initializer_list<Primitive> others)
+{
+    for(Primitive other: others)
+    {
+        if(type == other)
+        {
+            return type;
+        }
     }
 
     return Primitive::custom;

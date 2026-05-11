@@ -40,4 +40,5 @@ private:
 
     //helper
     Primitive checkTypes(Primitive type1, Primitive type2);
+    Primitive checkTypes(Primitive type1, std::initializer_list<Primitive> others);
 };

@@ -9,6 +9,7 @@ enum class OpCode
     functionBegin,
     functionEnd,
     plus,
+    minus,
     assign,
     abort
 };
