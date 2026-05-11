@@ -2,10 +2,11 @@
 #include <sstream>
 #include <ranges>
 #include "symbol.hpp"
+#include "helpers.hpp"
 
 SemanticAnalyser::SemanticAnalyser():main(false)
 {
-
+    scopeStack.emplace_back();
 }
 
 void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
@@ -28,10 +29,13 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
                 noError &= visit((nodes::VarDecl*)node);
                 break;
             }
+            case NodeType::binary:
+                noError &= visit((nodes::Binary*)node);
+                break;
             default:
             {
                 std::stringstream errorStream;
-                errorStream << "An error has occurred at the line " << node->location.row << " and the column " << node->location.col << ".\nA function declaration or a variable declaration was expected.";
+                errorStream << "An error has occurred at the line " << node->location.row << " and the column " << node->location.col << ".\nA type for a function declaration or a variable declaration was expected, but ,'";
                 errors.emplace_back(errorStream.str());
                 noError = false;
             }
@@ -287,7 +291,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary)
 
         binary->overallType = checkTypes(type1, type2);
     }
-    else
+    else if(helpers::equalsOr<std::string>(binary->op, {"+", "-"}))
     {
         Primitive type1;
 

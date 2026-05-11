@@ -1,4 +1,6 @@
+int x = 4-2;
+
 void main()
 {
-    abort 4 - 2;
+    abort x;
 }

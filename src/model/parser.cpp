@@ -170,6 +170,7 @@ std::vector<nodes::Node*> Parser::parseGlobal()
         auto tok = *pTok;
         if(tok.type == TokenType::semi)
         {
+            consume();
             continue;
         }
 
@@ -186,9 +187,9 @@ std::vector<nodes::Node*> Parser::parseGlobal()
             continue;
         }
 
-        TokenType type = consume().type;
+        TokenType type = tok.type;
 
-        pTok = peek();
+        pTok = peek(1);
         if(!pTok)
         {
             std::stringstream errorStream;
@@ -214,9 +215,9 @@ std::vector<nodes::Node*> Parser::parseGlobal()
             continue;
         }
 
-        std::string_view name = consume().buffer;
+        std::string_view name = tok.buffer;
 
-        pTok = peek();
+        pTok = peek(2);
         if(!pTok)
         {
             std::stringstream errorStream;
@@ -233,6 +234,8 @@ std::vector<nodes::Node*> Parser::parseGlobal()
         if(tok.type == TokenType::lParen)
         {
             consume();
+            consume();
+            consume();
             nodes.emplace_back(parseFuncDecl(type, name, location));
         }
         else
@@ -248,7 +251,29 @@ std::vector<nodes::Node*> Parser::parseGlobal()
                 continue;
             }
 
-            nodes.emplace_back(parseVarDecl(type, name, location));
+            nodes.emplace_back(parseAssign());
+
+            if(!(pTok = peek()))
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the end of the file. A ';' was expected but the end of the file was found instead. A ';' is needed to end every statement.";
+                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                errors.emplace_back(error);
+                consume();
+                continue;
+            }
+            
+            tok = *pTok;
+            if(tok.type != TokenType::semi)
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA ';' was expected but '" << tok.buffer << "' was found instead. A semicolon is needed to end a statement.";
+                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                errors.emplace_back(error);
+                consume();
+                continue;
+            }
+            consume();
         }
     }
 
