@@ -34,6 +34,10 @@ struct Operand
     };
     
     bool operator==(const Operand& other) const;
+    Operand operator+(const Operand& other) const;
+    Operand operator-(const Operand& other) const;
+private:
+    Operand operation(const Operand& other, const std::string& op) const;
 };
 
 template<>

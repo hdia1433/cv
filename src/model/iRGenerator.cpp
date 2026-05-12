@@ -7,7 +7,7 @@ IRGenerator::IRGenerator():tempNum(0), offset(0)
 
 }
 
-std::vector<Instruction> IRGenerator::getInstructions()
+std::vector<Instruction>& IRGenerator::getInstructions()
 {
     return instructions;
 }

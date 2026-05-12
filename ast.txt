@@ -1,18 +1,10 @@
 Binary Operation:
 ├── Variable Declaration(x, int):
 ├── =
-└── Integer Literal(4)
-Binary Operation:
-├── Variable Declaration(y, int):
-├── =
-└── Variable Reference(x)
-Binary Operation:
-├── Variable Declaration(z, int):
-├── =
 └── Binary Operation:
-    ├── Variable Reference(y)
-    ├── +
-    └── Integer Literal(5)
+    ├── Integer Literal(5)
+    ├── -
+    └── Integer Literal(6)
 Function Declaration(main, void):
 └── Abort:
-    └── Variable Reference(z)
+    └── Variable Reference(x)

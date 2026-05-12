@@ -19,6 +19,41 @@ bool Operand::operator==(const Operand& other) const
     }
 }
 
+Operand Operand::operator+(const Operand& other) const
+{
+    return operation(other, "+");
+}
+
+Operand Operand::operator-(const Operand& other) const
+{
+    return operation(other, "-");
+}
+
+Operand Operand::operation(const Operand& other, const std::string& op) const
+{
+    if(kind != OperandKind::immediate || other.kind != OperandKind::immediate)
+    {
+        std::cerr << "Error, cannot add 2 operands that are not both immediates";
+        throw std::runtime_error("math error");
+    }
+
+    Operand result{.kind = OperandKind::immediate};
+
+    std::visit([&other, &op, &result, this](const auto& value, const auto& otherValue)
+    {
+        if(op == "+")
+        {
+            result.immediate = value + otherValue;
+        }
+        else if(op == "-")
+        {
+            result.immediate = value - otherValue;
+        }
+    }, immediate, other.immediate);
+
+    return result;
+}
+
 std::string Instruction::toString()
 {
     switch(operation)

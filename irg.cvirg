@@ -1,7 +1,5 @@
-x = 4
-y = x
-t0 = y+5
-z = t0
+t0=5-6
+x = t0
 func main:
-exit z
+exit x
 endFunc

@@ -26,9 +26,18 @@ bool Optimizer::fold(std::vector<Instruction>& iRCode)
 
     for(Instruction& instr: iRCode)
     {
-        if(instr.operation == OpCode::plus && instr.arg1.kind == OperandKind::immediate && instr.arg2.kind == OperandKind::immediate)
+        if(instr.arg1.kind != OperandKind::immediate || instr.arg2.kind != OperandKind::immediate)
         {
-            instr = Instruction{.operation = OpCode::assign, .result = instr.result, .arg1 = Operand{.kind = OperandKind::immediate, .immediate = std::get<int>(instr.arg1.immediate) + std::get<int>(instr.arg2.immediate)}};
+            continue;
+        }
+        else if(helpers::equalsOr(instr.operation, {OpCode::plus}))
+        {
+            instr = Instruction{.operation = OpCode::assign, .result = instr.result, .arg1 = instr.arg1 + instr.arg2};
+            changed = true;
+        }
+        else if(instr.operation == OpCode::minus)
+        {
+            instr = Instruction{.operation = OpCode::assign, .result = instr.result, .arg1 = instr.arg1 - instr.arg2};
             changed = true;
         }
     }

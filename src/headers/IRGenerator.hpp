@@ -15,7 +15,7 @@ private:
 public:
     IRGenerator();
 
-    std::vector<Instruction> getInstructions();
+    std::vector<Instruction>& getInstructions();
 
     void generate(const std::vector<nodes::Node*>& ast);
 

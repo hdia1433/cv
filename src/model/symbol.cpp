@@ -26,7 +26,7 @@ Function::~Function()
 
 GlobalScope::GlobalScope()
 {
-    write(2, "Hello!\n", 7);
+    
 }
 
 GlobalScope::~GlobalScope()

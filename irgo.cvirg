@@ -1,3 +1,3 @@
 func main:
-exit 12
+exit -1
 endFunc
