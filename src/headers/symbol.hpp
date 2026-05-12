@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.hpp"
 #include "token.hpp"
-#include "unordered_map"
+#include <unordered_map>
 #include "token.hpp"
 #include "functional"
 
@@ -34,6 +34,8 @@ enum class SymbolType
 struct Symbol
 {
     SymbolType kind;
+
+    virtual ~Symbol() = default;
 };
 
 struct Variable: public Symbol
@@ -56,6 +58,7 @@ struct Function: public Symbol
     Coordinate location;
 
     Function(const std::string& name, Primitive returnType, const Coordinate& location);
+    ~Function();
 };
 
 struct GlobalScope
@@ -63,7 +66,8 @@ struct GlobalScope
     std::unordered_map<std::string, Variable*> variables;
     std::unordered_map<FunctionSignature, Function*> functions;
 
+    GlobalScope();
     ~GlobalScope();
 };
 
-extern GlobalScope globalScope;
+GlobalScope& getGlobalScope();

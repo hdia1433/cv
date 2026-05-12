@@ -13,7 +13,7 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
 {
     bool noError = true;
 
-    currentSymbolTable = &globalScope.variables;
+    currentSymbolTable = &getGlobalScope().variables;
 
     for(nodes::Node* node: ast)
     {
@@ -32,7 +32,7 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
                 break;
             }
             case NodeType::binary:
-                noError &= visit((nodes::Binary*)node);
+                noError &= visit((nodes::Binary*)node, true);
                 break;
             default:
             {
@@ -94,7 +94,7 @@ bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
         }
     }
 
-    if(globalScope.functions.find(FunctionSignature{.name = std::string(funcDecl->name), .returnType = funcDecl->returnType}) != globalScope.functions.end())
+    if(getGlobalScope().functions.find(FunctionSignature{.name = std::string(funcDecl->name), .returnType = funcDecl->returnType}) != getGlobalScope().functions.end())
     {
         std::stringstream errorStream;
         errorStream << "An error has occurred at the line " << funcDecl->location.row << " and the column " << funcDecl->location.col << ".\nA function has already been declared with the same signature as the function: " << funcDecl->name << ". Only 1 function can be declared with 1 signature per scope.";
@@ -104,7 +104,7 @@ bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
 
     Function* symbol = new Function(std::string(funcDecl->name), funcDecl->returnType, funcDecl->location);
     funcDecl->symbol = symbol;
-    globalScope.functions.emplace(FunctionSignature{.name = std::string(funcDecl->name), .returnType = funcDecl->returnType}, symbol);
+    getGlobalScope().functions.emplace(FunctionSignature{.name = std::string(funcDecl->name), .returnType = funcDecl->returnType}, symbol);
 
     auto oldSymbolTable = currentSymbolTable;
     currentSymbolTable = &symbol->locals;
@@ -142,7 +142,7 @@ bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
     return result;
 }
 
-bool SemanticAnalyser::visit(nodes::VarDecl* varDecl)
+bool SemanticAnalyser::visit(nodes::VarDecl* varDecl, bool global)
 {
     for(const auto& [key, value]: scopeStack.back())
     {
@@ -156,6 +156,7 @@ bool SemanticAnalyser::visit(nodes::VarDecl* varDecl)
     }
 
     Variable* variable = new Variable(std::string(varDecl->name), varDecl->varType, varDecl->location);
+    variable->global = global;
 
     scopeStack.back().emplace(varDecl->name, variable);
     varDecl->symbol = variable;
@@ -206,7 +207,7 @@ bool SemanticAnalyser::visit(nodes::Abort* abort)
     return false;
 }
 
-bool SemanticAnalyser::visit(nodes::Binary* binary)
+bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
 {
     bool result = true;
 
@@ -219,7 +220,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary)
             case NodeType::varDecl:
             {
                 nodes::VarDecl* varDecl = (nodes::VarDecl*)binary->left;
-                if(visit(varDecl))
+                if(visit(varDecl, true))
                 {
                     type1 = varDecl->varType;
                 }

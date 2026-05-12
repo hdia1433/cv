@@ -1,5 +1,6 @@
 #include "controller.hpp"
 #include "fstream"
+#include <unistd.h>
 
 Controller::Controller(const std::string& code):code(code)
 {
@@ -8,6 +9,7 @@ Controller::Controller(const std::string& code):code(code)
 
 void Controller::start()
 {
+    write(2, "A\n", 2);
     #ifdef DEBUG
     std::println("Lexing.");
     #endif
@@ -16,6 +18,7 @@ void Controller::start()
     std::println("Printing to tokens.txt");
     lexer.printToFile();
     #endif
+    write(2, "B\n", 2);
 
     #ifdef DEBUG
     std::println("\nParsing.");
@@ -25,11 +28,13 @@ void Controller::start()
     std::println("Printing to ast.txt");
     parser.printToFile();
     #endif
+    write(2, "C\n", 2);
 
     #ifdef DEBUG
     std::println("\nSemantic analysing.");
     #endif
     sAnalyser.analyse(parser.getAst());
+    write(2, "D\n", 2);
 
     #ifdef DEBUG
     std::println("\nGenerating intermediate code.");
@@ -38,6 +43,7 @@ void Controller::start()
     #ifdef DEBUG
     iRGenerator.printToFile();
     #endif
+    write(2, "E\n", 2);
 
     // #ifdef DEBUG
     // std::println("\nOptimizing intermediate code.");
@@ -46,11 +52,16 @@ void Controller::start()
     // #ifdef DEBUG
     // iRGenerator.printToFile("irgo.cvirg");
     // #endif
+    write(2, "F\n", 2);
+
+    auto ir = iRGenerator.getInstructions();
 
     #ifdef DEBUG
     std::println("\nGenerating assembly.");
     #endif
-    asmGenerator.generate(iRGenerator.getInstructions());
+    std::print("Hello!");
+    asmGenerator.generate(ir);
+    write(2, "G\n", 2);
 
     #ifdef DEBUG
     std::println("\nOutputting assembly to a file.");

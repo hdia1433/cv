@@ -7,14 +7,14 @@ IRGenerator::IRGenerator():tempNum(0), offset(0)
 
 }
 
-std::vector<Instruction>& IRGenerator::getInstructions()
+std::vector<Instruction> IRGenerator::getInstructions()
 {
     return instructions;
 }
 
 void IRGenerator::generate(const std::vector<nodes::Node*>& ast)
 {
-    currentSymbolTable = &globalScope.variables;
+    currentSymbolTable = &getGlobalScope().variables;
 
     for(nodes::Node* node: ast)
     {
@@ -26,8 +26,11 @@ void IRGenerator::generate(const std::vector<nodes::Node*>& ast)
                 break;
             }
             case NodeType::varDecl:
-                generateVarDecl((nodes::VarDecl*)node);
+            {
+                Operand var = generateVarDecl((nodes::VarDecl*)node);
+                instructions.emplace_back(Instruction{.operation = OpCode::define, .arg1 = var});
                 break;
+            }
             case NodeType::binary:
                 generateBinary((nodes::Binary*)node);
                 break;
@@ -85,8 +88,11 @@ void IRGenerator::generate(nodes::Abort* abort)
 
 Operand IRGenerator::generateVarDecl(nodes::VarDecl* varDecl)
 {
-    varDecl->symbol->offset = offset;
-    offset += helpers::typeToSize(varDecl->symbol->type);
+    if(!varDecl->symbol->global)
+    {
+        varDecl->symbol->offset = offset;
+        offset += helpers::typeToSize(varDecl->symbol->type);
+    }
     return Operand{.kind = OperandKind::symbol, .symbol = varDecl->symbol};
 }
 
@@ -97,19 +103,23 @@ Operand IRGenerator::generateVarRef(nodes::VarRef* varRef)
 
 Operand IRGenerator::generateBinary(nodes::Binary* binary)
 {
+    Operand result = {};
+
     if(binary->op == "+")
     {
         Operand arg1 = generateExpression(binary->left);
         Operand arg2 = generateExpression(binary->right);
+        result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++};
 
-        instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++}, .arg1 = arg1, .arg2 = arg2});
+        instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = result, .arg1 = arg1, .arg2 = arg2});
     }
     else if(binary->op == "-")
     {
         Operand arg1 = generateExpression(binary->left);
         Operand arg2 = generateExpression(binary->right);
+        result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++};
 
-        instructions.emplace_back(Instruction{.operation = OpCode::minus, .result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++}, .arg1 = arg1, .arg2 = arg2});
+        instructions.emplace_back(Instruction{.operation = OpCode::minus, .result = result, .arg1 = arg1, .arg2 = arg2});
     }
     else if(binary->op == "=")
     {
@@ -117,7 +127,7 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
         {
             case NodeType::varDecl:
             {
-                Operand result = generateVarDecl((nodes::VarDecl*)binary->left);
+                result = generateVarDecl((nodes::VarDecl*)binary->left);
                 Operand arg1 = generateExpression(binary->right);
 
                 instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
@@ -125,7 +135,7 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
             }
             case NodeType::varRef:
             {
-                Operand result = generateVarRef((nodes::VarRef*)binary->left);
+                result = generateVarRef((nodes::VarRef*)binary->left);
                 Operand arg1 = generateExpression(binary->right);
 
                 instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
@@ -136,7 +146,7 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
         }
     }
 
-    return instructions.back().result;
+    return result;
 }
 
 void IRGenerator::generateBody(nodes::Node* node)

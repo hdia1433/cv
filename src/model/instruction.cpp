@@ -33,6 +33,12 @@ std::string Instruction::toString()
         {
             return "endFunc";
         }
+        case OpCode::define:
+        {
+            std::stringstream line;
+            line << "define " << ((Variable*)arg1.symbol)->name;
+            return line.str();
+        }
         case OpCode::plus:
         {
             std::stringstream line;

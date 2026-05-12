@@ -29,13 +29,13 @@ public:
 private:
     //structures
     bool visit(nodes::FuncDecl* funcDecl);
-    bool visit(nodes::VarDecl* varDecl);
+    bool visit(nodes::VarDecl* varDecl, bool global = false);
 
     //keywords
     bool visit(nodes::Abort* abort);
 
     //statement tree
-    bool visit(nodes::Binary* binary);
+    bool visit(nodes::Binary* binary, bool global = false);
     bool visit(nodes::VarRef* varRef);
 
     //helper

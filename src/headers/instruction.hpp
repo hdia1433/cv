@@ -8,6 +8,7 @@ enum class OpCode
 {
     functionBegin,
     functionEnd,
+    define,
     plus,
     minus,
     assign,

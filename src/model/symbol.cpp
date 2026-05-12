@@ -1,4 +1,5 @@
 #include "symbol.hpp"
+#include <unistd.h>
 
 bool FunctionSignature::operator==(const FunctionSignature& other) const
 {
@@ -15,12 +16,34 @@ Function::Function(const std::string& name, Primitive returnType, const Coordina
     kind = SymbolType::func;
 }
 
+Function::~Function()
+{
+    for(auto& [key, var]: locals)
+    {
+        delete var;
+    }
+}
+
+GlobalScope::GlobalScope()
+{
+    write(2, "Hello!\n", 7);
+}
+
 GlobalScope::~GlobalScope()
 {
     for(auto& [key, value]: variables)
     {
         delete value;
     }
+
+    for(auto& [key, value]: functions)
+    {
+        delete value;
+    }
 }
 
-GlobalScope globalScope;
+GlobalScope& getGlobalScope()
+{
+    static GlobalScope globalScope;
+    return globalScope;
+}

@@ -1,7 +1,8 @@
 #include "asmGenerator.hpp"
 #include "helpers.hpp"
+#include <unistd.h>
 
-AsmGenerator::AsmGenerator():indentNum(0), index(0), regNum(0)
+AsmGenerator::AsmGenerator():indentNum(0), index(0), regNum(0), currentSection(SectionType::text)
 {
 
 }
@@ -15,24 +16,52 @@ void AsmGenerator::generate(std::vector<Instruction>& irCode)
 {
     this->irCode = &irCode;
 
+    std::vector<Instruction> staticInitInstr;
+
     while(auto pInstr = peek())
     {
         auto instr = *pInstr;
 
-        switch(instr.operation)
+        switch((OpCode)instr.operation)
         {
             case OpCode::functionBegin:
-                generateFunctionDecl();
+                generateFunctionDecl(!staticInitInstr.empty());
+                break;
+            case OpCode::assign:
+                if(instr.arg1.kind == OperandKind::immediate)
+                {
+                    std::visit([this](auto& value){
+                        generateGlobalVariable(value);
+                    }, instr.arg1.immediate);
+                    break;
+                }
+                generateGlobalVariable();
+                staticInitInstr.emplace_back(instr);
+                break;
+            case OpCode::define:
+                generateGlobalVariable();
                 break;
             default:
+                staticInitInstr.emplace_back(consume());
                 break;
         }
+    }
+
+    if(!staticInitInstr.empty())
+    {
+        generateStaticInit(std::move(staticInitInstr));
     }
 }
 
 #pragma region structure
-void AsmGenerator::generateFunctionDecl()
+void AsmGenerator::generateFunctionDecl(bool init)
 {
+    if(currentSection != SectionType::text)
+    {
+        currentSection = SectionType::text;
+        assembly << std::endl << "\n.section __TEXT, __text\n";
+    }
+
     Instruction functionDecl = consume();
 
     Function* function = ((Function*)(functionDecl.arg1.symbol));
@@ -53,8 +82,13 @@ void AsmGenerator::generateFunctionDecl()
 
     assembly << ".global _" << name << std::endl;
     assembly << "_" << name << ":\n";
-    indentNum++;
+    std::string indent(++indentNum, '\t');
     generatePrologue(localSize);
+
+    if(init)
+    {
+        assembly << indent << "bl _static_init\n\n";
+    }
     
     bool exited = false;
     Instruction instr = *peek();
@@ -98,7 +132,7 @@ void AsmGenerator::generatePrologue(int localSize)
 
     if(localSize > 0)
     {
-        assembly << indent << "add sp, sp, #" << localSize << std::endl;
+        assembly << indent << "sub sp, sp, #" << localSize << std::endl;
     }
     
     assembly << std::endl;
@@ -110,8 +144,89 @@ void AsmGenerator::generateEpilogue(int localSize)
 
     assembly << indent << "\nmov sp, x29\n";
     assembly << indent << "ldp x29, x30, [sp], #16\n";
-    assembly << indent << "sub sp, sp, #" << localSize << std::endl;
     assembly << indent << "ret\n";
+}
+
+void AsmGenerator::generateGlobalVariable()
+{
+    
+    if(currentSection != SectionType::bss)
+    {
+        currentSection = SectionType::bss;
+        assembly << ".section __DATA, __bss\n.lcomm ";
+    }
+
+    Instruction instr = consume();
+    Variable* var = (Variable*)instr.result.symbol;
+
+    assembly << "_" << var->name << ", ";
+    switch(var->type)
+    {
+        case Primitive::intTp:
+            assembly << "4\n\n";
+            break;
+        default:
+            break;
+    }
+}
+
+void AsmGenerator::generateGlobalVariable(std::variant<int> value)
+{
+    if(currentSection != SectionType::data)
+    {
+        currentSection = SectionType::data;
+        assembly << ".section __DATA, __data\n";
+    }
+
+    Instruction instr = consume();
+    Variable* var = (Variable*)instr.arg1.symbol;
+
+    if(var->global)
+    {
+        assembly << "_" << var->name << ":\n";
+    }
+
+    switch(var->type)
+    {
+        case Primitive::intTp:
+            assembly << "\t.long ";
+            assembly << std::get<int>(value) << std::endl;
+            break;
+        default:
+            break;
+    }
+}
+
+void AsmGenerator::generateStaticInit(std::vector<Instruction>&& instructions)
+{
+    if(currentSection != SectionType::text)
+    {
+        currentSection = SectionType::text;
+        assembly << ".section __TEXT, __text\n";
+    }
+
+    assembly << "_static_init:\n";
+    indentNum++;
+
+    for(Instruction& instr: instructions)
+    {
+        switch(instr.operation)
+        {
+            case OpCode::assign:
+                generateAssign(instr);
+                break;
+            case OpCode::minus:
+                generateMinus(instr);
+                break;
+            case OpCode::plus:
+                generatePlus(instr);
+                break;
+            default:
+                break;
+        }
+    }
+
+    indentNum--;
 }
 #pragma endregion
 
@@ -132,11 +247,13 @@ void AsmGenerator::generateAbort()
     }
     else if(abort.arg1.kind == OperandKind::symbol)
     {
-        assembly << indent << "ldr w28, [sp, #" << ((Variable*)abort.arg1.symbol)->offset << "]\n";
-        value << "w28";
+        accessVar((Variable*)abort.arg1.symbol, "w0");
     }
 
-    assembly << indent << "mov w0, " << value.str() << std::endl;
+    if(!value.str().empty())
+    {
+        assembly << indent << "mov w0, " << value.str() << std::endl;
+    }
     assembly << indent << "bl _exit\n";
 }
 #pragma endregion
@@ -144,88 +261,158 @@ void AsmGenerator::generateAbort()
 #pragma region Expression tree
 void AsmGenerator::generatePlus()
 {
-    Instruction plus = consume();
+    generateOperation("add");
+}
+
+void AsmGenerator::generatePlus(const Instruction& instr)
+{
+    generateOperation("add", instr);
+}
+
+void AsmGenerator::generateMinus()
+{
+    generateOperation("sub");
+}
+
+void AsmGenerator::generateMinus(const Instruction& instr)
+{
+    generateOperation("sub", instr);
+}
+
+void AsmGenerator::generateAssign()
+{
+    generateAssign(consume());
+}
+
+void AsmGenerator::generateAssign(const Instruction& instr)
+{
+    std::string indent(indentNum, '\t');
+
+    std::stringstream value;
+
+    switch(instr.arg1.kind)
+    {
+        case OperandKind::symbol:
+        {
+            accessVar((Variable*)instr.arg1.symbol);
+            break;
+        }
+        case OperandKind::temporary:
+            value << "w" << instr.arg1.temporary;
+            break;
+        case OperandKind::immediate:
+            std::visit([&value](auto& num)
+            {
+                value << num;
+            }, instr.arg1.immediate);
+            break;
+    }
+
+    if(!value.str().empty())
+    {
+        assembly << indent << "mov w28"<< ", " << value.str() << std::endl;
+    }
+    setVar((Variable*)instr.result.symbol);
+}
+#pragma endregion
+
+
+void AsmGenerator::accessVar(Variable* symbol, const std::string& reg)
+{
+    std::string indent(indentNum, '\t');
+
+    if(!symbol->global)
+    {
+        assembly << indent << "ldr " << reg << ", [sp, #" << symbol->offset << "]\n";
+        return;
+    }
+
+    std::string xReg = "x" + reg.substr(1);
+    assembly << indent << "adrp " << xReg << ", _" << symbol->name << "@PAGE\n";
+    assembly << indent << "add " << xReg << ", " << xReg << ", :lo12:_" << symbol->name << "@PAGEOFF\n";
+    assembly << indent << "ldr " << reg << ", [" << xReg << "]\n";
+}
+
+void AsmGenerator::setVar(Variable* symbol, const std::string& useReg, const std::string& storeReg)
+{
+    std::string indent(indentNum, '\t');
+
+    if(!symbol->global)
+    {
+        assembly << indent << "str " << useReg << ", [sp, #" << symbol->offset << "]\n";
+        return;
+    }
+
+    std::string xReg = "x" + useReg.substr(1);
+    assembly << indent << "adrp " << xReg << ", _" << symbol->name << "@PAGE\n";
+    assembly << indent << "add " << xReg << ", " << xReg << ", :lo12:_" << symbol->name << "@PAGEOFF\n";
+    assembly << indent << "str " << storeReg << ", [" << xReg << "]\n";
+}
+
+void AsmGenerator::generateOperation(const std::string& op)
+{
+    generateOperation(op, consume());
+}
+
+void AsmGenerator::generateOperation(const std::string& op, const Instruction& instr)
+{
     std::string indent(indentNum, '\t');
 
     std::string reg;
     std::string arg1;
     std::string arg2;
 
-    if(plus.result.kind == OperandKind::temporary)
+    if(instr.result.kind == OperandKind::temporary)
     {
-        reg = getReg(plus.result.temporary);
+        reg = getReg(instr.result.temporary);
     }
 
-    if(plus.arg1.kind == OperandKind::temporary)
+    if(instr.arg1.kind == OperandKind::temporary)
     {
-        arg1 = getReg(plus.arg1.temporary);
-    }
-    else if(plus.arg1.kind == OperandKind::immediate)
+        arg1 = getReg(instr.arg1.temporary);
+    }  
+    else if(instr.arg1.kind == OperandKind::immediate)
     {
-        assembly << indent << "mov " << reg << ", #" << std::get<int>(plus.arg1.immediate) << std::endl;
+        std::visit([this, &indent, &reg](const auto& value){
+            assembly << indent << "mov " << reg << ", #" << value << std::endl;
+        }, instr.arg1.immediate);
         arg1 = reg;
     }
-    else if(plus.arg1.kind == OperandKind::symbol)
+    else if(instr.arg1.kind == OperandKind::symbol)
     {
-        assembly << indent << "ldr w28, [sp, #" << ((Variable*)plus.arg1.symbol)->offset << "]\n";
+        accessVar((Variable*)instr.arg1.symbol);
+
         arg1 = "w28";
     }
 
-    if(plus.arg2.kind == OperandKind::temporary)
+    if(instr.arg2.kind == OperandKind::temporary)
     {
-        arg2 = getReg(plus.arg2.temporary);
+        arg2 = getReg(instr.arg2.temporary);
     }
-    else if(plus.arg2.kind == OperandKind::immediate)
+    else if(instr.arg2.kind == OperandKind::immediate)
     {
-        arg2 = "#" + std::to_string(std::get<int>(plus.arg2.immediate));
+        std::visit([&arg2](const auto& value){
+            arg2 = "#" + std::to_string(value);
+        },instr.arg2.immediate);
     }
-    else if(plus.arg2.kind == OperandKind::symbol)
+    else if(instr.arg2.kind == OperandKind::symbol)
     {
-        int num;
-        if(arg1 == "w28")
+        std::string reg;
+        if(arg1.substr(1) == "28")
         {
-            num = 27;
+            reg = "w27";
         }
         else
         {
-            num = 28;
+            reg = "w28";
         }
-        assembly << indent << "ldr w" << num << ", [sp, #" << ((Variable*)plus.arg2.symbol)->offset << "]\n";
-        arg2 = "w" + std::to_string(num);
+
+        accessVar((Variable*)instr.arg2.symbol, reg);
+        arg2 = reg;
     }
 
-    assembly << indent << "add " << reg << ", " << arg1 << ", " << arg2 << std::endl;
+    assembly << indent << op << " " << reg << ", " << arg1 << ", " << arg2 << std::endl;
 }
-
-void AsmGenerator::generateAssign()
-{
-    Instruction assign = consume();
-
-    std::string indent(indentNum, '\t');
-
-    std::stringstream value;
-
-    switch(assign.arg1.kind)
-    {
-        case OperandKind::symbol:
-            value << "[sp, #" << ((Variable*)assign.arg1.symbol)->offset << "]";
-            break;
-        case OperandKind::temporary:
-            value << "w" << assign.arg1.temporary;
-            break;
-        case OperandKind::immediate:
-            std::visit([&value](auto& num)
-            {
-                value << num;
-            }, assign.arg1.immediate);
-            break;
-    }
-
-    assembly << indent << "mov w28"<< ", " << value.str() << std::endl;
-    assembly << indent << "str w28, [sp, #" << ((Variable*)assign.result.symbol)->offset << "]\n";
-}
-#pragma endregion
-
 
 Instruction* AsmGenerator::peek()
 {
