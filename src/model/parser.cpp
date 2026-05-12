@@ -1,4 +1,5 @@
 #include "parser.hpp"
+#include "helpers.hpp"
 #include <sstream>
 #include <fstream>
 
@@ -489,10 +490,26 @@ nodes::Node* Parser::parseAssign()
 
 nodes::Node* Parser::parseTerm()
 {
-    nodes::Node* left = parsePrimary();
+    nodes::Node* left = parseFactor();
 
     auto pTok = peek();
     if(pTok && pTok->type == TokenType::opPlus || pTok->type == TokenType::opMinus)
+    {
+        std::string op = std::string(consume().buffer);
+
+        nodes::Node* right = parseExpression();
+        left = new nodes::Binary(op, left, right, left->location);
+    }
+
+    return left;
+}
+
+nodes::Node* Parser::parseFactor()
+{
+    nodes::Node* left = parsePrimary();
+
+    auto pTok = peek();
+    if(pTok && helpers::equalsOr(pTok->type, {TokenType::opMult}))
     {
         std::string op = std::string(consume().buffer);
 

@@ -36,6 +36,7 @@ private:
     nodes::Node* parseExpression();
     nodes::Node* parseAssign();
     nodes::Node* parseTerm();
+    nodes::Node* parseFactor();
     nodes::Node* parsePrimary();
 
     //helper
