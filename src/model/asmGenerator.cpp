@@ -153,13 +153,13 @@ void AsmGenerator::generateGlobalVariable()
     if(currentSection != SectionType::bss)
     {
         currentSection = SectionType::bss;
-        assembly << ".section __DATA, __bss\n.lcomm ";
+        assembly << ".section __DATA, __bss\n";
     }
 
     Instruction instr = consume();
     Variable* var = (Variable*)instr.result.symbol;
 
-    assembly << "_" << var->name << ", ";
+    assembly << ".lcomm _" << var->name << ", ";
     switch(var->type)
     {
         case Primitive::intTp:
@@ -179,7 +179,7 @@ void AsmGenerator::generateGlobalVariable(std::variant<int> value)
     }
 
     Instruction instr = consume();
-    Variable* var = (Variable*)instr.arg1.symbol;
+    Variable* var = (Variable*)instr.result.symbol;
 
     if(var->global)
     {
@@ -206,7 +206,8 @@ void AsmGenerator::generateStaticInit(std::vector<Instruction>&& instructions)
     }
 
     assembly << "_static_init:\n";
-    indentNum++;
+    int oldIndentNum = indentNum;
+    indentNum = 1;
 
     for(Instruction& instr: instructions)
     {
@@ -226,7 +227,9 @@ void AsmGenerator::generateStaticInit(std::vector<Instruction>&& instructions)
         }
     }
 
-    indentNum--;
+    assembly << std::endl << "\tret\n";
+
+    indentNum = oldIndentNum;
 }
 #pragma endregion
 

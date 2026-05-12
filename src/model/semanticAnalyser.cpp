@@ -311,11 +311,11 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
     {
         Primitive type1;
 
-        switch(binary->right->type)
+        switch(binary->left->type)
         {
             case NodeType::binary:
             {
-                auto innerBinary = (nodes::Binary*)binary->right;
+                auto innerBinary = (nodes::Binary*)binary->left;
                 if(visit(innerBinary))
                 {
                     type1 = innerBinary->overallType;
@@ -328,7 +328,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
             }
             case NodeType::varRef:
             {
-                auto varRef = (nodes::VarRef*)binary->right;
+                auto varRef = (nodes::VarRef*)binary->left;
                 if(visit(varRef))
                 {
                     for(auto& scope: scopeStack | std::views::reverse)
@@ -349,7 +349,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
             }
             case NodeType::literal:
             {
-                auto literal = (nodes::Literal*)binary->right;
+                auto literal = (nodes::Literal*)binary->left;
                 type1 = literal->litType;
                 break;
             }
