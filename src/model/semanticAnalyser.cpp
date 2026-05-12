@@ -71,6 +71,23 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
 
         throw std::runtime_error(errorStream.str());
     }
+
+    if(!warnings.empty())
+    {
+        for(std::string warning: warnings)
+        {
+            std::cerr << warning << std::endl << std::endl;
+        }
+
+        if(warnings.size() > 1)
+        {
+            std::cerr << warnings.size() << " warnings were generated.\n";
+        }
+        else
+        {
+            std::cerr << "1 warning was generated.\n";
+        }
+    }
 }
 
 bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)

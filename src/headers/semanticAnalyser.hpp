@@ -18,6 +18,7 @@ class SemanticAnalyser
 {
 private:
     std::vector<std::string> errors;
+    std::vector<std::string> warnings;
     ScopeStack scopeStack;
     std::unordered_map<std::string, Variable*>* currentSymbolTable;
     bool main;

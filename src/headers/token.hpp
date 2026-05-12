@@ -14,6 +14,7 @@ enum class TokenType
     opAssign,
     opPlus,
     opMinus,
+    opMult,
     semi,
     identifier
 };
