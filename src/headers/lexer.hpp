@@ -8,6 +8,7 @@ private:
     std::string code;
     std::vector<Token> tokens;
     Coordinate currentLoc;
+    std::vector<std::string> errors;
 public:
     Lexer();
 

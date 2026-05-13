@@ -83,7 +83,7 @@ namespace nodes
     struct Literal: public Node
     {
         Primitive litType;
-        std::variant<int> value;
+        std::variant<int, char> value;
 
         template <typename T>
         Literal(T value, const Coordinate& location):value(value)
@@ -94,6 +94,10 @@ namespace nodes
             if(std::is_same_v<T, int>)
             {
                 litType = Primitive::intTp;
+            }
+            else if(std::is_same_v<T, char>)
+            {
+                litType = Primitive::charTp;
             }
         }
 

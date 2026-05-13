@@ -6,6 +6,7 @@
 std::unordered_map<std::string_view, TokenType> keywords = {
     {"void", TokenType::kwVoid},
     {"int", TokenType::kwInt},
+    {"char", TokenType::kwChar},
     {"abort", TokenType::kwAbort}
 };
 
@@ -115,6 +116,31 @@ void Lexer::analyze(const std::string& code)
             consume();
             addToken("*", TokenType::opMult, startLoc);
         }
+        else if(ch == '\'')
+        {
+            consume();
+            consume();
+            if(!(chOpt = peek()))
+            {
+                std::stringstream errorStream;
+
+                errorStream << "An error has occurred at the end of the file.\nThere was no \'\'\' character to end the character literal.\n";
+                errors.emplace_back(errorStream.str());
+                continue;
+            }
+            char ch = consume();
+            if(ch != '\'')
+            {
+                std::stringstream errorStream;
+
+                errorStream << "An error has occurred at the line " << currentLoc.row << " and the column " << currentLoc.col << ".\nA character literal was started, but was never terminated with a \'\'\' character.";
+                errors.emplace_back(errorStream.str());
+                continue;
+            }
+            std::string_view buffer(code.data() + start + 1, index - start - 2);
+
+            addToken(buffer, TokenType::ltChar, startLoc);
+        }
         else if(ch == ';')
         {
             consume();
@@ -126,8 +152,10 @@ void Lexer::analyze(const std::string& code)
         }
         else
         {
-            std::cerr << "An error has occurred at the line " << currentLoc.row << " and the column " << currentLoc.col << ".\nThe character '" << ch << "' cannot be used to begin an identifier.\n\n";
-            throw std::runtime_error("1 error was generated.");
+            std::stringstream errorStream;
+
+            errorStream << "An error has occurred at the line " << currentLoc.row << " and the column " << currentLoc.col << ".\nThe character '" << ch << "' cannot be used to begin an identifier.\n\n";
+            errors.emplace_back(errorStream.str());
         }
     }
 }
@@ -151,11 +179,17 @@ void Lexer::printToFile()
             case TokenType::kwInt:
                 file << "INTEGER_TYPE";
                 break;
+            case TokenType::kwChar:
+                file << "CHARACTER_TYPE";
+                break;
             case TokenType::kwAbort:
                 file << "KW_ABORT";
                 break;
             case TokenType::ltInt:
                 file << "INT_LITERAL: " << tok.buffer;
+                break;
+            case TokenType::ltChar:
+                file << "CHAR_LITERAL: " << tok.buffer;
                 break;
             case TokenType::lParen:
                 file << "LEFT_PARENTHESIS";

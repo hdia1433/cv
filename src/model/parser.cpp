@@ -536,11 +536,14 @@ nodes::Node* Parser::parsePrimary()
     switch(tok.type)
     {
         case TokenType::ltInt:
-            consume();
+            tok = consume();
             return new nodes::Literal(std::stoi(std::string(tok.buffer)), tok.location);
         case TokenType::identifier:
             tok = consume();
             return new nodes::VarRef(tok.buffer, tok.location);
+        case TokenType::ltChar:
+            tok = consume();
+            return new nodes::Literal(tok.buffer[0], tok.location);
         default:
             break;
     }
@@ -571,6 +574,7 @@ bool Parser::isType(TokenType type)
     {
         case TokenType::kwInt:
         case TokenType::kwVoid:
+        case TokenType::kwChar:
             return true;
         default:
             return false;
@@ -586,8 +590,11 @@ Primitive Parser::tokenTypeToPrimitive(TokenType type)
             return Primitive::intTp;
         case TokenType::kwVoid:
             return Primitive::voidTp;
+        case TokenType::kwChar:
+        case TokenType::ltChar:
+            return Primitive::charTp;
         default:
-            return Primitive::custom;
+            return Primitive::error;
     }
 }
 #pragma endregion

@@ -5,8 +5,10 @@ enum class TokenType
 {
     kwVoid,
     kwInt,
+    kwChar,
     kwAbort,
     ltInt,
+    ltChar,
     lParen,
     rParen,
     lBrace,
@@ -23,9 +25,12 @@ enum class Primitive
 {
     voidTp,
     intTp,
+    charTp,
     pFunc,
-    custom
+    error
 };
+
+std::ostream& operator<<(std::ostream& ostream, Primitive primitive);
 
 struct Coordinate
 {

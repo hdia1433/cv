@@ -31,7 +31,7 @@ private:
     void generatePrologue(int localSize);
     void generateEpilogue(int localSize);
     void generateGlobalVariable();
-    void generateGlobalVariable(std::variant<int> value);
+    void generateGlobalVariable(std::variant<int, char> value);
     void generateStaticInit(std::vector<Instruction>&& instructions);
 
     //keywords

@@ -182,15 +182,16 @@ Operand IRGenerator::generateExpression(nodes::Node* node)
         {
             Operand value{.kind = OperandKind::immediate};
 
-            std::visit([&](const auto& arg)
-            {
-                using T = std::decay_t<decltype(arg)>;
+            nodes::Literal* lit = (nodes::Literal*)node;
 
-                if(std::is_same_v<T, int>)
-                {
-                    value.immediate = arg;
-                }
-            }, ((nodes::Literal*)node)->value);
+            if(const int* integer = std::get_if<int>(&lit->value))
+            {
+                value.immediate = *integer;
+            }
+            else if(const char* character = std::get_if<char>(&lit->value))
+            {
+                value.immediate = *character;
+            }
 
             return value;
         }

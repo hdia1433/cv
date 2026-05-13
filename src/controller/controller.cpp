@@ -40,8 +40,6 @@ void Controller::start()
     iRGenerator.printToFile();
     #endif
 
-    
-
     #ifdef DEBUG
     std::println("\nOptimizing intermediate code.");
     #endif

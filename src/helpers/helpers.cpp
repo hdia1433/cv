@@ -69,6 +69,8 @@ namespace helpers
         {
             case Primitive::intTp:
                 return 4;
+            case Primitive::charTp:
+                return 1;
             default:
                 return 0;
         }

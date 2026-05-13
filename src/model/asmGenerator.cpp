@@ -148,8 +148,14 @@ void AsmGenerator::generateEpilogue(int localSize)
 {
     std::string indent(indentNum, '\t');
 
-    assembly << indent << "\nmov sp, x29\n";
-    assembly << indent << "ldp x29, x30, [sp], #16\n";
+    assembly << std::endl;
+
+    if(localSize > 0)
+    {
+        assembly << indent << "add sp, sp, #" << localSize << std::endl;
+    }
+    assembly << indent << "mov sp, x29\n";
+    assembly << indent << "ldp x29, x30, [sp, #16]\n";
     assembly << indent << "ret\n";
 }
 
@@ -171,12 +177,15 @@ void AsmGenerator::generateGlobalVariable()
         case Primitive::intTp:
             assembly << "4\n\n";
             break;
+        case Primitive::charTp:
+            assembly << "1\n\n";
+            break;
         default:
             break;
     }
 }
 
-void AsmGenerator::generateGlobalVariable(std::variant<int> value)
+void AsmGenerator::generateGlobalVariable(std::variant<int, char> value)
 {
     if(currentSection != SectionType::data)
     {
@@ -196,7 +205,11 @@ void AsmGenerator::generateGlobalVariable(std::variant<int> value)
     {
         case Primitive::intTp:
             assembly << "\t.long ";
-            assembly << std::get<int>(value) << std::endl;
+            assembly << std::get<int>(value) << std::endl << std::endl;
+            break;
+        case Primitive::charTp:
+            assembly << "\t.byte ";
+            assembly << "'" << std::get<char>(value) << "'\n\n";
             break;
         default:
             break;
@@ -254,7 +267,14 @@ void AsmGenerator::generateAbort()
     }
     else if(abort.arg1.kind == OperandKind::immediate)
     {
-        value << "#" << std::get<int>(abort.arg1.immediate);
+        if(const int* integer = std::get_if<int>(&abort.arg1.immediate))
+        {
+            value << "#" << *integer;
+        }
+        else if(const char* character = std::get_if<char>(&abort.arg1.immediate))
+        {
+            value << "#'" << *character << "'";
+        }
     }
     else if(abort.arg1.kind == OperandKind::symbol)
     {
@@ -322,10 +342,14 @@ void AsmGenerator::generateAssign(const Instruction& instr)
             value << "w" << instr.arg1.temporary;
             break;
         case OperandKind::immediate:
-            std::visit([&value](auto& num)
+            if(const int* integer = std::get_if<int>(&instr.arg1.immediate))
             {
-                value << num;
-            }, instr.arg1.immediate);
+                value << "#" << *integer;
+            }
+            else if(const char* character = std::get_if<char>(&instr.arg1.immediate))
+            {
+                value << "#'" << *character << "'";
+            }
             break;
     }
 
@@ -394,9 +418,15 @@ void AsmGenerator::generateOperation(const std::string& op, const Instruction& i
     }  
     else if(instr.arg1.kind == OperandKind::immediate)
     {
-        std::visit([this, &indent, &reg](const auto& value){
-            assembly << indent << "mov " << reg << ", #" << value << std::endl;
-        }, instr.arg1.immediate);
+        assembly << indent << "mov " << reg << ", ";
+        if(const int* integer = std::get_if<int>(&instr.arg1.immediate))
+        {
+            assembly << "#" << *integer << std::endl;
+        }
+        else if(const char* character = std::get_if<char>(&instr.arg1.immediate))
+        {
+            assembly << "#'" << *character << "'\n";
+        }
         arg1 = reg;
     }
     else if(instr.arg1.kind == OperandKind::symbol)
@@ -412,9 +442,14 @@ void AsmGenerator::generateOperation(const std::string& op, const Instruction& i
     }
     else if(instr.arg2.kind == OperandKind::immediate)
     {
-        std::visit([&arg2](const auto& value){
-            arg2 = "#" + std::to_string(value);
-        },instr.arg2.immediate);
+        if(const int* integer = std::get_if<int>(&instr.arg2.immediate))
+        {
+            arg2 = "#" + std::to_string(*integer);
+        }
+        else if(const char* character = std::get_if<char>(&instr.arg2.immediate))
+        {
+            arg2 = "#'" + std::to_string(*character);
+        }
 
         if(op == "mul")
         {

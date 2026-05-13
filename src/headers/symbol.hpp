@@ -35,6 +35,8 @@ struct Symbol
 {
     SymbolType kind;
 
+    Symbol(SymbolType kind);
+
     virtual ~Symbol() = default;
 };
 

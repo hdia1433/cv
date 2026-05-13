@@ -31,7 +31,7 @@ struct Operand
     {
         Symbol* symbol;
         int temporary;
-        std::variant<int> immediate;
+        std::variant<int, char> immediate;
     };
     
     bool operator==(const Operand& other) const;
@@ -59,7 +59,7 @@ struct std::hash<Operand>
                 h2 = std::hash<int>{}(op.temporary);
                 break;
             case OperandKind::immediate:
-                h2 = std::hash<std::variant<int>>{}(op.immediate);
+                h2 = std::hash<std::variant<int, char>>{}(op.immediate);
                 break;
         }
 

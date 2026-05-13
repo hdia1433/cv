@@ -27,8 +27,7 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
             case NodeType::varDecl:
             {
                 nodes::VarDecl* varDecl = ((nodes::VarDecl*)node);
-                varDecl->symbol->global = true;
-                noError &= visit(varDecl);
+                noError &= visit(varDecl, true);
                 break;
             }
             case NodeType::binary:
@@ -211,7 +210,7 @@ bool SemanticAnalyser::visit(nodes::Abort* abort)
         case NodeType::literal:
         {
             nodes::Literal* literal = (nodes::Literal*)abort->expression;
-            if(checkTypes(literal->litType, {Primitive::intTp}) != Primitive::custom)
+            if(checkTypes(literal->litType, {Primitive::intTp}) != Primitive::error)
             {
                 return true;
             }
@@ -227,17 +226,17 @@ bool SemanticAnalyser::visit(nodes::Abort* abort)
 bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
 {
     bool result = true;
+    Primitive type1;
+    Primitive type2;
 
     if(binary->op == "=")
     {
-        Primitive type1;
-
         switch(binary->left->type)
         {
             case NodeType::varDecl:
             {
                 nodes::VarDecl* varDecl = (nodes::VarDecl*)binary->left;
-                if(visit(varDecl, true))
+                if(visit(varDecl, global))
                 {
                     type1 = varDecl->varType;
                 }
@@ -272,9 +271,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 break;
         }
 
-        Primitive type2;
-
-        type2 = Primitive::custom;
+        type2 = Primitive::error;
 
         switch(binary->right->type)
         {
@@ -326,8 +323,6 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
     }
     else if(helpers::equalsOr<std::string>(binary->op, {"+", "-", "*"}))
     {
-        Primitive type1;
-
         switch(binary->left->type)
         {
             case NodeType::binary:
@@ -373,8 +368,6 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
             default:
                 break;
         }
-
-        Primitive type2;
 
         switch(binary->right->type)
         {
@@ -424,6 +417,16 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
 
         binary->overallType = checkTypes(type1, type2);
     }
+
+    if(binary->overallType == Primitive::error)
+    {
+        std::stringstream errorStream;
+
+        errorStream << "An error has occurred at the line " << binary->right->location.row << " and the column " << binary->right->location.col << ".\nThe type \"" << type1 << "\" is not compatible with the type \"" << type2 << "\".";
+        errors.emplace_back(errorStream.str());
+
+        result = false;
+    }
     
     return result;
 }
@@ -436,7 +439,7 @@ Primitive SemanticAnalyser::checkTypes(Primitive type1, Primitive type2)
         return type1;
     }
 
-    return Primitive::custom;
+    return Primitive::error;
 }
 
 Primitive SemanticAnalyser::checkTypes(Primitive type, std::initializer_list<Primitive> others)
@@ -449,6 +452,6 @@ Primitive SemanticAnalyser::checkTypes(Primitive type, std::initializer_list<Pri
         }
     }
 
-    return Primitive::custom;
+    return Primitive::error;
 }
 #pragma endregion
