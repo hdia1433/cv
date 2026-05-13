@@ -99,6 +99,12 @@ void AsmGenerator::generateFunctionDecl(bool init)
             case OpCode::plus:
                 generatePlus();
                 break;
+            case OpCode::minus:
+                generateMinus();
+                break;
+            case OpCode::mult:
+                generateMult();
+                break;
             case OpCode::abort:
                 generateAbort();
                 exited = true;
@@ -222,6 +228,8 @@ void AsmGenerator::generateStaticInit(std::vector<Instruction>&& instructions)
             case OpCode::plus:
                 generatePlus(instr);
                 break;
+            case OpCode::mult:
+                generateMult(instr);
             default:
                 break;
         }
@@ -280,6 +288,16 @@ void AsmGenerator::generateMinus()
 void AsmGenerator::generateMinus(const Instruction& instr)
 {
     generateOperation("sub", instr);
+}
+
+void AsmGenerator::generateMult()
+{
+    generateOperation("mul");
+}
+
+void AsmGenerator::generateMult(const Instruction& instr)
+{
+    generateOperation("mul", instr);
 }
 
 void AsmGenerator::generateAssign()
@@ -397,6 +415,22 @@ void AsmGenerator::generateOperation(const std::string& op, const Instruction& i
         std::visit([&arg2](const auto& value){
             arg2 = "#" + std::to_string(value);
         },instr.arg2.immediate);
+
+        if(op == "mul")
+        {
+            if(arg1 == "w28")
+            {
+                assembly << indent << "mov w26, " << arg2 << std::endl;
+                arg2 = "w26";
+            }
+            else
+            {
+                assembly << indent << "mov w28, " << arg2 << std::endl;
+                arg2 = "w28";
+            }
+        }
+
+        
     }
     else if(instr.arg2.kind == OperandKind::symbol)
     {

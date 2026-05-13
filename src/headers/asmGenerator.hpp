@@ -42,6 +42,8 @@ private:
     void generatePlus(const Instruction& instr);
     void generateMinus();
     void generateMinus(const Instruction& instr);
+    void generateMult();
+    void generateMult(const Instruction& instr);
     void generateAssign();
     void generateAssign(const Instruction& instr);
 

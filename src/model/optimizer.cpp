@@ -40,6 +40,11 @@ bool Optimizer::fold(std::vector<Instruction>& iRCode)
             instr = Instruction{.operation = OpCode::assign, .result = instr.result, .arg1 = instr.arg1 - instr.arg2};
             changed = true;
         }
+        else if(instr.operation == OpCode::mult)
+        {
+            instr = Instruction{.operation = OpCode::assign, .result = instr.result, .arg1 = instr.arg1 * instr.arg2};
+            changed = true;
+        }
     }
 
     return changed;

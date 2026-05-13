@@ -324,7 +324,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
 
         binary->overallType = checkTypes(type1, type2);
     }
-    else if(helpers::equalsOr<std::string>(binary->op, {"+", "-"}))
+    else if(helpers::equalsOr<std::string>(binary->op, {"+", "-", "*"}))
     {
         Primitive type1;
 

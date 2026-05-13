@@ -29,6 +29,11 @@ Operand Operand::operator-(const Operand& other) const
     return operation(other, "-");
 }
 
+Operand Operand::operator*(const Operand& other) const
+{
+    return operation(other, "*");
+}
+
 Operand Operand::operation(const Operand& other, const std::string& op) const
 {
     if(kind != OperandKind::immediate || other.kind != OperandKind::immediate)
@@ -48,6 +53,10 @@ Operand Operand::operation(const Operand& other, const std::string& op) const
         else if(op == "-")
         {
             result.immediate = value - otherValue;
+        }
+        else if(op == "*")
+        {
+            result.immediate = value * otherValue;
         }
     }, immediate, other.immediate);
 
@@ -86,7 +95,15 @@ std::string Instruction::toString()
         {
             std::stringstream line;
 
-            line << opToString(result) << "=" << opToString(arg1) << "-" << opToString(arg2);
+            line << opToString(result) << " = " << opToString(arg1) << " - " << opToString(arg2);
+
+            return line.str();
+        }
+        case OpCode::mult:
+        {
+            std::stringstream line;
+
+            line << opToString(result) << " = " << opToString(arg1) << " * " << opToString(arg2);
 
             return line.str();
         }

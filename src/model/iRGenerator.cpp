@@ -121,6 +121,14 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
 
         instructions.emplace_back(Instruction{.operation = OpCode::minus, .result = result, .arg1 = arg1, .arg2 = arg2});
     }
+    else if(binary->op == "*")
+    {
+        Operand arg1 = generateExpression(binary->left);
+        Operand arg2 = generateExpression(binary->right);
+        result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++};
+
+        instructions.emplace_back(Instruction{.operation = OpCode::mult, .result = result, .arg1 = arg1, .arg2 = arg2});
+    }
     else if(binary->op == "=")
     {
         switch(binary->left->type)

@@ -1,1 +1,5 @@
+t0 = 5 * 6
+x = t0
 func main:
+exit x
+endFunc
