@@ -11,6 +11,8 @@ enum class TokenType
     ltChar,
     lParen,
     rParen,
+    lBracket,
+    rBracket,
     lBrace,
     rBrace,
     opAssign,
@@ -20,17 +22,6 @@ enum class TokenType
     semi,
     identifier
 };
-
-enum class Primitive
-{
-    voidTp,
-    intTp,
-    charTp,
-    pFunc,
-    error
-};
-
-std::ostream& operator<<(std::ostream& ostream, Primitive primitive);
 
 struct Coordinate
 {

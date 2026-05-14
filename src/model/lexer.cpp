@@ -86,6 +86,16 @@ void Lexer::analyze(const std::string& code)
             consume();
             addToken(")", TokenType::rParen, startLoc);
         }
+        else if(ch == '[')
+        {
+            consume();
+            addToken("[", TokenType::lBracket, startLoc);
+        }
+        else if(ch == ']')
+        {
+            consume();
+            addToken("]", TokenType::rBracket, startLoc);
+        }
         else if(ch == '{')
         {
             consume();
