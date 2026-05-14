@@ -2,13 +2,14 @@
 #include "pch.hpp"
 #include "node.hpp"
 #include "symbol.hpp"
+#include "type.hpp"
 #include <unordered_map>
 
 struct VarInfo
 {
     std::string_view name;
     uint id;
-    Primitive type;
+    Type type;
     Coordinate location;
 };
 
@@ -40,6 +41,6 @@ private:
     bool visit(nodes::VarRef* varRef);
 
     //helper
-    Primitive checkTypes(Primitive type1, Primitive type2);
-    Primitive checkTypes(Primitive type1, std::initializer_list<Primitive> others);
+    Type checkTypes(Type type1, Type type2);
+    Type checkTypes(Type type1, std::initializer_list<Type> others);
 };

@@ -95,7 +95,7 @@ bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
 
     scopeStack.emplace_back();
 
-    if(funcDecl->name == "main" && funcDecl->returnType == Primitive::voidTp)
+    if(funcDecl->name == "main" && funcDecl->returnType.kind == TypeKind::tpVoid)
     {
         if(main)
         {
@@ -210,7 +210,7 @@ bool SemanticAnalyser::visit(nodes::Abort* abort)
         case NodeType::literal:
         {
             nodes::Literal* literal = (nodes::Literal*)abort->expression;
-            if(checkTypes(literal->litType, {Primitive::intTp}) != Primitive::error)
+            if(checkTypes(literal->litType, Type{.kind = TypeKind::tpInt}).kind != TypeKind::tpError)
             {
                 return true;
             }
@@ -226,8 +226,8 @@ bool SemanticAnalyser::visit(nodes::Abort* abort)
 bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
 {
     bool result = true;
-    Primitive type1;
-    Primitive type2;
+    Type type1;
+    Type type2;
 
     if(binary->op == "=")
     {
@@ -271,7 +271,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 break;
         }
 
-        type2 = Primitive::error;
+        type2.kind = TypeKind::tpError;
 
         switch(binary->right->type)
         {
@@ -418,7 +418,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
         binary->overallType = checkTypes(type1, type2);
     }
 
-    if(binary->overallType == Primitive::error)
+    if(binary->overallType.kind == TypeKind::tpError)
     {
         std::stringstream errorStream;
 
@@ -432,19 +432,19 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
 }
 
 #pragma region helpers
-Primitive SemanticAnalyser::checkTypes(Primitive type1, Primitive type2)
+Type SemanticAnalyser::checkTypes(Type type1, Type type2)
 {
     if(type1 == type2)
     {
         return type1;
     }
 
-    return Primitive::error;
+    return Type{.kind = TypeKind::tpError};
 }
 
-Primitive SemanticAnalyser::checkTypes(Primitive type, std::initializer_list<Primitive> others)
+Type SemanticAnalyser::checkTypes(Type type, std::initializer_list<Type> others)
 {
-    for(Primitive other: others)
+    for(Type other: others)
     {
         if(type == other)
         {
@@ -452,6 +452,6 @@ Primitive SemanticAnalyser::checkTypes(Primitive type, std::initializer_list<Pri
         }
     }
 
-    return Primitive::error;
+    return Type{.kind = TypeKind::tpError};
 }
 #pragma endregion

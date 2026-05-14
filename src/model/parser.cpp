@@ -135,7 +135,7 @@ nodes::Node* Parser::parseFuncDecl(TokenType type, std::string_view name, const 
     }
 
     consume();
-    function = new nodes::FuncDecl(parseScope(), name, tokenTypeToPrimitive(type), location);
+    function = new nodes::FuncDecl(parseScope(), name, tokenTypeToVarType(type), location);
 
     return function;
 }
@@ -152,7 +152,7 @@ nodes::Node* Parser::parseVarDecl(TokenType type, std::string_view name, const C
         return errors.back();
     }
 
-    return new nodes::VarDecl(name, tokenTypeToPrimitive(type), location);
+    return new nodes::VarDecl(name, tokenTypeToVarType(type), location);
 }
 
 nodes::Node* Parser::parseVarRef(std::string_view name, const Coordinate& location)
@@ -581,20 +581,20 @@ bool Parser::isType(TokenType type)
     }
 }
 
-Primitive Parser::tokenTypeToPrimitive(TokenType type)
+Type Parser::tokenTypeToVarType(TokenType type)
 {
     switch(type)
     {
         case TokenType::ltInt:
         case TokenType::kwInt:
-            return Primitive::intTp;
+            return Type{.kind = TypeKind::tpInt};
         case TokenType::kwVoid:
-            return Primitive::voidTp;
+            return Type{.kind = TypeKind::tpVoid};
         case TokenType::kwChar:
         case TokenType::ltChar:
-            return Primitive::charTp;
+            return Type{.kind = TypeKind::tpChar};
         default:
-            return Primitive::error;
+            return Type{.kind = TypeKind::tpError};
     }
 }
 #pragma endregion

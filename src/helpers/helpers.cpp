@@ -1,5 +1,6 @@
 #include "helpers.hpp"
 
+
 namespace helpers
 {
     bool isInt(std::string str)
@@ -63,13 +64,13 @@ namespace helpers
         }
     }
 
-    int typeToSize(Primitive type)
+    int typeToSize(Type type)
     {
-        switch(type)
+        switch(type.kind)
         {
-            case Primitive::intTp:
+            case TypeKind::tpInt:
                 return 4;
-            case Primitive::charTp:
+            case TypeKind::tpChar:
                 return 1;
             default:
                 return 0;

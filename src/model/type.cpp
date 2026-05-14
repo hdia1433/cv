@@ -1,4 +1,20 @@
 #include "type.hpp"
+#include "helpers.hpp"
+
+bool Type::operator==(const Type& other) const
+{
+    if(kind != other.kind)
+    {
+        return false;
+    }
+
+    if(helpers::equalsOr(kind, {TypeKind::tpArray}))
+    {
+        return *baseType == *other.baseType && size == other.size;
+    }
+    
+    return false;
+}
 
 std::ostream& operator<<(std::ostream& ostream, Type type)
 {

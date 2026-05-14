@@ -2,6 +2,7 @@
 #include "pch.hpp"
 #include "token.hpp"
 #include "symbol.hpp"
+#include "type.hpp"
 #include <variant>
 
 enum class NodeType
@@ -39,11 +40,11 @@ namespace nodes
     struct FuncDecl: public Node
     {
         std::string_view name;
-        Primitive returnType;
+        Type returnType;
         std::vector<Node*> body;
         Function* symbol;
 
-        FuncDecl(const std::vector<Node*>& body, std::string_view name, Primitive returnType, const Coordinate& location);
+        FuncDecl(const std::vector<Node*>& body, std::string_view name, Type returnType, const Coordinate& location);
         ~FuncDecl() override;
 
         std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
@@ -52,10 +53,10 @@ namespace nodes
     struct VarDecl: public Node
     {
         std::string_view name;
-        Primitive varType;
+        Type varType;
         Variable* symbol;
 
-        VarDecl(std::string_view name, Primitive varType, const Coordinate& location);
+        VarDecl(std::string_view name, Type varType, const Coordinate& location);
 
         std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };
@@ -82,7 +83,7 @@ namespace nodes
 
     struct Literal: public Node
     {
-        Primitive litType;
+        Type litType;
         std::variant<int, char> value;
 
         template <typename T>
@@ -93,11 +94,11 @@ namespace nodes
 
             if(std::is_same_v<T, int>)
             {
-                litType = Primitive::intTp;
+                litType = Type{.kind = TypeKind::tpInt};
             }
             else if(std::is_same_v<T, char>)
             {
-                litType = Primitive::charTp;
+                litType = Type{.kind = TypeKind::tpChar};
             }
         }
 
@@ -105,7 +106,7 @@ namespace nodes
     };
 
     struct Binary: public Node{
-        Primitive overallType;
+        Type overallType;
         std::string op;
         Node* left;
         Node* right;

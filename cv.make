@@ -87,7 +87,7 @@ GENERATED += $(OBJDIR)/parser.o
 GENERATED += $(OBJDIR)/pch.o
 GENERATED += $(OBJDIR)/semanticAnalyser.o
 GENERATED += $(OBJDIR)/symbol.o
-GENERATED += $(OBJDIR)/token.o
+GENERATED += $(OBJDIR)/type.o
 OBJECTS += $(OBJDIR)/asmGenerator.o
 OBJECTS += $(OBJDIR)/controller.o
 OBJECTS += $(OBJDIR)/helpers.o
@@ -101,7 +101,7 @@ OBJECTS += $(OBJDIR)/parser.o
 OBJECTS += $(OBJDIR)/pch.o
 OBJECTS += $(OBJDIR)/semanticAnalyser.o
 OBJECTS += $(OBJDIR)/symbol.o
-OBJECTS += $(OBJDIR)/token.o
+OBJECTS += $(OBJDIR)/type.o
 
 # Rules
 # #############################################
@@ -204,7 +204,7 @@ $(OBJDIR)/semanticAnalyser.o: src/model/semanticAnalyser.cpp
 $(OBJDIR)/symbol.o: src/model/symbol.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/token.o: src/model/token.cpp
+$(OBJDIR)/type.o: src/model/type.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 

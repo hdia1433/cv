@@ -2,6 +2,26 @@
 #include "pch.hpp"
 #include "token.hpp"
 
+#ifndef TYPE
+#define TYPE
+enum class TypeKind
+{
+    tpInt,
+    tpChar,
+    tpVoid,
+    tpArray,
+    tpError
+};
+
+struct Type
+{
+    TypeKind kind;
+    Type* baseType;
+    int size;
+
+    bool operator==(const Type& other) const;
+};
+#endif
 
 namespace helpers
 {
@@ -26,5 +46,5 @@ namespace helpers
 
     bool isNumber(std::string str);
 
-    int typeToSize(Primitive type);
+    int typeToSize(Type type);
 }

@@ -3,14 +3,16 @@
 
 namespace nodes
 {
-    std::string typeToString(Primitive type)
+    std::string typeToString(Type type)
     {
-        switch(type)
+        switch(type.kind)
         {
-            case Primitive::voidTp:
+            case TypeKind::tpVoid:
                 return "void";
-            case Primitive::intTp:
+            case TypeKind::tpInt:
                 return "int";
+            case TypeKind::tpChar:
+                return "char";
             default:
                 return "error";
         }
@@ -59,7 +61,7 @@ namespace nodes
     }
 
     //Function Declaration
-    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, Primitive returnType, const Coordinate& location):body(body), name(name), returnType(returnType)
+    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, Type returnType, const Coordinate& location):body(body), name(name), returnType(returnType)
     {
         type = NodeType::funcDecl;
         this->location = location;
@@ -126,7 +128,7 @@ namespace nodes
     }
 
     //Variable declaration
-    VarDecl::VarDecl(std::string_view name, Primitive varType, const Coordinate& location):name(name), varType(varType)
+    VarDecl::VarDecl(std::string_view name, Type varType, const Coordinate& location):name(name), varType(varType)
     {
         type = NodeType::varDecl;
         this->location = location;

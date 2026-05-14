@@ -43,5 +43,5 @@ private:
     Token* peek(uint ahead = 0);
     Token consume();
     bool isType(TokenType type);
-    Primitive tokenTypeToPrimitive(TokenType type);
+    Type tokenTypeToVarType(TokenType type);
 };

@@ -151,6 +151,11 @@ void Lexer::analyze(const std::string& code)
 
             addToken(buffer, TokenType::ltChar, startLoc);
         }
+        else if(ch == ',')
+        {
+            consume();
+            addToken(",", TokenType::comma, startLoc);
+        }
         else if(ch == ';')
         {
             consume();
@@ -207,6 +212,12 @@ void Lexer::printToFile()
             case TokenType::rParen:
                 file << "RIGHT_PARENTHESIS";
                 break;
+            case TokenType::lBracket:
+                file << "LEFT_SQUARE_BRACKET";
+                break;
+            case TokenType::rBracket:
+                file << "RIGHT_SQUARE_BRACKET";
+                break;
             case TokenType::lBrace:
                 file << "LEFT_CURLY_BRACKET";
                 break;
@@ -225,6 +236,9 @@ void Lexer::printToFile()
             case TokenType::opMult:
                 file << "MULTIPLICATION_OPERATOR";
                 break;
+            case TokenType::comma:
+                file << "COMMA";
+                break;
             case TokenType::semi:
                 file << "SEMICOLON";
                 break;
@@ -235,7 +249,6 @@ void Lexer::printToFile()
         file << "}, \n";
     }
     file << "}";
-    std::println("Token list printed to tokens.txt");
 }
 
 char* Lexer::peek()

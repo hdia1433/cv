@@ -1,5 +1,6 @@
 #include "asmGenerator.hpp"
 #include "helpers.hpp"
+#include "type.hpp"
 #include <unistd.h>
 
 AsmGenerator::AsmGenerator():indentNum(0), index(0), regNum(0), currentSection(SectionType::text)
@@ -172,12 +173,12 @@ void AsmGenerator::generateGlobalVariable()
     Variable* var = (Variable*)instr.result.symbol;
 
     assembly << ".lcomm _" << var->name << ", ";
-    switch(var->type)
+    switch(var->type.kind)
     {
-        case Primitive::intTp:
+        case TypeKind::tpInt:
             assembly << "4\n\n";
             break;
-        case Primitive::charTp:
+        case TypeKind::tpChar:
             assembly << "1\n\n";
             break;
         default:
@@ -201,13 +202,13 @@ void AsmGenerator::generateGlobalVariable(std::variant<int, char> value)
         assembly << "_" << var->name << ":\n";
     }
 
-    switch(var->type)
+    switch(var->type.kind)
     {
-        case Primitive::intTp:
+        case TypeKind::tpInt:
             assembly << "\t.long ";
             assembly << std::get<int>(value) << std::endl << std::endl;
             break;
-        case Primitive::charTp:
+        case TypeKind::tpChar:
             assembly << "\t.byte ";
             assembly << "'" << std::get<char>(value) << "'\n\n";
             break;
