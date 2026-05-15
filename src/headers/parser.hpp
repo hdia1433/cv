@@ -20,8 +20,8 @@ public:
     void printToFile();
 private:
     //structures
-    nodes::Node* parseFuncDecl(TokenType type, std::string_view name, const Coordinate& location);
-    nodes::Node* parseVarDecl(TokenType type, std::string_view name, const Coordinate& location);
+    nodes::Node* parseFuncDecl(Type type, std::string_view name, const Coordinate& location);
+    nodes::Node* parseVarDecl(Type type, std::string_view name, const Coordinate& location);
     nodes::Node* parseVarRef(std::string_view name, const Coordinate& location);
 
     //bodies
@@ -37,7 +37,7 @@ private:
     nodes::Node* parseAssign();
     nodes::Node* parseTerm();
     nodes::Node* parseFactor();
-    nodes::Node* parsePrimary();
+    nodes::Node* parsePrimary(bool inInit = false);
 
     //helper
     Token* peek(uint ahead = 0);

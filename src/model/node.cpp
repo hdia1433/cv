@@ -17,9 +17,14 @@ namespace nodes
                 return "error";
         }
     }
+
+    Node::Node(NodeType type, Coordinate location):type(type), location(location)
+    {
+
+    }
     
     //Error
-    Error::Error(const std::string& error):error(std::move(error))
+    Error::Error(const std::string& error):Node(NodeType::empty, Coordinate{}), error(std::move(error))
     {
 
     }
@@ -61,10 +66,9 @@ namespace nodes
     }
 
     //Function Declaration
-    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, Type returnType, const Coordinate& location):body(body), name(name), returnType(returnType)
+    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, Type returnType, const Coordinate& location):Node(NodeType::funcDecl, location), body(body), name(name), returnType(returnType)
     {
-        type = NodeType::funcDecl;
-        this->location = location;
+        
     }
 
     FuncDecl::~FuncDecl()
@@ -128,10 +132,9 @@ namespace nodes
     }
 
     //Variable declaration
-    VarDecl::VarDecl(std::string_view name, Type varType, const Coordinate& location):name(name), varType(varType)
+    VarDecl::VarDecl(std::string_view name, Type varType, const Coordinate& location):Node(NodeType::varDecl, location), name(name), varType(varType)
     {
-        type = NodeType::varDecl;
-        this->location = location;
+        
     }
 
     std::string VarDecl::printToFile(int indentNum, int space, bool last)
@@ -173,10 +176,9 @@ namespace nodes
     }
 
     //Variable reference
-    VarRef::VarRef(std::string_view name, const Coordinate& location):name(name)
+    VarRef::VarRef(std::string_view name, const Coordinate& location):Node(NodeType::varRef, location), name(name)
     {
-        type = NodeType::varRef;
-        this->location = location;
+        
     }
 
     std::string VarRef::printToFile(int indentNum, int space, bool last)
@@ -218,10 +220,9 @@ namespace nodes
     }
 
     //Abort keyword
-    Abort::Abort(Node* expression, const Coordinate& location):expression(expression)
+    Abort::Abort(Node* expression, const Coordinate& location):Node(NodeType::kwAbort, location), expression(expression)
     {
-        type = NodeType::kwAbort;
-        this->location = location;
+        
     }
 
     Abort::~Abort()
@@ -271,7 +272,7 @@ namespace nodes
         return result.str();
     }
 
-    //Integer literal
+    //literal
     std::string Literal::printToFile(int indentNum, int space, bool last)
     {
         std::string indent = "";
@@ -305,11 +306,13 @@ namespace nodes
         }
         std::stringstream result;
 
-        result << indent << "Integer Literal(";
-        
-        if(auto integer = std::get_if<int>(&value))
+        if(int* integer = std::get_if<int>(&value))
         {
-            result << *integer;
+            result << indent << "Integer Literal(" << integer;
+        }
+        else if(char* character = std::get_if<char>(&value))
+        {
+            result << indent << "Character Literal(" << character;
         }
         
         result << ")\n";
@@ -317,11 +320,97 @@ namespace nodes
         return result.str();
     }
 
-    //binary expression
-    Binary::Binary(std::string op, Node* left, Node* right, const Coordinate& location): op(op), left(left), right(right)
+    InitList::InitList(const std::vector<Node*>& values, const Coordinate& location):Node(NodeType::initList, location), values(values)
     {
-        type = NodeType::binary;
-        this->location = location;
+
+    }
+
+    InitList::~InitList()
+    {
+        for(Node* node: values)
+        {
+            delete node;
+        }
+    }
+
+    std::string InitList::printToFile(int indentNum, int space, bool last)
+    {
+        std::string indent = "";
+        indent.reserve(indentNum * 2);
+        if(indentNum > 0)
+        {
+            for(uint i = 0; i < indentNum - 1; i++)
+            {
+                if((space >> i) & 1)
+                {
+                    indent += "    ";
+                }
+                else
+                {
+                    indent += "│   ";
+                }
+
+            }
+            if(last)
+            {
+                indent += "└── ";
+            }
+            else
+            {
+                indent += "├── ";
+            }
+        }
+        if(last && indentNum > 0)
+        {
+            space |= (1 << (indentNum - 1));
+        }
+        std::stringstream result;
+
+        result << indent << "Initialiser list:\n";
+
+        for(uint i = 0; i < values.size(); i++)
+        {
+            indent = "";
+            indent.reserve((indentNum + 1) * 2);
+            if(indentNum + 1 > 0)
+            {
+                for(uint j = 0; j < indentNum; j++)
+                {
+                    if((space >> j) & 1)
+                    {
+                        indent += "    ";
+                    }
+                    else
+                    {
+                        indent += "│   ";
+                    }
+
+                }
+                if(last)
+                {
+                    indent += "└── ";
+                }
+                else
+                {
+                    indent += "├── ";
+                }
+            }
+
+            if(i == values.size() - 1)
+            {
+                space |= (1 << (indentNum - 1));
+            }
+
+            result << indent << values[i];
+        }
+
+        return result.str();
+    }
+
+    //binary expression
+    Binary::Binary(std::string op, Node* left, Node* right, const Coordinate& location):Node(NodeType::binary, location), op(op), left(left), right(right)
+    {
+        
     }
 
     Binary::~Binary()
@@ -392,9 +481,9 @@ namespace nodes
     }
 
     //Empty
-    Empty::Empty()
+    Empty::Empty():Node(NodeType::empty, Coordinate{})
     {
-        type = NodeType::empty;
+        
     }
 
     std::string Empty::printToFile(int indentNum, int space, bool last)

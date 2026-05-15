@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& ostream, Type type)
         case TypeKind::tpChar:
             return ostream << "char";
         case TypeKind::tpArray:
-            return ostream << "array<" << type.baseType << ", " << type.size << ">";
+            return ostream << "array<" << *type.baseType << ", " << type.size << ">";
         case TypeKind::tpError:
             return ostream << "error";
     }

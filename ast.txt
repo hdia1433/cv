@@ -2,4 +2,5 @@ Function Declaration(main, void):
 └── Binary Operation:
     ├── Variable Declaration(x, error):
     ├── =
-    └── Integer Literal()
+    └── Initialiser list:
+        └── 0x101076220        └── 0x101076260        └── 0x1010762a0

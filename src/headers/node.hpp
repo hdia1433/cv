@@ -4,6 +4,7 @@
 #include "symbol.hpp"
 #include "type.hpp"
 #include <variant>
+#include <sstream>
 
 enum class NodeType
 {
@@ -12,6 +13,7 @@ enum class NodeType
     varRef,
     kwAbort,
     literal,
+    initList,
     binary,
     empty
 };
@@ -23,6 +25,7 @@ namespace nodes
         NodeType type;
         Coordinate location;
 
+        Node(NodeType type, Coordinate location);
         virtual ~Node() = default;
 
         virtual std::string printToFile(int indentNum = 0, int space = 0, bool last = false) = 0;
@@ -84,10 +87,10 @@ namespace nodes
     struct Literal: public Node
     {
         Type litType;
-        std::variant<int, char> value;
+        Primitive value;
 
-        template <typename T>
-        Literal(T value, const Coordinate& location):value(value)
+        template<PrimitiveName T>
+        Literal(T value, const Coordinate& location):Node(NodeType::literal, location), value(value)
         {
             type = NodeType::literal;
             this->location = location;
@@ -101,6 +104,18 @@ namespace nodes
                 litType = Type{.kind = TypeKind::tpChar};
             }
         }
+
+        std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
+    };
+
+    struct InitList: public Node
+    {
+        Type baseType;
+        std::vector<Node*> values; 
+
+        InitList(const std::vector<Node*>& values, const Coordinate& location);
+
+        ~InitList() override;
 
         std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
     };

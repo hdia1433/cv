@@ -80,7 +80,7 @@ void Parser::printToFile()
 }
 
 #pragma region structures
-nodes::Node* Parser::parseFuncDecl(TokenType type, std::string_view name, const Coordinate& location)
+nodes::Node* Parser::parseFuncDecl(Type type, std::string_view name, const Coordinate& location)
 {
     nodes::FuncDecl* function;
 
@@ -135,12 +135,12 @@ nodes::Node* Parser::parseFuncDecl(TokenType type, std::string_view name, const 
     }
 
     consume();
-    function = new nodes::FuncDecl(parseScope(), name, tokenTypeToVarType(type), location);
+    function = new nodes::FuncDecl(parseScope(), name, type, location);
 
     return function;
 }
 
-nodes::Node* Parser::parseVarDecl(TokenType type, std::string_view name, const Coordinate& location)
+nodes::Node* Parser::parseVarDecl(Type type, std::string_view name, const Coordinate& location)
 {
     Token* pTok = peek();
     if(!pTok)
@@ -152,7 +152,7 @@ nodes::Node* Parser::parseVarDecl(TokenType type, std::string_view name, const C
         return errors.back();
     }
 
-    return new nodes::VarDecl(name, tokenTypeToVarType(type), location);
+    return new nodes::VarDecl(name, type, location);
 }
 
 nodes::Node* Parser::parseVarRef(std::string_view name, const Coordinate& location)
@@ -168,6 +168,8 @@ std::vector<nodes::Node*> Parser::parseGlobal()
 
     while(auto pTok = peek())
     {
+        int peekLevel = 0;
+
         auto tok = *pTok;
         if(tok.type == TokenType::semi)
         {
@@ -188,9 +190,9 @@ std::vector<nodes::Node*> Parser::parseGlobal()
             continue;
         }
 
-        TokenType type = tok.type;
+        Type type = tokenTypeToVarType(tok.type);
 
-        pTok = peek(1);
+        pTok = peek(++peekLevel);
         if(!pTok)
         {
             std::stringstream errorStream;
@@ -204,6 +206,39 @@ std::vector<nodes::Node*> Parser::parseGlobal()
         }
 
         tok = *pTok;
+        while(tok.type == TokenType::lBracket)
+        {
+            consume();
+            while(tok.type != TokenType::rBracket)
+            {
+                if(!(pTok = peek(++peekLevel)))
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the end of the file.\nA size for the array or ']' was expected to end the array type declaration. Arrays are declared like <type>[<size of array>], or if initialised with an initialiser list you can forgo the size declaration.\n";
+
+                    nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                    errors.emplace_back(error);
+                    nodes.emplace_back(errors.back());
+                    consume();
+                    continue;
+                }
+
+                tok = *pTok;
+                if(tok.type != TokenType::ltInt || tok.type != TokenType::rBracket)
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA number or a ']' was expected but '" << tok.buffer << "' was found instead. Arrays are declared like <type>[<size of array>], or if initialised with an initialiser list you can forgo the size declaration.\n";
+
+                    nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                    errors.emplace_back(error);
+                    nodes.emplace_back(errors.back());
+                    consume();
+                    continue;
+                }
+            }
+            consume();
+        }
+
         if(tok.type != TokenType::identifier)
         {
             std::stringstream errorStream;
@@ -218,7 +253,7 @@ std::vector<nodes::Node*> Parser::parseGlobal()
 
         std::string_view name = tok.buffer;
 
-        pTok = peek(2);
+        pTok = peek(++peekLevel);
         if(!pTok)
         {
             std::stringstream errorStream;
@@ -241,7 +276,7 @@ std::vector<nodes::Node*> Parser::parseGlobal()
         }
         else
         {
-            if(type == TokenType::kwVoid)
+            if(type.kind == TypeKind::tpVoid)
             {
                 std::stringstream errorStream;
                 errorStream << "An error has occurred at the line " << location.row << " and the column " << location.col << ".\nA variable cannot be declared as type \"void\".\n";
@@ -288,7 +323,6 @@ std::vector<nodes::Node*> Parser::parseScope()
     while(auto pTok = peek())
     {
         auto tok = *pTok;
-
         if(tok.type == TokenType::rBrace)
         {
             consume();
@@ -433,7 +467,7 @@ nodes::Node* Parser::parseAssign()
         }
 
         Coordinate location = tok.location;
-        TokenType type = consume().type;
+        Type type = tokenTypeToVarType(consume().type);
 
         pTok = peek();
         if(!pTok)
@@ -446,6 +480,70 @@ nodes::Node* Parser::parseAssign()
         }
 
         tok = *pTok;
+        while(tok.type == TokenType::lBracket)
+        {
+            consume();
+            type = Type{.kind = TypeKind::tpArray, .baseType = new Type{.kind = type.kind}};
+            if(!(pTok = peek()))
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the end of the file.\nA size for the array or ']' was expected to end the array type declaration. Arrays are declared like <type>[<size of array>], or if initialised with an initialiser list you can forgo the size declaration.\n";
+
+                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                errors.emplace_back(error);
+                consume();
+                return errors.back();
+            }
+
+            tok = *pTok;
+            if(tok.type == TokenType::ltInt)
+            {
+                type.size = std::stoi(std::string(consume().buffer));
+
+                if(!(pTok = peek()))
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the end of the file.\nA ']' was expected but the end of the file was found instead. Arrays are declared like <type>[<size of array>], or if initialised with an initialiser list you can forgo the size declaration.\n";
+
+                    nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                    errors.emplace_back(error);
+                    consume();
+                    return errors.back();
+                }
+
+                tok = *pTok;
+            }
+            
+            if(tok.type == TokenType::comma)
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA ']' was expected, but '" << tok.buffer << "'. In Cv, multidimensional arrays are declared like: <type>[<size1>][<size2>].\n";
+
+                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                errors.emplace_back(error);
+                consume();
+                return errors.back();
+            }
+            else if(tok.type != TokenType::rBracket)
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA ']' was expected, but '" << tok.buffer << "'. Arrays are declared like <type>[<size of array>], or if initialised with an initialiser list you can forgo the size declaration.";
+            }
+            consume();
+
+            if(!(pTok = peek()))
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the end of the file.\nA ']' was expected but the end of the file was found instead. Arrays are declared like <type>[<size of array>], or if initialised with an initialiser list you can forgo the size declaration.\n";
+
+                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                errors.emplace_back(error);
+                consume();
+                return errors.back();
+            }
+            tok = *pTok;
+        }
+
         if(tok.type != TokenType::identifier)
         {
             std::stringstream errorStream;
@@ -493,7 +591,7 @@ nodes::Node* Parser::parseTerm()
     nodes::Node* left = parseFactor();
 
     auto pTok = peek();
-    if(pTok && pTok->type == TokenType::opPlus || pTok->type == TokenType::opMinus)
+    if(pTok && (pTok->type == TokenType::opPlus || pTok->type == TokenType::opMinus))
     {
         std::string op = std::string(consume().buffer);
 
@@ -520,13 +618,27 @@ nodes::Node* Parser::parseFactor()
     return left;
 }
 
-nodes::Node* Parser::parsePrimary()
+nodes::Node* Parser::parsePrimary(bool inInit)
 {
     auto pTok = peek();
     if(!pTok)
     {
         std::stringstream errorStream;
-        errorStream << "An error has occurred at the end of the file.\nA number or variable name was expected, but the end of the file was found instead.";
+        errorStream << "An error has occurred at the end of the file.\nA literal";
+        if(inInit)
+        {
+            errorStream << ",";
+        }
+        else
+        {
+            errorStream << " or ";
+        }
+        errorStream << "variable name";
+        if(inInit)
+        {
+            errorStream << ", or initialiser list";
+        }
+        errorStream << " was expected, but the end of the file was found instead.";
         nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
         errors.emplace_back(error);
         return errors.back();
@@ -544,6 +656,36 @@ nodes::Node* Parser::parsePrimary()
         case TokenType::ltChar:
             tok = consume();
             return new nodes::Literal(tok.buffer[0], tok.location);
+        case TokenType::lBrace:
+        {
+            Coordinate location = consume().location;
+
+            std::vector<nodes::Node*> values;
+
+            while((pTok = peek()))
+            {
+                tok = *pTok;
+                if(tok.type == TokenType::rBrace)
+                {
+                    consume();
+                    return new nodes::InitList(values, location);
+                }
+                else if(tok.type == TokenType::comma)
+                {
+                    consume();
+
+                }
+
+                values.emplace_back(parsePrimary(true));
+            }
+
+            std::stringstream errorStream;
+            errorStream << "An error has occurred at the end of the file.\nA '}' was expected to close the initialiser list, but the end of the file was found instead.\n";
+
+            nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+            errors.emplace_back(error);
+            return errors.back();
+        }
         default:
             break;
     }

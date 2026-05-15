@@ -1,6 +1,14 @@
 #pragma once
 #include "pch.hpp"
 #include "helpers.hpp"
+#include <concepts>
+#include <type_traits>
+#include <variant>
+
+template <typename T>
+concept PrimitiveName = std::is_same_v<T, int> || std::is_same_v<T, char>;
+
+using Primitive = std::variant<int, char>;
 
 #ifndef TYPE
 #define TYPE
