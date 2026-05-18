@@ -310,6 +310,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
 
     if(binary->op == "=")
     {
+        bool varNeedsSize = false;
         switch(binary->left->type)
         {
             case NodeType::varDecl:
@@ -318,6 +319,11 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 if(visit(varDecl, global))
                 {
                     type1 = varDecl->varType;
+                    
+                    if(TypeKind::tpArray == type1.kind && 0 == type1.size)
+                    {
+                        varNeedsSize = true;
+                    }
                 }
                 else
                 {
@@ -400,6 +406,12 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 if(visit(initList))
                 {
                     type2 = Type{.kind = TypeKind::tpArray, .baseType = &initList->baseType, .size = (int)initList->values.size()};
+
+                    if(varNeedsSize)
+                    {
+                        ((nodes::VarDecl*)binary->left)->varType.size = type2.size;
+                        type1.size = type2.size;
+                    }
                 }
                 else
                 {

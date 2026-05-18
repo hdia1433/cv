@@ -1,4 +1,6 @@
 void main()
 {
-    int[3] x = {1, '2', 3};
+    int[] x = {1, 2, 3};
+
+    abort x[1];
 }

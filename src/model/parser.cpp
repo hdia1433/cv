@@ -637,8 +637,44 @@ nodes::Node* Parser::parsePrimary()
             tok = consume();
             return new nodes::Literal(std::stoi(std::string(tok.buffer)), tok.location);
         case TokenType::identifier:
+        {
             tok = consume();
-            return new nodes::VarRef(tok.buffer, tok.location);
+            std::string_view name = tok.buffer;
+            pTok = peek();
+            if(pTok && pTok->type == TokenType::lBracket)
+            {
+                consume();
+                if(!(pTok = peek()))
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the end of the file.\nA value was expected for the index, but the end of the file was found instead. In order to access the index of an array you use <variable name>[<index>];";
+                    nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                    errors.emplace_back(error);
+                    return errors.back();
+                }
+                nodes::Node* index = parseExpression();
+                if(!(pTok = peek()))
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the end of the file.\nA ']' was expected to close the array subscript, but the end of the file was found instead. In order to access the index of an array you use <variable name>[<index>];";
+                    nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                    errors.emplace_back(error);
+                    return errors.back();
+                }
+
+                tok = *pTok;
+                if(tok.type != TokenType::rBracket)
+                {
+                    std::stringstream errorStream;
+                    errorStream << "and error has occurred at the line " << tok.location.row << " and the column " << tok.location.col << ".\nA ']' was expected to close the array subscript, but '" << tok.buffer << "' was found instead. In order to access the index of an array you use <variable name>[<index>];";
+                    nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                    errors.emplace_back(error);
+                    return errors.back();
+                }
+                consume();
+            }
+            return new nodes::VarRef(name, tok.location);
+        }
         case TokenType::ltChar:
             tok = consume();
             return new nodes::Literal(tok.buffer[0], tok.location);

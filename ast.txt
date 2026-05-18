@@ -1,8 +1,10 @@
 Function Declaration(main, void):
-└── Binary Operation:
-    ├── Variable Declaration(x, error):
-    ├── =
-    └── Initialiser list:
-        ├── Integer Literal(1)
-        ├── Character Literal(2)
-        └── Integer Literal(3)
+├── Binary Operation:
+│   ├── Variable Declaration(x, error):
+│   ├── =
+│   └── Initialiser list:
+│       ├── Integer Literal(1)
+│       ├── Integer Literal(2)
+│       └── Integer Literal(3)
+└── Abort:
+    └── Variable Reference(x)
