@@ -4,7 +4,19 @@
 std::ostream& operator<<(std::ostream& ostream, Primitive& primitive)
 {
     std::visit([&ostream](const auto& value){
+        using T = std::decay_t<decltype(value)>;
+
+        bool isChar = std::is_same_v<T, char>;
+
+        if(isChar)
+        {
+            ostream << "'";
+        }
         ostream << value;
+        if(isChar)
+        {
+            ostream << "'";
+        }
     },primitive);
 
     return ostream;
