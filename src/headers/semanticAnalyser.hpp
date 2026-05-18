@@ -39,6 +39,7 @@ private:
     //statement tree
     bool visit(nodes::Binary* binary, bool global = false);
     bool visit(nodes::VarRef* varRef);
+    bool visit(nodes::InitList* initList);
 
     //helper
     Type checkTypes(Type type1, Type type2);

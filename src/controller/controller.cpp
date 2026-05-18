@@ -40,13 +40,13 @@ void Controller::start()
     iRGenerator.printToFile();
     #endif
 
-    #ifdef DEBUG
-    std::println("\nOptimizing intermediate code.");
-    #endif
-    optimizer.optimize(iRGenerator.getInstructions());
-    #ifdef DEBUG
-    iRGenerator.printToFile("irgo.cvirg");
-    #endif
+    // #ifdef DEBUG
+    // std::println("\nOptimizing intermediate code.");
+    // #endif
+    // optimizer.optimize(iRGenerator.getInstructions());
+    // #ifdef DEBUG
+    // iRGenerator.printToFile("irgo.cvirg");
+    // #endif
 
     auto ir = iRGenerator.getInstructions();
 

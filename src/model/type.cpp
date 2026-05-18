@@ -1,6 +1,15 @@
 #include "type.hpp"
 #include "helpers.hpp"
 
+std::ostream& operator<<(std::ostream& ostream, Primitive& primitive)
+{
+    std::visit([&ostream](const auto& value){
+        ostream << value;
+    },primitive);
+
+    return ostream;
+}
+
 bool Type::operator==(const Type& other) const
 {
     if(kind != other.kind)
@@ -13,10 +22,10 @@ bool Type::operator==(const Type& other) const
         return *baseType == *other.baseType && size == other.size;
     }
     
-    return false;
+    return true;
 }
 
-std::ostream& operator<<(std::ostream& ostream, Type type)
+std::ostream& operator<<(std::ostream& ostream, Type& type)
 {
     switch(type.kind)
     {

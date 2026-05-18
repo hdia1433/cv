@@ -199,6 +199,85 @@ bool SemanticAnalyser::visit(nodes::VarRef* varRef)
     return false;
 }
 
+bool SemanticAnalyser::visit(nodes::InitList* initList)
+{
+
+
+    for(uint i = 0; i < initList->values.size(); i++)
+    {
+        nodes::Node* value = initList->values[i];
+
+        switch(value->type)
+        {
+            case NodeType::literal:
+            {
+                nodes::Literal* literal = (nodes::Literal*)value;
+
+                if(i == 0)
+                {
+                    initList->baseType = literal->litType;
+                }
+                else if(initList->baseType != literal->litType)
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the line " << literal->location.row << " and the column " << literal->location.col << ".\nThe value " << literal->value << " is of the type " << literal->litType << " while the init list is of type " << initList->baseType << " (The type of the first value in the list.). There is no implicit conversion between those types.";
+                    errors.emplace_back(errorStream.str());
+                    return false;
+                }
+                break;
+            }
+            case NodeType::varRef:
+            {
+                nodes::VarRef* varRef = (nodes::VarRef*)value;
+                auto symbol = currentSymbolTable->find(std::string(varRef->name));
+                if(symbol == currentSymbolTable->end())
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the line " << varRef->location.row << " and the column " << varRef->location.col << ".\nThe variable " << varRef->name << " is undefined. Variables must be declared before they are used.";
+                    errors.emplace_back(errorStream.str());
+                    return false;
+                }
+                else if(0 == i)
+                {
+                    initList->baseType = symbol->second->type;
+                }
+                else if(symbol->second->type != initList->baseType)
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the line " << varRef->location.row << " and the column " << varRef->location.col << ".\nThe variable \"" << varRef->name << "\" is of the type " << symbol->second->type << " while the init list is of type " << initList->baseType << " (The type of the first value in the list.). There is no implicit conversion between those types.";
+                    errors.emplace_back(errorStream.str());
+                    return false;
+                }
+                break;
+            }
+            case NodeType::binary:
+            {
+                nodes::Binary* binary = (nodes::Binary*)value;
+
+                if(0 == 1)
+                {
+                    initList->baseType = binary->overallType;
+                }
+                else if(initList->baseType != binary->overallType)
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the line " << binary->location.row << " and the column " << binary->location.col << ".\nThe operation results in the type " << binary->overallType << " while the init list is of type " << initList->baseType << " (The type of the first value in the list.). There is no implicit conversion between those types.";
+                    errors.emplace_back(errorStream.str());
+                    return false;
+                }
+                break;
+            }
+            default:
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the line " << value->location.row << " and the column " << value->location.col << ".\nA viable value to be put in an initialiser list was expected.\n";
+                errors.emplace_back(errorStream.str());
+                return false;
+        }
+    }
+    
+    return true;
+}
+
 bool SemanticAnalyser::visit(nodes::Abort* abort)
 {
     switch(abort->expression->type)
@@ -313,6 +392,19 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
             {
                 auto literal = (nodes::Literal*)binary->right;
                 type2 = literal->litType;
+                break;
+            }
+            case NodeType::initList:
+            {
+                auto initList = (nodes::InitList*)binary->right;
+                if(visit(initList))
+                {
+                    type2 = Type{.kind = TypeKind::tpArray, .baseType = &initList->baseType, .size = (int)initList->values.size()};
+                }
+                else
+                {
+                    type2 = Type{.kind = TypeKind::tpError};
+                }
                 break;
             }
             default:

@@ -618,27 +618,13 @@ nodes::Node* Parser::parseFactor()
     return left;
 }
 
-nodes::Node* Parser::parsePrimary(bool inInit)
+nodes::Node* Parser::parsePrimary()
 {
     auto pTok = peek();
     if(!pTok)
     {
         std::stringstream errorStream;
-        errorStream << "An error has occurred at the end of the file.\nA literal";
-        if(inInit)
-        {
-            errorStream << ",";
-        }
-        else
-        {
-            errorStream << " or ";
-        }
-        errorStream << "variable name";
-        if(inInit)
-        {
-            errorStream << ", or initialiser list";
-        }
-        errorStream << " was expected, but the end of the file was found instead.";
+        errorStream << "An error has occurred at the end of the file.\nA literal, variable name, or initialiser list was expected, but the end of the file was found instead.";
         nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
         errors.emplace_back(error);
         return errors.back();
@@ -676,7 +662,7 @@ nodes::Node* Parser::parsePrimary(bool inInit)
 
                 }
 
-                values.emplace_back(parsePrimary(true));
+                values.emplace_back(parseExpression());
             }
 
             std::stringstream errorStream;

@@ -308,11 +308,11 @@ namespace nodes
 
         if(int* integer = std::get_if<int>(&value))
         {
-            result << indent << "Integer Literal(" << integer;
+            result << indent << "Integer Literal(" << *integer;
         }
         else if(char* character = std::get_if<char>(&value))
         {
-            result << indent << "Character Literal(" << character;
+            result << indent << "Character Literal(" << *character;
         }
         
         result << ")\n";
@@ -370,6 +370,8 @@ namespace nodes
 
         for(uint i = 0; i < values.size(); i++)
         {
+            last = (i == values.size() - 1);
+
             indent = "";
             indent.reserve((indentNum + 1) * 2);
             if(indentNum + 1 > 0)
@@ -401,7 +403,8 @@ namespace nodes
                 space |= (1 << (indentNum - 1));
             }
 
-            result << indent << values[i];
+            result << indent;
+            result << values[i]->printToFile();
         }
 
         return result.str();

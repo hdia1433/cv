@@ -37,7 +37,7 @@ private:
     nodes::Node* parseAssign();
     nodes::Node* parseTerm();
     nodes::Node* parseFactor();
-    nodes::Node* parsePrimary(bool inInit = false);
+    nodes::Node* parsePrimary();
 
     //helper
     Token* peek(uint ahead = 0);

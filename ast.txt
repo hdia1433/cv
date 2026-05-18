@@ -3,4 +3,6 @@ Function Declaration(main, void):
     ├── Variable Declaration(x, error):
     ├── =
     └── Initialiser list:
-        └── 0x101076220        └── 0x101076260        └── 0x1010762a0
+        ├── Integer Literal(1)
+        ├── Character Literal(2)
+        └── Integer Literal(3)

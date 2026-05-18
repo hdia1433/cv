@@ -10,6 +10,8 @@ concept PrimitiveName = std::is_same_v<T, int> || std::is_same_v<T, char>;
 
 using Primitive = std::variant<int, char>;
 
+std::ostream& operator<<(std::ostream& ostream, Primitive& primitive);
+
 #ifndef TYPE
 #define TYPE
 enum class TypeKind
@@ -31,7 +33,7 @@ struct Type
 };
 #endif
 
-std::ostream& operator<<(std::ostream& ostream, Type type);
+std::ostream& operator<<(std::ostream& ostream, Type& type);
 
 template<>
 struct std::hash<Type>
