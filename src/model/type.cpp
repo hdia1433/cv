@@ -37,6 +37,22 @@ bool Type::operator==(const Type& other) const
     return true;
 }
 
+Type Type::clone() const
+{
+    Type t{.kind = kind};
+    if(helpers::equalsOr(kind, {TypeKind::tpArray, TypeKind::tpPoint}))
+    {
+        t.baseType = std::make_unique<Type>(baseType->clone());
+    }
+
+    if(TypeKind::tpArray == kind)
+    {
+        t.size = size;
+    }
+
+    return t;
+}
+
 std::ostream& operator<<(std::ostream& ostream, Type& type)
 {
     switch(type.kind)
@@ -48,7 +64,9 @@ std::ostream& operator<<(std::ostream& ostream, Type& type)
         case TypeKind::tpChar:
             return ostream << "char";
         case TypeKind::tpArray:
-            return ostream << "array<" << *type.baseType << ", " << type.size << ">";
+            return ostream << *type.baseType << "[" << type.size << "]";
+        case TypeKind::tpPoint:
+            return ostream << *type.baseType << "*";
         case TypeKind::tpError:
             return ostream << "error";
     }

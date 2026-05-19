@@ -110,7 +110,7 @@ bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
         }
     }
 
-    if(getGlobalScope().functions.find(FunctionSignature{.name = std::string(funcDecl->name), .returnType = funcDecl->returnType}) != getGlobalScope().functions.end())
+    if(getGlobalScope().functions.find(FunctionSignature{.name = std::string(funcDecl->name), .returnType = std::move(funcDecl->returnType)}) != getGlobalScope().functions.end())
     {
         std::stringstream errorStream;
         errorStream << "An error has occurred at the line " << funcDecl->location.row << " and the column " << funcDecl->location.col << ".\nA function has already been declared with the same signature as the function: " << funcDecl->name << ". Only 1 function can be declared with 1 signature per scope.";
@@ -118,9 +118,9 @@ bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
         result = result && false;
     }
 
-    Function* symbol = new Function(std::string(funcDecl->name), funcDecl->returnType, funcDecl->location);
+    Function* symbol = new Function(std::string(funcDecl->name), std::move(funcDecl->returnType), funcDecl->location);
     funcDecl->symbol = symbol;
-    getGlobalScope().functions.emplace(FunctionSignature{.name = std::string(funcDecl->name), .returnType = funcDecl->returnType}, symbol);
+    getGlobalScope().functions.emplace(FunctionSignature{.name = std::string(funcDecl->name), .returnType = std::move(funcDecl->returnType)}, symbol);
 
     auto oldSymbolTable = currentSymbolTable;
     currentSymbolTable = &symbol->locals;
@@ -171,7 +171,7 @@ bool SemanticAnalyser::visit(nodes::VarDecl* varDecl, bool global)
         }
     }
 
-    Variable* variable = new Variable(std::string(varDecl->name), varDecl->varType, varDecl->location);
+    Variable* variable = new Variable(std::string(varDecl->name), std::move(varDecl->varType), varDecl->location);
     variable->global = global;
 
     scopeStack.back().emplace(varDecl->name, variable);
@@ -215,7 +215,7 @@ bool SemanticAnalyser::visit(nodes::InitList* initList)
 
                 if(i == 0)
                 {
-                    initList->baseType = literal->litType;
+                    initList->baseType = std::move(literal->litType);
                 }
                 else if(initList->baseType != literal->litType)
                 {
@@ -239,7 +239,7 @@ bool SemanticAnalyser::visit(nodes::InitList* initList)
                 }
                 else if(0 == i)
                 {
-                    initList->baseType = symbol->second->type;
+                    initList->baseType = std::move(symbol->second->type);
                 }
                 else if(symbol->second->type != initList->baseType)
                 {
@@ -256,7 +256,7 @@ bool SemanticAnalyser::visit(nodes::InitList* initList)
 
                 if(0 == 1)
                 {
-                    initList->baseType = binary->overallType;
+                    initList->baseType = std::move(binary->overallType);
                 }
                 else if(initList->baseType != binary->overallType)
                 {
@@ -289,7 +289,7 @@ bool SemanticAnalyser::visit(nodes::Abort* abort)
         case NodeType::literal:
         {
             nodes::Literal* literal = (nodes::Literal*)abort->expression;
-            if(checkTypes(literal->litType, Type{.kind = TypeKind::tpInt}).kind != TypeKind::tpError)
+            if(checkTypes(std::move(literal->litType), Type{.kind = TypeKind::tpInt}).kind != TypeKind::tpError)
             {
                 return true;
             }
@@ -318,7 +318,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 nodes::VarDecl* varDecl = (nodes::VarDecl*)binary->left;
                 if(visit(varDecl, global))
                 {
-                    type1 = varDecl->varType;
+                    type1 = std::move(varDecl->varType);
                     
                     if(TypeKind::tpArray == type1.kind && 0 == type1.size)
                     {
@@ -345,7 +345,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                         auto varInfo = scope.find(std::string(varRef->name));
                         if(varInfo != scope.end())
                         {
-                            type1 = varInfo->second->type;
+                            type1 = std::move(varInfo->second->type);
                             break;
                         }
                     }
@@ -365,7 +365,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 auto innerBinary = (nodes::Binary*)binary->right;
                 if(visit(innerBinary))
                 {
-                    type2 = innerBinary->overallType;
+                    type2 = std::move(innerBinary->overallType);
                 }
                 else
                 {
@@ -383,7 +383,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                         auto variable = scope.find(std::string(varRef->name));
                         if(variable != scope.end())
                         {
-                            type2 = variable->second->type;
+                            type2 = std::move(variable->second->type);
                             break;
                         }
                     }
@@ -397,7 +397,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
             case NodeType::literal:
             {
                 auto literal = (nodes::Literal*)binary->right;
-                type2 = literal->litType;
+                type2 = std::move(literal->litType);
                 break;
             }
             case NodeType::initList:
@@ -405,7 +405,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 auto initList = (nodes::InitList*)binary->right;
                 if(visit(initList))
                 {
-                    type2 = Type{.kind = TypeKind::tpArray, .baseType = &initList->baseType, .size = (int)initList->values.size()};
+                    type2 = Type{.kind = TypeKind::tpArray, .baseType = std::make_unique<Type>(initList->baseType.clone()), .size = (int)initList->values.size()};
 
                     if(varNeedsSize)
                     {
@@ -423,7 +423,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 break;
         }
 
-        binary->overallType = checkTypes(type1, type2);
+        binary->overallType = checkTypes(std::move(type1), std::move(type2));
     }
     else if(helpers::equalsOr<std::string>(binary->op, {"+", "-", "*"}))
     {
@@ -434,7 +434,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 auto innerBinary = (nodes::Binary*)binary->left;
                 if(visit(innerBinary))
                 {
-                    type1 = innerBinary->overallType;
+                    type1 = std::move(innerBinary->overallType);
                 }
                 else
                 {
@@ -452,7 +452,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                         auto variable = scope.find(std::string(varRef->name));
                         if(variable != scope.end())
                         {
-                            type1 = variable->second->type;
+                            type1 = std::move(variable->second->type);
                             break;
                         }
                     }
@@ -466,7 +466,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
             case NodeType::literal:
             {
                 auto literal = (nodes::Literal*)binary->left;
-                type1 = literal->litType;
+                type1 = std::move(literal->litType);
                 break;
             }
             default:
@@ -480,7 +480,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 auto innerBinary = (nodes::Binary*)binary->right;
                 if(visit(innerBinary))
                 {
-                    type2 = innerBinary->overallType;
+                    type2 = std::move(innerBinary->overallType);
                 }
                 else
                 {
@@ -498,7 +498,7 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                         auto variable = scope.find(std::string(varRef->name));
                         if(variable != scope.end())
                         {
-                            type2 = variable->second->type;
+                            type2 = std::move(variable->second->type);
                             break;
                         }
                     }
@@ -512,14 +512,14 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
             case NodeType::literal:
             {
                 auto literal = (nodes::Literal*)binary->right;
-                type2 = literal->litType;
+                type2 = std::move(literal->litType);
                 break;
             }
             default:
                 break;
         }
 
-        binary->overallType = checkTypes(type1, type2);
+        binary->overallType = checkTypes(std::move(type1), std::move(type2));
     }
 
     if(binary->overallType.kind == TypeKind::tpError)
@@ -548,7 +548,7 @@ Type SemanticAnalyser::checkTypes(Type type1, Type type2)
 
 Type SemanticAnalyser::checkTypes(Type type, std::initializer_list<Type> others)
 {
-    for(Type other: others)
+    for(const Type& other: others)
     {
         if(type == other)
         {

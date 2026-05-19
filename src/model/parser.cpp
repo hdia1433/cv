@@ -135,7 +135,7 @@ nodes::Node* Parser::parseFuncDecl(Type type, std::string_view name, const Coord
     }
 
     consume();
-    function = new nodes::FuncDecl(parseScope(), name, type, location);
+    function = new nodes::FuncDecl(parseScope(), name, std::move(type), location);
 
     return function;
 }
@@ -152,7 +152,7 @@ nodes::Node* Parser::parseVarDecl(Type type, std::string_view name, const Coordi
         return errors.back();
     }
 
-    return new nodes::VarDecl(name, type, location);
+    return new nodes::VarDecl(name, std::move(type), location);
 }
 
 nodes::Node* Parser::parseVarRef(std::string_view name, const Coordinate& location)
@@ -206,9 +206,14 @@ std::vector<nodes::Node*> Parser::parseGlobal()
         }
 
         tok = *pTok;
-        while(tok.type == TokenType::lBracket)
+        while(tok.type == TokenType::lBracket || tok.type == TokenType::opStar)
         {
             consume();
+            if(TokenType::opStar == tok.type)
+            {
+                peekLevel++;
+                continue;
+            }
             while(tok.type != TokenType::rBracket)
             {
                 if(!(pTok = peek(++peekLevel)))
@@ -272,7 +277,7 @@ std::vector<nodes::Node*> Parser::parseGlobal()
             consume();
             consume();
             consume();
-            nodes.emplace_back(parseFuncDecl(type, name, location));
+            nodes.emplace_back(parseFuncDecl(std::move(type), name, location));
         }
         else
         {
@@ -480,10 +485,26 @@ nodes::Node* Parser::parseAssign()
         }
 
         tok = *pTok;
-        while(tok.type == TokenType::lBracket)
+        while(tok.type == TokenType::lBracket || tok.type == TokenType::opStar)
         {
             consume();
-            type = Type{.kind = TypeKind::tpArray, .baseType = new Type{.kind = type.kind}};
+            if(TokenType::opStar == tok.type)
+            {
+                type = Type{.kind = TypeKind::tpPoint, .baseType = std::make_unique<Type>(Type{.kind = type.kind})};
+                if(!(pTok = peek()))
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the end of the file.\nA variable name was expected, but the end o the file was found instead. A variable is needed after a type in order to declare a variable.\n";
+
+                    nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                    errors.emplace_back(error);
+                    consume();
+                    return errors.back();
+                }
+                tok = *pTok;
+                continue;
+            }
+            type = Type{.kind = TypeKind::tpArray, .baseType = std::make_unique<Type>(Type{.kind = type.kind})};
             if(!(pTok = peek()))
             {
                 std::stringstream errorStream;
@@ -554,7 +575,7 @@ nodes::Node* Parser::parseAssign()
         }
 
         std::string_view name = consume().buffer;
-        left = parseVarDecl(type, name, location);
+        left = parseVarDecl(std::move(type), name, location);
         pTok = peek();
     }
     else if(tok.type == TokenType::identifier)

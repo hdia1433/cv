@@ -1,28 +1,10 @@
 #pragma once
 #include "pch.hpp"
 #include "token.hpp"
+#include "typeKind.hpp"
+#include "type.hpp"
 
-#ifndef TYPE
-#define TYPE
-enum class TypeKind
-{
-    tpInt,
-    tpChar,
-    tpVoid,
-    tpArray,
-    tpPoint,
-    tpError
-};
-
-struct Type
-{
-    TypeKind kind;
-    Type* baseType;
-    int size;
-
-    bool operator==(const Type& other) const;
-};
-#endif
+struct Type;
 
 namespace helpers
 {
@@ -47,5 +29,5 @@ namespace helpers
 
     bool isNumber(std::string str);
 
-    int typeToSize(Type type);
+    int typeToSize(const Type& type);
 }

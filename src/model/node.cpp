@@ -3,7 +3,7 @@
 
 namespace nodes
 {
-    std::string typeToString(Type type)
+    std::string typeToString(const Type& type)
     {
         switch(type.kind)
         {
@@ -66,7 +66,7 @@ namespace nodes
     }
 
     //Function Declaration
-    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, Type returnType, const Coordinate& location):Node(NodeType::funcDecl, location), body(body), name(name), returnType(returnType)
+    FuncDecl::FuncDecl(const std::vector<Node*>& body, std::string_view name, Type returnType, const Coordinate& location):Node(NodeType::funcDecl, location), body(body), name(name), returnType(std::move(returnType))
     {
         
     }
@@ -132,7 +132,7 @@ namespace nodes
     }
 
     //Variable declaration
-    VarDecl::VarDecl(std::string_view name, Type varType, const Coordinate& location):Node(NodeType::varDecl, location), name(name), varType(varType)
+    VarDecl::VarDecl(std::string_view name, Type varType, const Coordinate& location):Node(NodeType::varDecl, location), name(name), varType(std::move(varType))
     {
         
     }

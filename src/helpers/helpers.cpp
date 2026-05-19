@@ -64,7 +64,7 @@ namespace helpers
         }
     }
 
-    int typeToSize(Type type)
+    int typeToSize(const Type& type)
     {
         switch(type.kind)
         {
