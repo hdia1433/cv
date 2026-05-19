@@ -124,7 +124,12 @@ void Lexer::analyze(const std::string& code)
         else if(ch == '*')
         {
             consume();
-            addToken("*", TokenType::opMult, startLoc);
+            addToken("*", TokenType::opStar, startLoc);
+        }
+        else if(ch == '&')
+        {
+            consume();
+            addToken("&", TokenType::opRef, startLoc);
         }
         else if(ch == '\'')
         {
@@ -233,8 +238,11 @@ void Lexer::printToFile()
             case TokenType::opMinus:
                 file << "MINUS_OPERATOR";
                 break;
-            case TokenType::opMult:
-                file << "MULTIPLICATION_OPERATOR";
+            case TokenType::opStar:
+                file << "STAR_OPERATOR";
+                break;
+            case TokenType::opRef:
+                file << "MEMORY_REFERENCE_OPERATOR";
                 break;
             case TokenType::comma:
                 file << "COMMA";

@@ -607,7 +607,7 @@ nodes::Node* Parser::parseFactor()
     nodes::Node* left = parsePrimary();
 
     auto pTok = peek();
-    if(pTok && helpers::equalsOr(pTok->type, {TokenType::opMult}))
+    if(pTok && helpers::equalsOr(pTok->type, {TokenType::opStar}))
     {
         std::string op = std::string(consume().buffer);
 

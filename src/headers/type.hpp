@@ -20,6 +20,7 @@ enum class TypeKind
     tpChar,
     tpVoid,
     tpArray,
+    tpPoint,
     tpError
 };
 
