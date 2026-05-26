@@ -1,10 +1,8 @@
 #pragma once
-#include "pch.hpp"
-#include "token.hpp"
-#include <unordered_map>
-#include "token.hpp"
 #include "functional"
+#include "token.hpp"
 #include "type.hpp"
+#include <unordered_map>
 
 struct FunctionSignature
 {
@@ -14,8 +12,7 @@ struct FunctionSignature
     bool operator==(const FunctionSignature& other) const;
 };
 
-template<>
-struct std::hash<FunctionSignature>
+template <> struct std::hash<FunctionSignature>
 {
     std::size_t operator()(const FunctionSignature& sig) const
     {

@@ -1,41 +1,40 @@
-workspace "cv"
-    architecture "ARM64"
-    configurations { "Debug", "Release" }
-    startproject "cv"
+workspace("cv")
+architecture("ARM64")
+configurations({ "Debug", "Release" })
+startproject("cv")
 
-project "cv"
-    kind "ConsoleApp"
-    language "C++"
-    cppdialect "C++23"
-    targetdir "bin/%{cfg.buildcfg}"
-    objdir "bin-int/%{cfg.buildcfg}"
+project("cv")
+kind("ConsoleApp")
+language("C++")
+cppdialect("C++23")
+targetdir("bin/%{cfg.buildcfg}")
+objdir("bin-int/%{cfg.buildcfg}")
 
-    buildoptions { "-std=c++23" }
+buildoptions({ "-std=c++23" })
+postbuildcommands({ "ninja -t compdb > compile_commands.json" })
 
-    -- Source files
-    files {
-        "src/**.cpp",
-        "src/headers/**.hpp"
-    }
-    includedirs {
-        "src/headers"
-    }
-    pchheader "src/headers/pch.hpp"
-    pchsource "src/controller/pch.cpp"
-    excludes { "src/headers/*.gch" }
-    -- Platform-specific settings
-    filter "system:macosx"
-        libdirs { }
-        links {
+-- Source files
+files({
+	"src/**.cpp",
+	"src/headers/**.hpp",
+})
+includedirs({
+	"src/headers",
+})
+pchheader("src/headers/pch.hpp")
+pchsource("src/controller/pch.cpp")
+excludes({ "src/headers/*.gch" })
+-- Platform-specific settings
+filter("system:macosx")
+libdirs({})
+links({})
 
-        }
+filter("configurations:Debug")
+defines({ "DEBUG" })
+symbols("On")
 
-    filter "configurations:Debug"
-        defines { "DEBUG" }
-        symbols "On"
+filter("configurations:Release")
+defines({ "NDEBUG" })
+optimize("On")
 
-    filter "configurations:Release"
-        defines { "NDEBUG" }
-        optimize "On"
-
-    filter {}
+filter({})

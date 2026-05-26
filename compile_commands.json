@@ -1,0 +1,224 @@
+[
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/controller/controller.cpp -o bin-int/Debug/controller.o",
+    "file": "src/controller/controller.cpp",
+    "output": "bin-int/Debug/controller.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/controller/main.cpp -o bin-int/Debug/main.o",
+    "file": "src/controller/main.cpp",
+    "output": "bin-int/Debug/main.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/controller/pch.cpp -o bin-int/Debug/pch.o",
+    "file": "src/controller/pch.cpp",
+    "output": "bin-int/Debug/pch.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/helpers/helpers.cpp -o bin-int/Debug/helpers.o",
+    "file": "src/helpers/helpers.cpp",
+    "output": "bin-int/Debug/helpers.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/model/asmGenerator.cpp -o bin-int/Debug/asmGenerator.o",
+    "file": "src/model/asmGenerator.cpp",
+    "output": "bin-int/Debug/asmGenerator.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/model/iRGenerator.cpp -o bin-int/Debug/iRGenerator.o",
+    "file": "src/model/iRGenerator.cpp",
+    "output": "bin-int/Debug/iRGenerator.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/model/instruction.cpp -o bin-int/Debug/instruction.o",
+    "file": "src/model/instruction.cpp",
+    "output": "bin-int/Debug/instruction.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/model/lexer.cpp -o bin-int/Debug/lexer.o",
+    "file": "src/model/lexer.cpp",
+    "output": "bin-int/Debug/lexer.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/model/node.cpp -o bin-int/Debug/node.o",
+    "file": "src/model/node.cpp",
+    "output": "bin-int/Debug/node.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/model/optimizer.cpp -o bin-int/Debug/optimizer.o",
+    "file": "src/model/optimizer.cpp",
+    "output": "bin-int/Debug/optimizer.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/model/parser.cpp -o bin-int/Debug/parser.o",
+    "file": "src/model/parser.cpp",
+    "output": "bin-int/Debug/parser.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/model/semanticAnalyser.cpp -o bin-int/Debug/semanticAnalyser.o",
+    "file": "src/model/semanticAnalyser.cpp",
+    "output": "bin-int/Debug/semanticAnalyser.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/model/symbol.cpp -o bin-int/Debug/symbol.o",
+    "file": "src/model/symbol.cpp",
+    "output": "bin-int/Debug/symbol.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -g -std=c++23 -D\"DEBUG\" -Isrc/headers -std=c++23 -c src/model/type.cpp -o bin-int/Debug/type.o",
+    "file": "src/model/type.cpp",
+    "output": "bin-int/Debug/type.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -o bin/Debug/cv bin-int/Debug/controller.o bin-int/Debug/main.o bin-int/Debug/pch.o bin-int/Debug/helpers.o bin-int/Debug/asmGenerator.o bin-int/Debug/iRGenerator.o bin-int/Debug/instruction.o bin-int/Debug/lexer.o bin-int/Debug/node.o bin-int/Debug/optimizer.o bin-int/Debug/parser.o bin-int/Debug/semanticAnalyser.o bin-int/Debug/symbol.o bin-int/Debug/type.o  -arch arm64",
+    "file": "bin-int/Debug/controller.o",
+    "output": "bin/Debug/cv"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "sh -c 'ninja -t compdb > compile_commands.json && touch \"bin-int/Debug/cv.postbuild\"'",
+    "file": "bin/Debug/cv",
+    "output": "bin-int/Debug/cv.postbuild"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/controller/controller.cpp -o bin-int/Release/controller.o",
+    "file": "src/controller/controller.cpp",
+    "output": "bin-int/Release/controller.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/controller/main.cpp -o bin-int/Release/main.o",
+    "file": "src/controller/main.cpp",
+    "output": "bin-int/Release/main.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/controller/pch.cpp -o bin-int/Release/pch.o",
+    "file": "src/controller/pch.cpp",
+    "output": "bin-int/Release/pch.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/helpers/helpers.cpp -o bin-int/Release/helpers.o",
+    "file": "src/helpers/helpers.cpp",
+    "output": "bin-int/Release/helpers.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/model/asmGenerator.cpp -o bin-int/Release/asmGenerator.o",
+    "file": "src/model/asmGenerator.cpp",
+    "output": "bin-int/Release/asmGenerator.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/model/iRGenerator.cpp -o bin-int/Release/iRGenerator.o",
+    "file": "src/model/iRGenerator.cpp",
+    "output": "bin-int/Release/iRGenerator.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/model/instruction.cpp -o bin-int/Release/instruction.o",
+    "file": "src/model/instruction.cpp",
+    "output": "bin-int/Release/instruction.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/model/lexer.cpp -o bin-int/Release/lexer.o",
+    "file": "src/model/lexer.cpp",
+    "output": "bin-int/Release/lexer.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/model/node.cpp -o bin-int/Release/node.o",
+    "file": "src/model/node.cpp",
+    "output": "bin-int/Release/node.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/model/optimizer.cpp -o bin-int/Release/optimizer.o",
+    "file": "src/model/optimizer.cpp",
+    "output": "bin-int/Release/optimizer.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/model/parser.cpp -o bin-int/Release/parser.o",
+    "file": "src/model/parser.cpp",
+    "output": "bin-int/Release/parser.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/model/semanticAnalyser.cpp -o bin-int/Release/semanticAnalyser.o",
+    "file": "src/model/semanticAnalyser.cpp",
+    "output": "bin-int/Release/semanticAnalyser.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/model/symbol.cpp -o bin-int/Release/symbol.o",
+    "file": "src/model/symbol.cpp",
+    "output": "bin-int/Release/symbol.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -arch arm64 -O2 -std=c++23 -D\"NDEBUG\" -Isrc/headers -std=c++23 -c src/model/type.cpp -o bin-int/Release/type.o",
+    "file": "src/model/type.cpp",
+    "output": "bin-int/Release/type.o"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "clang++ -o bin/Release/cv bin-int/Release/controller.o bin-int/Release/main.o bin-int/Release/pch.o bin-int/Release/helpers.o bin-int/Release/asmGenerator.o bin-int/Release/iRGenerator.o bin-int/Release/instruction.o bin-int/Release/lexer.o bin-int/Release/node.o bin-int/Release/optimizer.o bin-int/Release/parser.o bin-int/Release/semanticAnalyser.o bin-int/Release/symbol.o bin-int/Release/type.o  -arch arm64",
+    "file": "bin-int/Release/controller.o",
+    "output": "bin/Release/cv"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "sh -c 'ninja -t compdb > compile_commands.json && touch \"bin-int/Release/cv.postbuild\"'",
+    "file": "bin/Release/cv",
+    "output": "bin-int/Release/cv.postbuild"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "",
+    "file": "bin-int/Debug/cv.postbuild",
+    "output": "cv_Debug"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "",
+    "file": "bin-int/Release/cv.postbuild",
+    "output": "cv_Release"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "",
+    "file": "bin/Debug/cv.postbuild",
+    "output": "cv"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "",
+    "file": "cv_Debug",
+    "output": "Debug"
+  },
+  {
+    "directory": "/Users/heberdiamond/cppProjects/cv",
+    "command": "",
+    "file": "cv_Release",
+    "output": "Release"
+  }
+]

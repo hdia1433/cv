@@ -1,5 +1,4 @@
 #pragma once
-#include "pch.hpp"
 #include "typeKind.hpp"
 #include <concepts>
 #include <type_traits>
@@ -25,13 +24,12 @@ struct Type
 
 std::ostream& operator<<(std::ostream& ostream, Type& type);
 
-template<>
-struct std::hash<Type>
+template <> struct std::hash<Type>
 {
     std::size_t operator()(const Type& sig)
     {
         std::size_t h1 = std::hash<TypeKind>{}(sig.kind);
-        if(TypeKind::tpArray == sig.kind)
+        if (TypeKind::tpArray == sig.kind)
         {
             std::size_t h2 = std::hash<Type>{}(*sig.baseType);
             std::size_t h3 = std::hash<int>{}(sig.size);

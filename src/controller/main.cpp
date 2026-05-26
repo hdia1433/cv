@@ -1,11 +1,10 @@
-#include "pch.hpp"
 #include "controller.hpp"
 #include <fstream>
 #include <sstream>
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-    if(argc < 2)
+    if (argc < 2)
     {
         throw std::runtime_error("An error has occurred. A file was expected to be passed. cv <file>");
     }
@@ -14,7 +13,7 @@ int main(int argc, char* argv[])
 
     std::fstream file(fileName);
 
-    if(!file.is_open())
+    if (!file.is_open())
     {
         std::stringstream error;
         error << "An error has occurred. The file provided, '" << fileName << "', couldn't be opened.";
