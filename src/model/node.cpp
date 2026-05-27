@@ -116,7 +116,7 @@ std::string FuncDecl::printToFile(int indentNum, int space, bool last)
     }
     std::stringstream result;
 
-    result << indent << "Function Declaration(" << name << ", " << typeToString(returnType) << "):\n";
+    result << indent << "Function Declaration(" << name << ", " << returnType << "):\n";
     for (uint i = 0; i < body.size(); i++)
     {
         if (i == body.size() - 1)
@@ -170,7 +170,7 @@ std::string VarDecl::printToFile(int indentNum, int space, bool last)
     }
     std::stringstream result;
 
-    result << indent << "Variable Declaration(" << name << ", " << typeToString(varType) << "):\n";
+    result << indent << "Variable Declaration(" << name << ", " << varType << "):\n";
 
     return result.str();
 }

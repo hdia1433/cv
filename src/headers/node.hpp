@@ -97,11 +97,11 @@ struct Literal: public Node
 
         if (std::is_same_v<T, int>)
         {
-            litType = Type{.kind = TypeKind::tpInt};
+            litType = Type(TypeKind::tpInt);
         }
         else if (std::is_same_v<T, char>)
         {
-            litType = Type{.kind = TypeKind::tpChar};
+            litType = Type(TypeKind::tpChar);
         }
     }
 
@@ -135,7 +135,7 @@ struct Binary: public Node
 
 struct Unary: public Node
 {
-    Type type;
+    Type unaryType;
     std::string op;
     std::unique_ptr<Node> expression;
 

@@ -4,7 +4,7 @@ Function Declaration(main, void):
 │   ├── =
 │   └── Integer Literal(5)
 ├── Binary Operation:
-│   ├── Variable Declaration(y, error):
+│   ├── Variable Declaration(y, int*):
 │   ├── =
 │   └── Unary Operation:
 │       ├── &

@@ -55,34 +55,37 @@ objdir_cv_Debug = bin-int/Debug
 targetdir_cv_Debug = bin/Debug
 target_cv_Debug = cv
 
-build bin-int/Debug/controller.o: cxx_clang src/controller/controller.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/main.o: cxx_clang src/controller/main.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/pch.o: cxx_clang src/controller/pch.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/helpers.o: cxx_clang src/helpers/helpers.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/asmGenerator.o: cxx_clang src/model/asmGenerator.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/iRGenerator.o: cxx_clang src/model/iRGenerator.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/instruction.o: cxx_clang src/model/instruction.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/lexer.o: cxx_clang src/model/lexer.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/node.o: cxx_clang src/model/node.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/optimizer.o: cxx_clang src/model/optimizer.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/parser.o: cxx_clang src/model/parser.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/semanticAnalyser.o: cxx_clang src/model/semanticAnalyser.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/symbol.o: cxx_clang src/model/symbol.cpp
-  cxxflags = $cxxflags_cv_Debug
-build bin-int/Debug/type.o: cxx_clang src/model/type.cpp
-  cxxflags = $cxxflags_cv_Debug
+build bin-int/Debug/pch.hpp.gch | bin-int/Debug/pch.hpp.gch.d: pch_clang src/headers/pch.hpp
+  cflags = $cxxflags_cv_Debug
+  depfile = bin-int/Debug/pch.hpp.gch.d
+build bin-int/Debug/controller.o: cxx_clang src/controller/controller.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/main.o: cxx_clang src/controller/main.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/pch.o: cxx_clang src/controller/pch.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/helpers.o: cxx_clang src/helpers/helpers.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/asmGenerator.o: cxx_clang src/model/asmGenerator.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/iRGenerator.o: cxx_clang src/model/iRGenerator.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/instruction.o: cxx_clang src/model/instruction.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/lexer.o: cxx_clang src/model/lexer.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/node.o: cxx_clang src/model/node.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/optimizer.o: cxx_clang src/model/optimizer.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/parser.o: cxx_clang src/model/parser.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/semanticAnalyser.o: cxx_clang src/model/semanticAnalyser.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/symbol.o: cxx_clang src/model/symbol.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
+build bin-int/Debug/type.o: cxx_clang src/model/type.cpp | bin-int/Debug/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Debug -include bin-int/Debug/pch.hpp
 build bin/Debug/cv: link_clang bin-int/Debug/controller.o bin-int/Debug/main.o bin-int/Debug/pch.o bin-int/Debug/helpers.o bin-int/Debug/asmGenerator.o bin-int/Debug/iRGenerator.o bin-int/Debug/instruction.o bin-int/Debug/lexer.o bin-int/Debug/node.o bin-int/Debug/optimizer.o bin-int/Debug/parser.o bin-int/Debug/semanticAnalyser.o bin-int/Debug/symbol.o bin-int/Debug/type.o
   ldflags = $ldflags_cv_Debug
 build bin-int/Debug/cv.postbuild: postbuild | bin/Debug/cv
@@ -97,34 +100,37 @@ objdir_cv_Release = bin-int/Release
 targetdir_cv_Release = bin/Release
 target_cv_Release = cv
 
-build bin-int/Release/controller.o: cxx_clang src/controller/controller.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/main.o: cxx_clang src/controller/main.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/pch.o: cxx_clang src/controller/pch.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/helpers.o: cxx_clang src/helpers/helpers.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/asmGenerator.o: cxx_clang src/model/asmGenerator.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/iRGenerator.o: cxx_clang src/model/iRGenerator.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/instruction.o: cxx_clang src/model/instruction.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/lexer.o: cxx_clang src/model/lexer.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/node.o: cxx_clang src/model/node.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/optimizer.o: cxx_clang src/model/optimizer.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/parser.o: cxx_clang src/model/parser.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/semanticAnalyser.o: cxx_clang src/model/semanticAnalyser.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/symbol.o: cxx_clang src/model/symbol.cpp
-  cxxflags = $cxxflags_cv_Release
-build bin-int/Release/type.o: cxx_clang src/model/type.cpp
-  cxxflags = $cxxflags_cv_Release
+build bin-int/Release/pch.hpp.gch | bin-int/Release/pch.hpp.gch.d: pch_clang src/headers/pch.hpp
+  cflags = $cxxflags_cv_Release
+  depfile = bin-int/Release/pch.hpp.gch.d
+build bin-int/Release/controller.o: cxx_clang src/controller/controller.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/main.o: cxx_clang src/controller/main.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/pch.o: cxx_clang src/controller/pch.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/helpers.o: cxx_clang src/helpers/helpers.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/asmGenerator.o: cxx_clang src/model/asmGenerator.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/iRGenerator.o: cxx_clang src/model/iRGenerator.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/instruction.o: cxx_clang src/model/instruction.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/lexer.o: cxx_clang src/model/lexer.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/node.o: cxx_clang src/model/node.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/optimizer.o: cxx_clang src/model/optimizer.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/parser.o: cxx_clang src/model/parser.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/semanticAnalyser.o: cxx_clang src/model/semanticAnalyser.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/symbol.o: cxx_clang src/model/symbol.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
+build bin-int/Release/type.o: cxx_clang src/model/type.cpp | bin-int/Release/pch.hpp.gch
+  cxxflags = $cxxflags_cv_Release -include bin-int/Release/pch.hpp
 build bin/Release/cv: link_clang bin-int/Release/controller.o bin-int/Release/main.o bin-int/Release/pch.o bin-int/Release/helpers.o bin-int/Release/asmGenerator.o bin-int/Release/iRGenerator.o bin-int/Release/instruction.o bin-int/Release/lexer.o bin-int/Release/node.o bin-int/Release/optimizer.o bin-int/Release/parser.o bin-int/Release/semanticAnalyser.o bin-int/Release/symbol.o bin-int/Release/type.o
   ldflags = $ldflags_cv_Release
 build bin-int/Release/cv.postbuild: postbuild | bin/Release/cv

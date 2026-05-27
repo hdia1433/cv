@@ -395,7 +395,7 @@ std::vector<nodes::Node*> Parser::parseScope()
             continue;
         }
 
-        statements.emplace_back(node);
+        statements.emplace_back(std::move(node));
     }
 
     std::stringstream errorStream;
@@ -427,7 +427,7 @@ nodes::Node* Parser::parseAbort(const Coordinate& location)
         return errors.back();
     }
 
-    return new nodes::Abort(parseExpression(), location);
+    return new nodes::Abort(std::move(parseExpression()), location);
 }
 #pragma endregion
 
@@ -525,7 +525,7 @@ nodes::Node* Parser::parseAssign()
         return errors.back();
     }
 
-    nodes::Node* left;
+    nodes::Node* left = nullptr;
 
     Token tok = *pTok;
     if (isType(tok.type))
@@ -562,7 +562,7 @@ nodes::Node* Parser::parseAssign()
             consume();
             if (TokenType::opStar == tok.type)
             {
-                type = Type{.kind = TypeKind::tpPoint, .baseType = std::make_unique<Type>(Type{.kind = type.kind})};
+                type = Type(TypeKind::tpPoint, std::make_unique<Type>(type));
                 if (!(pTok = peek()))
                 {
                     std::stringstream errorStream;
@@ -580,7 +580,7 @@ nodes::Node* Parser::parseAssign()
                 tok = *pTok;
                 continue;
             }
-            type = Type{.kind = TypeKind::tpArray, .baseType = std::make_unique<Type>(Type{.kind = type.kind})};
+            type = Type(TypeKind::tpArray, std::make_unique<Type>(type));
             if (!(pTok = peek()))
             {
                 std::stringstream errorStream;
@@ -705,7 +705,14 @@ nodes::Node* Parser::parseAssign()
         return left;
     }
 
-    return parseTerm();
+    if (!left)
+    {
+        return parseTerm();
+    }
+    else
+    {
+        return left;
+    }
 }
 
 nodes::Node* Parser::parseTerm()
@@ -913,14 +920,14 @@ Type Parser::tokenTypeToVarType(TokenType type)
     {
     case TokenType::ltInt:
     case TokenType::kwInt:
-        return Type{.kind = TypeKind::tpInt};
+        return Type(TypeKind::tpInt);
     case TokenType::kwVoid:
-        return Type{.kind = TypeKind::tpVoid};
+        return Type(TypeKind::tpVoid);
     case TokenType::kwChar:
     case TokenType::ltChar:
-        return Type{.kind = TypeKind::tpChar};
+        return Type(TypeKind::tpChar);
     default:
-        return Type{.kind = TypeKind::tpError};
+        return Type(TypeKind::tpError);
     }
 }
 #pragma endregion

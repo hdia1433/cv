@@ -1,6 +1,8 @@
 #pragma once
 #include "typeKind.hpp"
 #include <concepts>
+#include <iostream>
+#include <memory>
 #include <type_traits>
 #include <variant>
 
@@ -17,9 +19,14 @@ struct Type
     std::unique_ptr<Type> baseType;
     int size;
 
-    bool operator==(const Type& other) const;
+    Type();
+    Type(TypeKind kind, Type* baseType = nullptr, int size = 0);
+    Type(TypeKind kind, std::unique_ptr<Type>&& baseType, int size = 0);
+    Type(const Type& other);
 
-    Type clone() const;
+    Type& operator=(const Type& other);
+
+    bool operator==(const Type& other) const;
 };
 
 std::ostream& operator<<(std::ostream& ostream, Type& type);
