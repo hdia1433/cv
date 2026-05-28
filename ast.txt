@@ -9,6 +9,12 @@ Function Declaration(main, void):
 │   └── Unary Operation:
 │       ├── &
 │       └── Variable Reference(x)
+├── Binary Operation:
+│   ├── Unary Operation:
+│   │   ├── *
+│   │   └── Variable Reference(y)
+│   ├── =
+│   └── Integer Literal(6)
 └── Abort:
     └── Unary Operation:
         ├── *

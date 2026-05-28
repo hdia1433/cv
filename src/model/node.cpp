@@ -3,21 +3,6 @@
 
 namespace nodes
 {
-std::string typeToString(const Type& type)
-{
-    switch (type.kind)
-    {
-    case TypeKind::tpVoid:
-        return "void";
-    case TypeKind::tpInt:
-        return "int";
-    case TypeKind::tpChar:
-        return "char";
-    default:
-        return "error";
-    }
-}
-
 Node::Node(NodeType type, Coordinate location): type(type), location(location)
 {
 }

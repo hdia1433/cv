@@ -22,29 +22,29 @@ void SemanticAnalyser::analyse(const std::vector<nodes::Node*>& ast)
     {
         switch (node->type)
         {
-        case NodeType::funcDecl:
-        {
-            noError &= visit((nodes::FuncDecl*)node);
-            break;
-        }
-        case NodeType::varDecl:
-        {
-            nodes::VarDecl* varDecl = ((nodes::VarDecl*)node);
-            noError &= visit(varDecl, true);
-            break;
-        }
-        case NodeType::binary:
-            noError &= visit((nodes::Binary*)node, true);
-            break;
-        default:
-        {
-            std::stringstream errorStream;
-            errorStream << "An error has occurred at the line " << node->location.row << " and the column "
-                        << node->location.col
-                        << ".\nA type for a function declaration or a variable declaration was expected, but ,'";
-            errors.emplace_back(errorStream.str());
-            noError = false;
-        }
+            case NodeType::funcDecl:
+            {
+                noError &= visit((nodes::FuncDecl*)node);
+                break;
+            }
+            case NodeType::varDecl:
+            {
+                nodes::VarDecl* varDecl = ((nodes::VarDecl*)node);
+                noError &= visit(varDecl, true);
+                break;
+            }
+            case NodeType::binary:
+                noError &= visit((nodes::Binary*)node, true);
+                break;
+            default:
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the line " << node->location.row << " and the column "
+                            << node->location.col
+                            << ".\nA type for a function declaration or a variable declaration was expected, but ,'";
+                errors.emplace_back(errorStream.str());
+                noError = false;
+            }
         }
     }
 
@@ -146,25 +146,25 @@ bool SemanticAnalyser::visit(nodes::FuncDecl* funcDecl)
 
         switch (node->type)
         {
-        case NodeType::kwAbort:
-        {
-            result &= visit((nodes::Abort*)node);
-            break;
-        }
-        case NodeType::varDecl:
-            result &= visit((nodes::VarDecl*)node);
-            break;
-        case NodeType::binary:
-            result &= visit((nodes::Binary*)node);
-            break;
-        default:
-        {
-            std::stringstream errorStream;
-            errorStream << "An error has occurred at the line " << node->location.row << " and the column "
-                        << node->location.col << ".\nA valid statement was expected.";
-            errors.emplace_back(errorStream.str());
-            result = false;
-        }
+            case NodeType::kwAbort:
+            {
+                result &= visit((nodes::Abort*)node);
+                break;
+            }
+            case NodeType::varDecl:
+                result &= visit((nodes::VarDecl*)node);
+                break;
+            case NodeType::binary:
+                result &= visit((nodes::Binary*)node);
+                break;
+            default:
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the line " << node->location.row << " and the column "
+                            << node->location.col << ".\nA valid statement was expected.";
+                errors.emplace_back(errorStream.str());
+                result = false;
+            }
         }
     }
 
@@ -230,84 +230,88 @@ bool SemanticAnalyser::visit(nodes::InitList* initList)
 
         switch (value->type)
         {
-        case NodeType::literal:
-        {
-            nodes::Literal* literal = (nodes::Literal*)value;
+            case NodeType::literal:
+            {
+                nodes::Literal* literal = (nodes::Literal*)value;
 
-            if (i == 0)
-            {
-                initList->baseType = std::move(literal->litType);
+                if (i == 0)
+                {
+                    initList->baseType = std::move(literal->litType);
+                }
+                else if (initList->baseType != literal->litType)
+                {
+                    std::stringstream errorStream;
+                    errorStream
+                        << "An error has occurred at the line " << literal->location.row << " and the column "
+                        << literal->location.col << ".\nThe value " << literal->value << " is of the type "
+                        << literal->litType << " while the init list is of type " << initList->baseType
+                        << " (The type of the first value in the list.). There is no implicit conversion between "
+                           "those types.";
+                    errors.emplace_back(errorStream.str());
+                    return false;
+                }
+                break;
             }
-            else if (initList->baseType != literal->litType)
+            case NodeType::varRef:
             {
-                std::stringstream errorStream;
-                errorStream << "An error has occurred at the line " << literal->location.row << " and the column "
-                            << literal->location.col << ".\nThe value " << literal->value << " is of the type "
-                            << literal->litType << " while the init list is of type " << initList->baseType
-                            << " (The type of the first value in the list.). There is no implicit conversion between "
-                               "those types.";
-                errors.emplace_back(errorStream.str());
-                return false;
+                nodes::VarRef* varRef = (nodes::VarRef*)value;
+                auto symbol = currentSymbolTable->find(std::string(varRef->name));
+                if (symbol == currentSymbolTable->end())
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the line " << varRef->location.row << " and the column "
+                                << varRef->location.col << ".\nThe variable " << varRef->name
+                                << " is undefined. Variables must be declared before they are used.";
+                    errors.emplace_back(errorStream.str());
+                    return false;
+                }
+                else if (0 == i)
+                {
+                    initList->baseType = std::move(symbol->second->type);
+                }
+                else if (symbol->second->type != initList->baseType)
+                {
+                    std::stringstream errorStream;
+                    errorStream
+                        << "An error has occurred at the line " << varRef->location.row << " and the column "
+                        << varRef->location.col << ".\nThe variable \"" << varRef->name << "\" is of the type "
+                        << symbol->second->type << " while the init list is of type " << initList->baseType
+                        << " (The type of the first value in the list.). There is no implicit conversion between "
+                           "those types.";
+                    errors.emplace_back(errorStream.str());
+                    return false;
+                }
+                break;
             }
-            break;
-        }
-        case NodeType::varRef:
-        {
-            nodes::VarRef* varRef = (nodes::VarRef*)value;
-            auto symbol = currentSymbolTable->find(std::string(varRef->name));
-            if (symbol == currentSymbolTable->end())
+            case NodeType::binary:
             {
-                std::stringstream errorStream;
-                errorStream << "An error has occurred at the line " << varRef->location.row << " and the column "
-                            << varRef->location.col << ".\nThe variable " << varRef->name
-                            << " is undefined. Variables must be declared before they are used.";
-                errors.emplace_back(errorStream.str());
-                return false;
-            }
-            else if (0 == i)
-            {
-                initList->baseType = std::move(symbol->second->type);
-            }
-            else if (symbol->second->type != initList->baseType)
-            {
-                std::stringstream errorStream;
-                errorStream << "An error has occurred at the line " << varRef->location.row << " and the column "
-                            << varRef->location.col << ".\nThe variable \"" << varRef->name << "\" is of the type "
-                            << symbol->second->type << " while the init list is of type " << initList->baseType
-                            << " (The type of the first value in the list.). There is no implicit conversion between "
-                               "those types.";
-                errors.emplace_back(errorStream.str());
-                return false;
-            }
-            break;
-        }
-        case NodeType::binary:
-        {
-            nodes::Binary* binary = (nodes::Binary*)value;
+                nodes::Binary* binary = (nodes::Binary*)value;
 
-            if (0 == 1)
-            {
-                initList->baseType = std::move(binary->overallType);
+                if (0 == 1)
+                {
+                    initList->baseType = std::move(binary->overallType);
+                }
+                else if (initList->baseType != binary->overallType)
+                {
+                    std::stringstream errorStream;
+                    errorStream
+                        << "An error has occurred at the line " << binary->location.row << " and the column "
+                        << binary->location.col << ".\nThe operation results in the type " << binary->overallType
+                        << " while the init list is of type " << initList->baseType
+                        << " (The type of the first value in the list.). There is no implicit conversion between "
+                           "those types.";
+                    errors.emplace_back(errorStream.str());
+                    return false;
+                }
+                break;
             }
-            else if (initList->baseType != binary->overallType)
-            {
+            default:
                 std::stringstream errorStream;
-                errorStream << "An error has occurred at the line " << binary->location.row << " and the column "
-                            << binary->location.col << ".\nThe operation results in the type " << binary->overallType
-                            << " while the init list is of type " << initList->baseType
-                            << " (The type of the first value in the list.). There is no implicit conversion between "
-                               "those types.";
+                errorStream << "An error has occurred at the line " << value->location.row << " and the column "
+                            << value->location.col
+                            << ".\nA viable value to be put in an initialiser list was expected.\n";
                 errors.emplace_back(errorStream.str());
                 return false;
-            }
-            break;
-        }
-        default:
-            std::stringstream errorStream;
-            errorStream << "An error has occurred at the line " << value->location.row << " and the column "
-                        << value->location.col << ".\nA viable value to be put in an initialiser list was expected.\n";
-            errors.emplace_back(errorStream.str());
-            return false;
         }
     }
 
@@ -318,21 +322,21 @@ bool SemanticAnalyser::visit(nodes::Abort* abort)
 {
     switch (abort->expression->type)
     {
-    case NodeType::binary:
-        return visit((nodes::Binary*)abort->expression);
-    case NodeType::varRef:
-        return visit((nodes::VarRef*)abort->expression);
-    case NodeType::literal:
-    {
-        nodes::Literal* literal = (nodes::Literal*)abort->expression;
-        if (checkTypes(std::move(literal->litType), Type(TypeKind::tpInt)).kind != TypeKind::tpError)
+        case NodeType::binary:
+            return visit((nodes::Binary*)abort->expression);
+        case NodeType::varRef:
+            return visit((nodes::VarRef*)abort->expression);
+        case NodeType::literal:
         {
-            return true;
+            nodes::Literal* literal = (nodes::Literal*)abort->expression;
+            if (checkTypes(std::move(literal->litType), Type(TypeKind::tpInt)).kind != TypeKind::tpError)
+            {
+                return true;
+            }
+            break;
         }
-        break;
-    }
-    default:
-        break;
+        default:
+            break;
     }
 
     return false;
@@ -349,127 +353,142 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
         bool varNeedsSize = false;
         switch (binary->left->type)
         {
-        case NodeType::varDecl:
-        {
-            nodes::VarDecl* varDecl = (nodes::VarDecl*)binary->left;
-            if (visit(varDecl, global))
+            case NodeType::varDecl:
             {
-                type1 = varDecl->varType;
+                nodes::VarDecl* varDecl = (nodes::VarDecl*)binary->left;
+                if (visit(varDecl, global))
+                {
+                    type1 = varDecl->varType;
 
-                if (TypeKind::tpArray == type1.kind && 0 == type1.size)
-                {
-                    varNeedsSize = true;
-                }
-            }
-            else
-            {
-                result = false;
-            }
-            break;
-        }
-        case NodeType::varRef:
-        {
-            nodes::VarRef* varRef = (nodes::VarRef*)binary->left;
-            if (!visit(varRef))
-            {
-                result = false;
-            }
-            else
-            {
-                for (auto& scope : scopeStack | std::views::reverse)
-                {
-                    auto varInfo = scope.find(std::string(varRef->name));
-                    if (varInfo != scope.end())
+                    if (TypeKind::tpArray == type1.kind && 0 == type1.size)
                     {
-                        type1 = varInfo->second->type;
-                        break;
+                        varNeedsSize = true;
                     }
                 }
+                else
+                {
+                    result = false;
+                }
+                break;
             }
-            break;
-        }
-        default:
-            break;
+            case NodeType::varRef:
+            {
+                nodes::VarRef* varRef = (nodes::VarRef*)binary->left;
+                if (!visit(varRef))
+                {
+                    result = false;
+                }
+                else
+                {
+                    for (auto& scope : scopeStack | std::views::reverse)
+                    {
+                        auto varInfo = scope.find(std::string(varRef->name));
+                        if (varInfo != scope.end())
+                        {
+                            type1 = varInfo->second->type;
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            case NodeType::unary:
+            {
+                nodes::Unary* unary = (nodes::Unary*)binary->left;
+
+                if (!visit(unary))
+                {
+                    result = false;
+                }
+                else
+                {
+                    type1 = unary->unaryType;
+                }
+                break;
+            }
+            default:
+                break;
         }
 
         type2.kind = TypeKind::tpError;
 
         switch (binary->right->type)
         {
-        case NodeType::binary:
-        {
-            auto innerBinary = (nodes::Binary*)binary->right;
-            if (visit(innerBinary))
+            case NodeType::binary:
             {
-                type2 = innerBinary->overallType;
-            }
-            else
-            {
-                result = false;
-            }
-            break;
-        }
-        case NodeType::unary:
-        {
-            auto unary = (nodes::Unary*)binary->right;
-            if (visit(unary))
-            {
-                type2 = unary->unaryType;
-            }
-            else
-            {
-                result = false;
-            }
-            break;
-        }
-        case NodeType::varRef:
-        {
-            auto varRef = (nodes::VarRef*)binary->right;
-            if (visit(varRef))
-            {
-                for (auto& scope : scopeStack | std::views::reverse)
+                auto innerBinary = (nodes::Binary*)binary->right;
+                if (visit(innerBinary))
                 {
-                    auto variable = scope.find(std::string(varRef->name));
-                    if (variable != scope.end())
+                    type2 = innerBinary->overallType;
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::unary:
+            {
+                auto unary = (nodes::Unary*)binary->right;
+                if (visit(unary))
+                {
+                    type2 = unary->unaryType;
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::varRef:
+            {
+                auto varRef = (nodes::VarRef*)binary->right;
+                if (visit(varRef))
+                {
+                    for (auto& scope : scopeStack | std::views::reverse)
                     {
-                        type2 = variable->second->type;
-                        break;
+                        auto variable = scope.find(std::string(varRef->name));
+                        if (variable != scope.end())
+                        {
+                            type2 = variable->second->type;
+                            break;
+                        }
                     }
                 }
-            }
-            else
-            {
-                result = false;
-            }
-            break;
-        }
-        case NodeType::literal:
-        {
-            auto literal = (nodes::Literal*)binary->right;
-            type2 = literal->litType;
-            break;
-        }
-        case NodeType::initList:
-        {
-            auto initList = (nodes::InitList*)binary->right;
-            if (visit(initList))
-            {
-                type2 = Type(TypeKind::tpArray, std::make_unique<Type>(initList->baseType), initList->values.size());
-
-                if (varNeedsSize)
+                else
                 {
-                    ((nodes::VarDecl*)binary->left)->varType.size = type2.size;
-                    type1.size = type2.size;
+                    result = false;
                 }
+                break;
             }
-            else
+            case NodeType::literal:
             {
-                type2 = Type(TypeKind::tpError);
+                auto literal = (nodes::Literal*)binary->right;
+                type2 = literal->litType;
+                break;
             }
-            break;
-        }
-        default:
-            break;
+            case NodeType::initList:
+            {
+                auto initList = (nodes::InitList*)binary->right;
+                if (visit(initList))
+                {
+                    type2 =
+                        Type(TypeKind::tpArray, std::make_unique<Type>(initList->baseType), initList->values.size());
+
+                    if (varNeedsSize)
+                    {
+                        ((nodes::VarDecl*)binary->left)->varType.size = type2.size;
+                        type1.size = type2.size;
+                    }
+                }
+                else
+                {
+                    type2 = Type(TypeKind::tpError);
+                }
+                break;
+            }
+            default:
+                break;
         }
 
         binary->overallType = checkTypes(std::move(type1), std::move(type2));
@@ -478,94 +497,94 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
     {
         switch (binary->left->type)
         {
-        case NodeType::binary:
-        {
-            auto innerBinary = (nodes::Binary*)binary->left;
-            if (visit(innerBinary))
+            case NodeType::binary:
             {
-                type1 = std::move(innerBinary->overallType);
-            }
-            else
-            {
-                result = false;
-            }
-            break;
-        }
-        case NodeType::varRef:
-        {
-            auto varRef = (nodes::VarRef*)binary->left;
-            if (visit(varRef))
-            {
-                for (auto& scope : scopeStack | std::views::reverse)
+                auto innerBinary = (nodes::Binary*)binary->left;
+                if (visit(innerBinary))
                 {
-                    auto variable = scope.find(std::string(varRef->name));
-                    if (variable != scope.end())
+                    type1 = std::move(innerBinary->overallType);
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::varRef:
+            {
+                auto varRef = (nodes::VarRef*)binary->left;
+                if (visit(varRef))
+                {
+                    for (auto& scope : scopeStack | std::views::reverse)
                     {
-                        type1 = std::move(variable->second->type);
-                        break;
+                        auto variable = scope.find(std::string(varRef->name));
+                        if (variable != scope.end())
+                        {
+                            type1 = std::move(variable->second->type);
+                            break;
+                        }
                     }
                 }
+                else
+                {
+                    result = false;
+                }
+                break;
             }
-            else
+            case NodeType::literal:
             {
-                result = false;
+                auto literal = (nodes::Literal*)binary->left;
+                type1 = std::move(literal->litType);
+                break;
             }
-            break;
-        }
-        case NodeType::literal:
-        {
-            auto literal = (nodes::Literal*)binary->left;
-            type1 = std::move(literal->litType);
-            break;
-        }
-        default:
-            break;
+            default:
+                break;
         }
 
         switch (binary->right->type)
         {
-        case NodeType::binary:
-        {
-            auto innerBinary = (nodes::Binary*)binary->right;
-            if (visit(innerBinary))
+            case NodeType::binary:
             {
-                type2 = std::move(innerBinary->overallType);
-            }
-            else
-            {
-                result = false;
-            }
-            break;
-        }
-        case NodeType::varRef:
-        {
-            auto varRef = (nodes::VarRef*)binary->right;
-            if (visit(varRef))
-            {
-                for (auto& scope : scopeStack | std::views::reverse)
+                auto innerBinary = (nodes::Binary*)binary->right;
+                if (visit(innerBinary))
                 {
-                    auto variable = scope.find(std::string(varRef->name));
-                    if (variable != scope.end())
+                    type2 = std::move(innerBinary->overallType);
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::varRef:
+            {
+                auto varRef = (nodes::VarRef*)binary->right;
+                if (visit(varRef))
+                {
+                    for (auto& scope : scopeStack | std::views::reverse)
                     {
-                        type2 = std::move(variable->second->type);
-                        break;
+                        auto variable = scope.find(std::string(varRef->name));
+                        if (variable != scope.end())
+                        {
+                            type2 = std::move(variable->second->type);
+                            break;
+                        }
                     }
                 }
+                else
+                {
+                    result = false;
+                }
+                break;
             }
-            else
+            case NodeType::literal:
             {
-                result = false;
+                auto literal = (nodes::Literal*)binary->right;
+                type2 = std::move(literal->litType);
+                break;
             }
-            break;
-        }
-        case NodeType::literal:
-        {
-            auto literal = (nodes::Literal*)binary->right;
-            type2 = std::move(literal->litType);
-            break;
-        }
-        default:
-            break;
+            default:
+                break;
         }
 
         binary->overallType = checkTypes(std::move(type1), std::move(type2));

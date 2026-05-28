@@ -453,27 +453,27 @@ nodes::Node* Parser::parseStatement()
 
     switch (tok.type)
     {
-    case TokenType::kwAbort:
-        consume();
-        statement = parseAbort(tok.location);
-        break;
-    case TokenType::semi:
-        consume();
-        statement = new nodes::Empty;
-        break;
-    case TokenType::kwVoid:
-    {
-        std::stringstream errorStream;
-        errorStream << "An error has occurred at the line " << tok.location.row << " and the column "
-                    << tok.location.col << ".\nA variable cannot be of the type 'void'.";
-        nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
-        errors.emplace_back(error);
-        statement = errors.back();
-        break;
-    }
-    default:
-        statement = parseExpression();
-        break;
+        case TokenType::kwAbort:
+            consume();
+            statement = parseAbort(tok.location);
+            break;
+        case TokenType::semi:
+            consume();
+            statement = new nodes::Empty;
+            break;
+        case TokenType::kwVoid:
+            {
+                std::stringstream errorStream;
+                errorStream << "An error has occurred at the line " << tok.location.row << " and the column "
+                            << tok.location.col << ".\nA variable cannot be of the type 'void'.";
+                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                errors.emplace_back(error);
+                statement = errors.back();
+                break;
+            }
+        default:
+            statement = parseExpression();
+            break;
     }
 
     pTok = peek();
@@ -692,6 +692,18 @@ nodes::Node* Parser::parseAssign()
             return left;
         }
     }
+    else if (tok.type == TokenType::opStar)
+    {
+        left = parseUnary();
+        pTok = peek();
+        if (pTok && pTok->type == TokenType::opAssign)
+        {
+            consume();
+            nodes::Node* right = parseExpression();
+            left = new nodes::Binary("=", left, right, left->location);
+            return left;
+        }
+    }
     else
     {
         return parseTerm();
@@ -760,14 +772,14 @@ nodes::Node* Parser::parseUnary()
     auto tok = *pTok;
     switch (tok.type)
     {
-    case TokenType::opRef:
-        tok = consume();
-        return new nodes::Unary("&", parsePrimary(), tok.location);
-    case TokenType::opStar:
-        tok = consume();
-        return new nodes::Unary("*", parsePrimary(), tok.location);
-    default:
-        return parsePrimary();
+        case TokenType::opRef:
+            tok = consume();
+            return new nodes::Unary("&", parsePrimary(), tok.location);
+        case TokenType::opStar:
+            tok = consume();
+            return new nodes::Unary("*", parsePrimary(), tok.location);
+        default:
+            return parsePrimary();
     }
 }
 
@@ -788,97 +800,97 @@ nodes::Node* Parser::parsePrimary()
     auto tok = *pTok;
     switch (tok.type)
     {
-    case TokenType::ltInt:
-        tok = consume();
-        return new nodes::Literal(std::stoi(std::string(tok.buffer)), tok.location);
-    case TokenType::identifier:
-    {
-        tok = consume();
-        std::string_view name = tok.buffer;
-        pTok = peek();
-        if (pTok && pTok->type == TokenType::lBracket)
-        {
-            consume();
-            if (!(pTok = peek()))
+        case TokenType::ltInt:
+            tok = consume();
+            return new nodes::Literal(std::stoi(std::string(tok.buffer)), tok.location);
+        case TokenType::identifier:
             {
+                tok = consume();
+                std::string_view name = tok.buffer;
+                pTok = peek();
+                if (pTok && pTok->type == TokenType::lBracket)
+                {
+                    consume();
+                    if (!(pTok = peek()))
+                    {
+                        std::stringstream errorStream;
+                        errorStream << "An error has occurred at the end of the file.\nA value "
+                                       "was expected for the index, but "
+                                       "the end of the file was found instead. In order to "
+                                       "access the index of an array you "
+                                       "use <variable name>[<index>];";
+                        nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                        errors.emplace_back(error);
+                        return errors.back();
+                    }
+                    nodes::Node* index = parseExpression();
+                    if (!(pTok = peek()))
+                    {
+                        std::stringstream errorStream;
+                        errorStream << "An error has occurred at the end of the file.\nA ']' "
+                                       "was expected to close the array "
+                                       "subscript, but the end of the file was found instead. "
+                                       "In order to access the index of "
+                                       "an array you use <variable name>[<index>];";
+                        nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                        errors.emplace_back(error);
+                        return errors.back();
+                    }
+
+                    tok = *pTok;
+                    if (tok.type != TokenType::rBracket)
+                    {
+                        std::stringstream errorStream;
+                        errorStream << "and error has occurred at the line " << tok.location.row << " and the column "
+                                    << tok.location.col << ".\nA ']' was expected to close the array subscript, but '"
+                                    << tok.buffer
+                                    << "' was found instead. In order to access the index of an array "
+                                       "you use <variable "
+                                       "name>[<index>];";
+                        nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
+                        errors.emplace_back(error);
+                        return errors.back();
+                    }
+                    consume();
+                }
+                return new nodes::VarRef(name, tok.location);
+            }
+        case TokenType::ltChar:
+            tok = consume();
+            return new nodes::Literal(tok.buffer[0], tok.location);
+        case TokenType::lBrace:
+            {
+                Coordinate location = consume().location;
+
+                std::vector<nodes::Node*> values;
+
+                while ((pTok = peek()))
+                {
+                    tok = *pTok;
+                    if (tok.type == TokenType::rBrace)
+                    {
+                        consume();
+                        return new nodes::InitList(values, location);
+                    }
+                    else if (tok.type == TokenType::comma)
+                    {
+                        consume();
+                    }
+
+                    values.emplace_back(parseExpression());
+                }
+
                 std::stringstream errorStream;
-                errorStream << "An error has occurred at the end of the file.\nA value "
-                               "was expected for the index, but "
-                               "the end of the file was found instead. In order to "
-                               "access the index of an array you "
-                               "use <variable name>[<index>];";
+                errorStream << "An error has occurred at the end of the file.\nA '}' was "
+                               "expected to close the initialiser "
+                               "list, but the end of the file was found instead.\n";
+
                 nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
                 errors.emplace_back(error);
                 return errors.back();
             }
-            nodes::Node* index = parseExpression();
-            if (!(pTok = peek()))
-            {
-                std::stringstream errorStream;
-                errorStream << "An error has occurred at the end of the file.\nA ']' "
-                               "was expected to close the array "
-                               "subscript, but the end of the file was found instead. "
-                               "In order to access the index of "
-                               "an array you use <variable name>[<index>];";
-                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
-                errors.emplace_back(error);
-                return errors.back();
-            }
-
-            tok = *pTok;
-            if (tok.type != TokenType::rBracket)
-            {
-                std::stringstream errorStream;
-                errorStream << "and error has occurred at the line " << tok.location.row << " and the column "
-                            << tok.location.col << ".\nA ']' was expected to close the array subscript, but '"
-                            << tok.buffer
-                            << "' was found instead. In order to access the index of an array "
-                               "you use <variable "
-                               "name>[<index>];";
-                nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
-                errors.emplace_back(error);
-                return errors.back();
-            }
-            consume();
-        }
-        return new nodes::VarRef(name, tok.location);
-    }
-    case TokenType::ltChar:
-        tok = consume();
-        return new nodes::Literal(tok.buffer[0], tok.location);
-    case TokenType::lBrace:
-    {
-        Coordinate location = consume().location;
-
-        std::vector<nodes::Node*> values;
-
-        while ((pTok = peek()))
-        {
-            tok = *pTok;
-            if (tok.type == TokenType::rBrace)
-            {
-                consume();
-                return new nodes::InitList(values, location);
-            }
-            else if (tok.type == TokenType::comma)
-            {
-                consume();
-            }
-
-            values.emplace_back(parseExpression());
-        }
-
-        std::stringstream errorStream;
-        errorStream << "An error has occurred at the end of the file.\nA '}' was "
-                       "expected to close the initialiser "
-                       "list, but the end of the file was found instead.\n";
-
-        nodes::Error* error = new nodes::Error(std::move(errorStream.str()));
-        errors.emplace_back(error);
-        return errors.back();
-    }
-    default:
-        break;
+        default:
+            break;
     }
 
     return new nodes::Empty;
@@ -905,12 +917,12 @@ bool Parser::isType(TokenType type)
 {
     switch (type)
     {
-    case TokenType::kwInt:
-    case TokenType::kwVoid:
-    case TokenType::kwChar:
-        return true;
-    default:
-        return false;
+        case TokenType::kwInt:
+        case TokenType::kwVoid:
+        case TokenType::kwChar:
+            return true;
+        default:
+            return false;
     }
 }
 
@@ -918,16 +930,16 @@ Type Parser::tokenTypeToVarType(TokenType type)
 {
     switch (type)
     {
-    case TokenType::ltInt:
-    case TokenType::kwInt:
-        return Type(TypeKind::tpInt);
-    case TokenType::kwVoid:
-        return Type(TypeKind::tpVoid);
-    case TokenType::kwChar:
-    case TokenType::ltChar:
-        return Type(TypeKind::tpChar);
-    default:
-        return Type(TypeKind::tpError);
+        case TokenType::ltInt:
+        case TokenType::kwInt:
+            return Type(TypeKind::tpInt);
+        case TokenType::kwVoid:
+            return Type(TypeKind::tpVoid);
+        case TokenType::kwChar:
+        case TokenType::ltChar:
+            return Type(TypeKind::tpChar);
+        default:
+            return Type(TypeKind::tpError);
     }
 }
 #pragma endregion

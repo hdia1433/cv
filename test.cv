@@ -2,6 +2,7 @@ void main()
 {
     int x = 5;
     int* y = &x;
+    *y = 6;
 
     abort *y;
 }

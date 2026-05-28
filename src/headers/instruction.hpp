@@ -1,8 +1,7 @@
 #pragma once
-#include "pch.hpp"
 #include "symbol.hpp"
-#include <variant>
 #include <functional>
+#include <variant>
 
 enum class OpCode
 {
@@ -13,12 +12,14 @@ enum class OpCode
     minus,
     mult,
     assign,
+    store,
     abort
 };
 
 enum class OperandKind
 {
     symbol,
+    reference,
     temporary,
     immediate
 };
@@ -27,32 +28,33 @@ struct Operand
 {
     OperandKind kind;
 
-    union 
+    union
     {
         Symbol* symbol;
         int temporary;
         std::variant<int, char> immediate;
     };
-    
+
     bool operator==(const Operand& other) const;
     Operand operator+(const Operand& other) const;
     Operand operator-(const Operand& other) const;
     Operand operator*(const Operand& other) const;
-private:
+
+  private:
     Operand operation(const Operand& other, const std::string& op) const;
 };
 
-template<>
-struct std::hash<Operand>
+template <> struct std::hash<Operand>
 {
     std::size_t operator()(const Operand& op) const
     {
-        std::size_t h1 = std::hash <OperandKind>{}(op.kind);
+        std::size_t h1 = std::hash<OperandKind>{}(op.kind);
         std::size_t h2;
 
-        switch(op.kind)
+        switch (op.kind)
         {
             case OperandKind::symbol:
+            case OperandKind::reference:
                 h2 = std::hash<Symbol*>{}(op.symbol);
                 break;
             case OperandKind::temporary:
@@ -76,6 +78,6 @@ struct Instruction
 
     std::string toString();
 
-private:
+  private:
     std::string opToString(const Operand& op);
 };
