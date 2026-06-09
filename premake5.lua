@@ -11,7 +11,6 @@ targetdir("bin/%{cfg.buildcfg}")
 objdir("bin-int/%{cfg.buildcfg}")
 
 buildoptions({ "-std=c++23" })
-postbuildcommands({ "ninja -t compdb > compile_commands.json" })
 
 -- Source files
 files({

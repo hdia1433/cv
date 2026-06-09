@@ -3,14 +3,16 @@
 
 bool Operand::operator==(const Operand& other) const
 {
-    if(kind != other.kind)
+    if (kind != other.kind)
     {
         return false;
     }
 
-    switch(kind)
+    switch (kind)
     {
         case OperandKind::symbol:
+        case OperandKind::reference:
+        case OperandKind::deReference:
             return symbol == other.symbol;
         case OperandKind::temporary:
             return temporary == other.temporary;
@@ -36,7 +38,7 @@ Operand Operand::operator*(const Operand& other) const
 
 Operand Operand::operation(const Operand& other, const std::string& op) const
 {
-    if(kind != OperandKind::immediate || other.kind != OperandKind::immediate)
+    if (kind != OperandKind::immediate || other.kind != OperandKind::immediate)
     {
         std::cerr << "Error, cannot add 2 operands that are not both immediates";
         throw std::runtime_error("math error");
@@ -44,28 +46,30 @@ Operand Operand::operation(const Operand& other, const std::string& op) const
 
     Operand result{.kind = OperandKind::immediate};
 
-    std::visit([&other, &op, &result, this](const auto& value, const auto& otherValue)
-    {
-        if(op == "+")
+    std::visit(
+        [&other, &op, &result, this](const auto& value, const auto& otherValue)
         {
-            result.immediate = value + otherValue;
-        }
-        else if(op == "-")
-        {
-            result.immediate = value - otherValue;
-        }
-        else if(op == "*")
-        {
-            result.immediate = value * otherValue;
-        }
-    }, immediate, other.immediate);
+            if (op == "+")
+            {
+                result.immediate = value + otherValue;
+            }
+            else if (op == "-")
+            {
+                result.immediate = value - otherValue;
+            }
+            else if (op == "*")
+            {
+                result.immediate = value * otherValue;
+            }
+        },
+        immediate, other.immediate);
 
     return result;
 }
 
 std::string Instruction::toString()
 {
-    switch(operation)
+    switch (operation)
     {
         case OpCode::functionBegin:
         {
@@ -124,24 +128,27 @@ std::string Instruction::opToString(const Operand& op)
 {
     std::stringstream line;
 
-    switch(op.kind)
+    switch (op.kind)
     {
         case OperandKind::symbol:
-            if(op.symbol->kind == SymbolType::var)
+            if (op.symbol->kind == SymbolType::var)
             {
                 line << ((Variable*)(op.symbol))->name;
                 break;
             }
             line << ((Function*)(op.symbol))->name;
             break;
+        case OperandKind::reference:
+            line << "&" << ((Variable*)op.symbol)->name;
+            break;
+        case OperandKind::deReference:
+            line << "*" << ((Variable*)op.symbol)->name;
+            break;
         case OperandKind::temporary:
             line << "t" << op.temporary;
             break;
         case OperandKind::immediate:
-            std::visit([&line](auto& value)
-            {
-                line << value;
-            }, op.immediate);
+            std::visit([&line](auto& value) { line << value; }, op.immediate);
             break;
     }
 

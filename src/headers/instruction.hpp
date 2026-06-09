@@ -12,7 +12,6 @@ enum class OpCode
     minus,
     mult,
     assign,
-    store,
     abort
 };
 
@@ -20,6 +19,7 @@ enum class OperandKind
 {
     symbol,
     reference,
+    deReference,
     temporary,
     immediate
 };
@@ -55,6 +55,7 @@ template <> struct std::hash<Operand>
         {
             case OperandKind::symbol:
             case OperandKind::reference:
+            case OperandKind::deReference:
                 h2 = std::hash<Symbol*>{}(op.symbol);
                 break;
             case OperandKind::temporary:

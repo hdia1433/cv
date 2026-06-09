@@ -1,8 +1,9 @@
 #include "controller.hpp"
+#include <cstring>
 #include <fstream>
 #include <sstream>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     if (argc < 2)
     {
@@ -10,6 +11,16 @@ int main(int argc, char *argv[])
     }
 
     std::string fileName = argv[1];
+
+    bool optimise = true;
+
+    for (uint i = 2; i < argc; i++)
+    {
+        if (0 == strcmp("--no-op", argv[i]) || 0 == strcmp("--n", argv[i]))
+        {
+            optimise = false;
+        }
+    }
 
     std::fstream file(fileName);
 
@@ -28,7 +39,7 @@ int main(int argc, char *argv[])
 
     std::string code = codestream.str();
 
-    Controller controller(std::move(code));
+    Controller controller(std::move(code), optimise);
     controller.start();
 
     return 0;

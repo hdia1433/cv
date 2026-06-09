@@ -1,6 +1,8 @@
 #include "iRGenerator.hpp"
 #include "fstream"
 #include "helpers.hpp"
+#include "instruction.hpp"
+#include "node.hpp"
 
 IRGenerator::IRGenerator(): tempNum(0), offset(0)
 {
@@ -20,16 +22,16 @@ void IRGenerator::generate(const std::vector<nodes::Node*>& ast)
         switch (node->type)
         {
             case NodeType::funcDecl:
-                {
-                    generate((nodes::FuncDecl*)node);
-                    break;
-                }
+            {
+                generate((nodes::FuncDecl*)node);
+                break;
+            }
             case NodeType::varDecl:
-                {
-                    Operand var = generateVarDecl((nodes::VarDecl*)node);
-                    instructions.emplace_back(Instruction{.operation = OpCode::define, .arg1 = var});
-                    break;
-                }
+            {
+                Operand var = generateVarDecl((nodes::VarDecl*)node);
+                instructions.emplace_back(Instruction{.operation = OpCode::define, .arg1 = var});
+                break;
+            }
             case NodeType::binary:
                 generateBinary((nodes::Binary*)node);
                 break;
@@ -135,21 +137,21 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
         switch (binary->left->type)
         {
             case NodeType::varDecl:
-                {
-                    result = generateVarDecl((nodes::VarDecl*)binary->left);
-                    Operand arg1 = generateExpression(binary->right);
+            {
+                result = generateVarDecl((nodes::VarDecl*)binary->left);
+                Operand arg1 = generateExpression(binary->right);
 
-                    instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
-                    break;
-                }
+                instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
+                break;
+            }
             case NodeType::varRef:
-                {
-                    result = generateVarRef((nodes::VarRef*)binary->left);
-                    Operand arg1 = generateExpression(binary->right);
+            {
+                result = generateVarRef((nodes::VarRef*)binary->left);
+                Operand arg1 = generateExpression(binary->right);
 
-                    instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
-                    break;
-                }
+                instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
+                break;
+            }
             default:
                 break;
         }
@@ -158,15 +160,30 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
     return result;
 }
 
+Operand IRGenerator::generateUnary(nodes::Unary* unary)
+{
+    if ("&" == unary->op)
+    {
+        return Operand{.kind = OperandKind::reference,
+                       .symbol = generateVarRef((nodes::VarRef*)unary->expression.get()).symbol};
+    }
+    else if ("*" == unary->op)
+    {
+        return Operand{.kind = OperandKind::deReference,
+                       .symbol = generateVarRef((nodes::VarRef*)unary->expression.get()).symbol};
+    }
+    return generateExpression(unary->expression.get());
+}
+
 void IRGenerator::generateBody(nodes::Node* node)
 {
     switch (node->type)
     {
         case NodeType::kwAbort:
-            {
-                generate((nodes::Abort*)node);
-                break;
-            }
+        {
+            generate((nodes::Abort*)node);
+            break;
+        }
         case NodeType::binary:
             generateBinary((nodes::Binary*)node);
             break;
@@ -180,28 +197,30 @@ Operand IRGenerator::generateExpression(nodes::Node* node)
     switch (node->type)
     {
         case NodeType::literal:
+        {
+            Operand value{.kind = OperandKind::immediate};
+
+            nodes::Literal* lit = (nodes::Literal*)node;
+
+            if (const int* integer = std::get_if<int>(&lit->value))
             {
-                Operand value{.kind = OperandKind::immediate};
-
-                nodes::Literal* lit = (nodes::Literal*)node;
-
-                if (const int* integer = std::get_if<int>(&lit->value))
-                {
-                    value.immediate = *integer;
-                }
-                else if (const char* character = std::get_if<char>(&lit->value))
-                {
-                    value.immediate = *character;
-                }
-
-                return value;
+                value.immediate = *integer;
             }
+            else if (const char* character = std::get_if<char>(&lit->value))
+            {
+                value.immediate = *character;
+            }
+
+            return value;
+        }
         case NodeType::varDecl:
             return generateVarDecl((nodes::VarDecl*)node);
         case NodeType::varRef:
             return generateVarRef((nodes::VarRef*)node);
         case NodeType::binary:
             return generateBinary((nodes::Binary*)node);
+        case NodeType::unary:
+            return generateUnary((nodes::Unary*)node);
         default:
             std::println("Broken!");
             return Operand{};

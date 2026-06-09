@@ -1,18 +1,17 @@
 #pragma once
-#include "pch.hpp"
-#include "node.hpp"
 #include "instruction.hpp"
 #include "node.hpp"
 #include <unordered_map>
 
 class IRGenerator
 {
-private:
+  private:
     std::vector<Instruction> instructions;
     std::unordered_map<std::string, Variable*>* currentSymbolTable;
     uint tempNum;
     uint offset;
-public:
+
+  public:
     IRGenerator();
 
     std::vector<Instruction>& getInstructions();
@@ -20,11 +19,12 @@ public:
     void generate(const std::vector<nodes::Node*>& ast);
 
     void printToFile(const std::string& fileName = "irg.cvirg");
-private:
+
+  private:
     void generate(nodes::FuncDecl* funcDecl);
     void generate(nodes::Abort* abort);
-
     Operand generateBinary(nodes::Binary* binary);
+    Operand generateUnary(nodes::Unary* unary);
     void generateBody(nodes::Node* node);
     Operand generateVarDecl(nodes::VarDecl* varDecl);
     Operand generateVarRef(nodes::VarRef* varRef);

@@ -1,15 +1,15 @@
-#include "pch.hpp"
+#include "asmGenerator.hpp"
+#include "iRGenerator.hpp"
 #include "lexer.hpp"
+#include "optimizer.hpp"
 #include "parser.hpp"
 #include "semanticAnalyser.hpp"
-#include "iRGenerator.hpp"
-#include "optimizer.hpp"
-#include "asmGenerator.hpp"
 
 class Controller
 {
-private:
+  private:
     std::string code;
+    bool optimise;
 
     Lexer lexer;
     Parser parser;
@@ -17,8 +17,9 @@ private:
     IRGenerator iRGenerator;
     Optimizer optimizer;
     AsmGenerator asmGenerator;
-public:
-    Controller(const std::string& code);
+
+  public:
+    Controller(const std::string& code, bool optimise = false);
 
     void start();
 };

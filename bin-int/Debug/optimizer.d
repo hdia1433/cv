@@ -740,6 +740,22 @@ bin-int/Debug/optimizer.o: \
   src/headers/token.hpp src/headers/type.hpp src/headers/typeKind.hpp \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/concepts \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__concepts/common_with.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/memory \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/align.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/inout_ptr.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/is_sufficiently_aligned.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/out_ptr.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/raw_storage_iterator.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/temporary_buffer.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/unique_temporary_buffer.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__new/global_new_delete.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__new/nothrow_t.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/assume_aligned.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/concepts.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/ranges_construct_at.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/ranges_destroy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/ranges_uninitialized_algorithms.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/uses_allocator_construction.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/type_traits \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/add_cv_quals.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/aligned_union.h \
@@ -759,66 +775,171 @@ bin-int/Debug/optimizer.o: \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/reference_converts_from_temporary.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/variant \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/forward_like.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/ranges \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/common_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/common_iterator.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/counted.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/counted_iterator.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/span \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__fwd/span.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/drop_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/empty_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/iota_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/unreachable_sentinel.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/movable_box.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/non_propagating_cache.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/repeat_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/drop_while_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_if_not.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_if.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/elements_of.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/elements_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/filter_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/join_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/iterator_with_data.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/as_lvalue.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/lazy_split_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_mismatch.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/in_in_result.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/single_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/rbegin.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/rend.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/reverse_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/split_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_search.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/take_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_min.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/take_while_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/transform_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/views.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/istream_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/adjacent_transform_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/adjacent_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__tuple/tuple_transform.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/zip_transform_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/zip_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/product_iterator.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/chunk_by_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_adjacent_find.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/adjacent_find.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/join_with_view.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/as_const.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/to.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/iterator \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/front_insert_iterator.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/insert_iterator.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/istream_iterator.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/ostream_iterator.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/mergeable.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/permutable.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/sortable.h \
   src/headers/helpers.hpp \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/algorithm \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/adjacent_find.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/all_of.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/any_of.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/binary_search.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/copy_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/count_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/equal_range.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/find_if_not.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/generate.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/generate_n.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/includes.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/inplace_merge.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/destruct_n.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_heap.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_heap_until.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_partitioned.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_sorted.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_sorted_until.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/make_heap.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/push_heap.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/sift_down.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/merge.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/minmax.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/minmax_element.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/next_permutation.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/none_of.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/nth_element.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/sort.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/partial_sort.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/sort_heap.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/pop_heap.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__debug_utils/strict_weak_ordering_check.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__debug_utils/randomize_range.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__bit/bit_log2.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__bit/blsr.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/partial_sort_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/make_projected.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/partition.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/partition_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/partition_point.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/prev_permutation.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/remove_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/remove_copy_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace_copy_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/reverse_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/rotate_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/search_n.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/set_difference.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/set_intersection.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/set_symmetric_difference.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/set_union.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/shuffle.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__random/uniform_int_distribution.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__random/is_valid.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__random/log2.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/stable_partition.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/stable_sort.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/radix_sort.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__numeric/partial_sum.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/unique.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/unique_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/pstl.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/sample.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/in_found_result.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/in_in_result.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/in_out_out_result.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/min_max_result.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/out_value_result.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_adjacent_find.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_all_of.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_any_of.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_binary_search.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_clamp.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_contains.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_copy_backward.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_copy_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_copy_n.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_count.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_count_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_equal.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_equal_range.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_fill.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_end.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_if_not.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_for_each_n.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_generate.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_generate_n.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_includes.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_inplace_merge.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/sortable.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/permutable.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_heap.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_heap_until.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_partitioned.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_permutation.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_sorted.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_sorted_until.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_lexicographical_compare.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_lower_bound.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_make_heap.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_max.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_max_element.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_merge.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/mergeable.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_min.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_min_element.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_minmax.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_minmax_element.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_mismatch.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_move.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_move_backward.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_next_permutation.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_none_of.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_nth_element.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_partial_sort.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_partial_sort_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_partition.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_partition_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_partition_point.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_pop_heap.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_prev_permutation.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_push_heap.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_remove.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_remove_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_remove_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_remove_copy_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_replace.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_replace_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_replace_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_replace_copy_if.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_reverse.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_reverse_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_rotate.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_rotate_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_sample.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/uniform_random_bit_generator_adaptor.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__random/uniform_random_bit_generator.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_search.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_search_n.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_set_difference.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_set_intersection.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_set_symmetric_difference.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_set_union.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_shuffle.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_sort.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_sort_heap.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_stable_partition.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_stable_sort.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_swap_ranges.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_unique.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_unique_copy.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/shift_left.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/shift_right.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_contains_subrange.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_ends_with.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_starts_with.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_last.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_fold.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/unordered_set
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/string:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/max.h:
@@ -1565,6 +1686,22 @@ src/headers/type.hpp:
 src/headers/typeKind.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/concepts:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__concepts/common_with.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/memory:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/align.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/inout_ptr.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/is_sufficiently_aligned.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/out_ptr.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/raw_storage_iterator.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/temporary_buffer.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/unique_temporary_buffer.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__new/global_new_delete.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__new/nothrow_t.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/assume_aligned.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/concepts.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/ranges_construct_at.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/ranges_destroy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/ranges_uninitialized_algorithms.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/uses_allocator_construction.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/type_traits:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/add_cv_quals.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/aligned_union.h:
@@ -1584,64 +1721,169 @@ src/headers/typeKind.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/reference_converts_from_temporary.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/variant:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/forward_like.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/ranges:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/common_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/common_iterator.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/counted.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/counted_iterator.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/span:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__fwd/span.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/drop_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/empty_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/iota_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/unreachable_sentinel.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/movable_box.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/non_propagating_cache.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/repeat_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/drop_while_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_if_not.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_if.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/elements_of.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/elements_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/filter_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/join_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/iterator_with_data.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/as_lvalue.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/lazy_split_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_mismatch.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/in_in_result.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/single_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/rbegin.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/rend.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/reverse_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/split_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_search.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/take_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_min.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/take_while_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/transform_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/views.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/istream_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/adjacent_transform_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/adjacent_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__tuple/tuple_transform.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/zip_transform_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/zip_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/product_iterator.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/chunk_by_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_adjacent_find.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/adjacent_find.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/join_with_view.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/as_const.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__ranges/to.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/iterator:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/front_insert_iterator.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/insert_iterator.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/istream_iterator.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/ostream_iterator.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/mergeable.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/permutable.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/sortable.h:
 src/headers/helpers.hpp:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/algorithm:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/adjacent_find.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/all_of.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/any_of.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/binary_search.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/copy_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/count_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/equal_range.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/find_if_not.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/generate.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/generate_n.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/includes.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/inplace_merge.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/destruct_n.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_heap.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_heap_until.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_partitioned.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_sorted.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_sorted_until.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/make_heap.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/push_heap.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/sift_down.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/merge.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/minmax.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/minmax_element.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/next_permutation.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/none_of.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/nth_element.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/sort.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/partial_sort.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/sort_heap.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/pop_heap.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__debug_utils/strict_weak_ordering_check.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__debug_utils/randomize_range.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__bit/bit_log2.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__bit/blsr.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/partial_sort_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/make_projected.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/partition.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/partition_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/partition_point.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/prev_permutation.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/remove_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/remove_copy_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace_copy_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/reverse_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/rotate_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/search_n.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/set_difference.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/set_intersection.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/set_symmetric_difference.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/set_union.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/shuffle.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__random/uniform_int_distribution.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__random/is_valid.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__random/log2.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/stable_partition.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/stable_sort.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/radix_sort.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__numeric/partial_sum.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/unique.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/unique_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/pstl.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/sample.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/in_found_result.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/in_in_result.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/in_out_out_result.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/min_max_result.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/out_value_result.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_adjacent_find.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_all_of.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_any_of.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_binary_search.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_clamp.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_contains.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_copy_backward.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_copy_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_copy_n.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_count.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_count_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_equal.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_equal_range.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_fill.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_end.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_if_not.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_for_each_n.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_generate.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_generate_n.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_includes.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_inplace_merge.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/sortable.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/permutable.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_heap.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_heap_until.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_partitioned.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_permutation.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_sorted.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_is_sorted_until.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_lexicographical_compare.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_lower_bound.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_make_heap.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_max.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_max_element.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_merge.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/mergeable.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_min.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_min_element.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_minmax.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_minmax_element.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_mismatch.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_move.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_move_backward.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_next_permutation.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_none_of.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_nth_element.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_partial_sort.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_partial_sort_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_partition.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_partition_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_partition_point.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_pop_heap.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_prev_permutation.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_push_heap.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_remove.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_remove_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_remove_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_remove_copy_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_replace.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_replace_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_replace_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_replace_copy_if.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_reverse.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_reverse_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_rotate.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_rotate_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_sample.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/uniform_random_bit_generator_adaptor.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__random/uniform_random_bit_generator.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_search.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_search_n.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_set_difference.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_set_intersection.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_set_symmetric_difference.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_set_union.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_shuffle.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_sort.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_sort_heap.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_stable_partition.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_stable_sort.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_swap_ranges.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_unique.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_unique_copy.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/shift_left.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/shift_right.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_contains_subrange.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_ends_with.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_starts_with.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_find_last.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/ranges_fold.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/unordered_set:

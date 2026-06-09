@@ -1,6 +1,7 @@
 #include "semanticAnalyser.hpp"
 #include "helpers.hpp"
 #include "symbol.hpp"
+#include "typeKind.hpp"
 #include <initializer_list>
 #include <memory>
 #include <ranges>
@@ -320,26 +321,57 @@ bool SemanticAnalyser::visit(nodes::InitList* initList)
 
 bool SemanticAnalyser::visit(nodes::Abort* abort)
 {
+    bool result = false;
+
+    Type nodeType;
+
     switch (abort->expression->type)
     {
         case NodeType::binary:
-            return visit((nodes::Binary*)abort->expression);
+        {
+            auto binary = (nodes::Binary*)abort->expression;
+            result = visit(binary);
+            nodeType = binary->overallType;
+        }
         case NodeType::varRef:
-            return visit((nodes::VarRef*)abort->expression);
+        {
+            auto varRef = (nodes::VarRef*)abort->expression;
+            result = visit(varRef);
+            nodeType = ((Variable*)varRef->symbol)->type;
+        }
         case NodeType::literal:
         {
             nodes::Literal* literal = (nodes::Literal*)abort->expression;
-            if (checkTypes(std::move(literal->litType), Type(TypeKind::tpInt)).kind != TypeKind::tpError)
-            {
-                return true;
-            }
+            result = true;
+            nodeType = literal->litType;
             break;
         }
+        case NodeType::unary:
+        {
+            auto unary = (nodes::Unary*)abort->expression;
+            result = visit(unary);
+            nodeType = unary->unaryType;
+        }
         default:
+            std::print("Broken!");
+            result = false;
             break;
     }
 
-    return false;
+    if (checkTypes(nodeType, Type(TypeKind::tpInt)).kind == TypeKind::tpError)
+    {
+        result = false;
+
+        std::stringstream errorStream;
+        errorStream << "An error has occurred at the line " << abort->location.row << " and the column "
+                    << abort->location.col
+                    << ".\nThe value for an abort must be an int, or compatible with an int, but " << nodeType
+                    << " is not.";
+
+        errors.emplace_back(errorStream.str());
+    }
+
+    return result;
 }
 
 bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)

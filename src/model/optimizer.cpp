@@ -1,7 +1,10 @@
 #include "optimizer.hpp"
-#include <ranges>
 #include "helpers.hpp"
+#include "instruction.hpp"
+#include "symbol.hpp"
+#include <algorithm>
 #include <unordered_set>
+#include <vector>
 
 Optimizer::Optimizer()
 {
@@ -61,18 +64,36 @@ bool Optimizer::propagate(std::vector<Instruction>& iRCode)
         if(instr.operation == OpCode::assign && instr.arg1.kind == OperandKind::immediate)
         {
             Operand assignee = instr.result;
+            std::vector<Symbol*> pointers;
 
             for(uint j = i + 1; j < iRCode.size(); j++)
             {
                 Instruction& instr2 = iRCode[j];
-
-                if(instr2.arg1 == assignee)
+                
+                if(helpers::equalsOr(instr2.arg1.kind, {OperandKind::symbol, OperandKind::temporary}) && instr2.arg1 == assignee)
+                {
+                    instr2.arg1 = instr.arg1;
+                    changed = true;
+                }
+                else if(OperandKind::reference == instr2.arg1.kind && instr2.operation == OpCode::assign && instr2.arg1.symbol == assignee.symbol)
+                {
+                    if(!std::ranges::contains(pointers, instr2.result.symbol))
+                    {
+                        pointers.emplace_back(instr2.result.symbol);
+                    }
+                }
+                else if(OperandKind::deReference == instr2.arg1.kind && std::ranges::contains(pointers, instr2.arg1.symbol))
                 {
                     instr2.arg1 = instr.arg1;
                     changed = true;
                 }
                 
-                if(instr2.arg2 == assignee)
+                if(helpers::equalsOr(instr2.arg2.kind, {OperandKind::symbol, OperandKind::temporary}) && instr2.arg2.symbol == assignee.symbol)
+                {
+                    instr2.arg2 = instr.arg1;
+                    changed = true;
+                }
+                else if(OperandKind::deReference == instr2.arg2.kind && std::ranges::contains(pointers, instr2.arg2.symbol))
                 {
                     instr2.arg2 = instr.arg1;
                     changed = true;
@@ -125,7 +146,7 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
             keep = true;
         }
         else if((instr.result.kind == OperandKind::temporary && liveTemp.find(instr.result.temporary) != liveTemp.end()) ||
-                (instr.result.kind == OperandKind::symbol && liveVar.find(instr.result.symbol) != liveVar.end()))
+                (helpers::equalsOr(instr.result.kind, {OperandKind::symbol, OperandKind::deReference, OperandKind::reference}) && liveVar.find(instr.result.symbol) != liveVar.end()))
         {
             keep = true;
         }
@@ -136,7 +157,7 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
             {
                 liveTemp.erase(instr.result.temporary);
             }
-            else if(instr.result.kind == OperandKind::symbol && liveVar.find(instr.result.symbol) != liveVar.end())
+            else if((helpers::equalsOr(instr.result.kind, {OperandKind::symbol, OperandKind::reference, OperandKind::deReference})) && liveVar.find(instr.result.symbol) != liveVar.end())
             {
                 liveVar.erase(instr.result.symbol);
             }
@@ -145,7 +166,7 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
             {
                 liveTemp.emplace(instr.arg1.temporary);
             }
-            else if(instr.arg1.kind == OperandKind::symbol)
+            else if((helpers::equalsOr(instr.result.kind, {OperandKind::symbol, OperandKind::reference, OperandKind::deReference})))
             {
                 liveVar.emplace(instr.arg1.symbol);
             }
@@ -154,7 +175,7 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
             {
                 liveTemp.emplace(instr.arg2.temporary);
             }
-            else if(instr.arg2.kind == OperandKind::symbol)
+            else if((helpers::equalsOr(instr.result.kind, {OperandKind::symbol, OperandKind::reference, OperandKind::deReference})))
             {
                 liveVar.emplace(instr.arg2.symbol);
             }
