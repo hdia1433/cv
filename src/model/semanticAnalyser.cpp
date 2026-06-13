@@ -1,5 +1,6 @@
 #include "semanticAnalyser.hpp"
 #include "helpers.hpp"
+#include "node.hpp"
 #include "symbol.hpp"
 #include "typeKind.hpp"
 #include <initializer_list>
@@ -224,7 +225,6 @@ bool SemanticAnalyser::visit(nodes::VarRef* varRef)
 
 bool SemanticAnalyser::visit(nodes::InitList* initList)
 {
-
     for (uint i = 0; i < initList->values.size(); i++)
     {
         nodes::Node* value = initList->values[i];
@@ -256,27 +256,23 @@ bool SemanticAnalyser::visit(nodes::InitList* initList)
             case NodeType::varRef:
             {
                 nodes::VarRef* varRef = (nodes::VarRef*)value;
-                auto symbol = currentSymbolTable->find(std::string(varRef->name));
-                if (symbol == currentSymbolTable->end())
+                if(!visit(varRef))
                 {
-                    std::stringstream errorStream;
-                    errorStream << "An error has occurred at the line " << varRef->location.row << " and the column "
-                                << varRef->location.col << ".\nThe variable " << varRef->name
-                                << " is undefined. Variables must be declared before they are used.";
-                    errors.emplace_back(errorStream.str());
                     return false;
                 }
-                else if (0 == i)
+                auto symbol = (Variable*)varRef->symbol;
+
+                if (0 == i)
                 {
-                    initList->baseType = std::move(symbol->second->type);
+                    initList->baseType = std::move(symbol->type);
                 }
-                else if (symbol->second->type != initList->baseType)
+                else if (symbol->type != initList->baseType)
                 {
                     std::stringstream errorStream;
                     errorStream
                         << "An error has occurred at the line " << varRef->location.row << " and the column "
                         << varRef->location.col << ".\nThe variable \"" << varRef->name << "\" is of the type "
-                        << symbol->second->type << " while the init list is of type " << initList->baseType
+                        << symbol->type << " while the init list is of type " << initList->baseType
                         << " (The type of the first value in the list.). There is no implicit conversion between "
                            "those types.";
                     errors.emplace_back(errorStream.str());
@@ -287,8 +283,12 @@ bool SemanticAnalyser::visit(nodes::InitList* initList)
             case NodeType::binary:
             {
                 nodes::Binary* binary = (nodes::Binary*)value;
+                if(!visit(binary))
+                {
+                    return false;
+                }
 
-                if (0 == 1)
+                if (0 == i)
                 {
                     initList->baseType = std::move(binary->overallType);
                 }
@@ -305,6 +305,49 @@ bool SemanticAnalyser::visit(nodes::InitList* initList)
                     return false;
                 }
                 break;
+            }
+            case NodeType::initList:
+            {
+                auto inInitList = (nodes::InitList*)value;
+                if(!visit(initList))
+                {
+                    return false;
+                }
+
+                Type type = Type(TypeKind::tpArray, std::make_unique<Type>(inInitList->baseType));
+
+                if(0 == i)
+                {
+                    initList->baseType = std::move(type);
+                }
+                else if(initList->baseType != type)
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the line " << inInitList->location.row << " and the column " << inInitList->location.col << ".\nThe outer init list is made up of values of the type " << initList->baseType << ", while the inner init list is of the type " << type << ".\n";
+                    errors.emplace_back(errorStream.str());
+                    return false;
+                }
+                break;
+            }
+            case NodeType::subscript:
+            {
+                auto subscript = (nodes::Subscript*)value;
+                if(!visit(subscript))
+                {
+                    return false;
+                }
+
+                if(0 == i)
+                {
+                    initList->baseType = subscript->baseType;
+                }
+                else if(initList->baseType != subscript->baseType)
+                {
+                    std::stringstream errorStream;
+                    errorStream << "An error has occurred at the line " << subscript->location.row << " and the column " << subscript->location.col << ".\nThe subscript of the array variable returns a value of the type " << subscript->baseType << " while the init list is made up of values of the type " << initList->baseType << ".\n";
+                    errors.emplace_back(errorStream.str());
+                    return false;
+                }
             }
             default:
                 std::stringstream errorStream;
@@ -332,12 +375,14 @@ bool SemanticAnalyser::visit(nodes::Abort* abort)
             auto binary = (nodes::Binary*)abort->expression;
             result = visit(binary);
             nodeType = binary->overallType;
+            break;
         }
         case NodeType::varRef:
         {
             auto varRef = (nodes::VarRef*)abort->expression;
             result = visit(varRef);
             nodeType = ((Variable*)varRef->symbol)->type;
+            break;
         }
         case NodeType::literal:
         {
@@ -351,6 +396,14 @@ bool SemanticAnalyser::visit(nodes::Abort* abort)
             auto unary = (nodes::Unary*)abort->expression;
             result = visit(unary);
             nodeType = unary->unaryType;
+            break;
+        }
+        case NodeType::subscript:
+        {
+            auto subscript = (nodes::Subscript*)abort->expression;
+            result = visit(subscript);
+            nodeType = subscript->baseType;
+            break;
         }
         default:
             std::print("Broken!");
@@ -438,6 +491,20 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 }
                 break;
             }
+            case NodeType::subscript:
+            {
+                nodes::Subscript* subscript = (nodes::Subscript*)binary->left;
+
+                if(!visit(subscript))
+                {
+                    result = false;
+                }
+                else
+                {
+                    type1 = subscript->baseType;
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -492,6 +559,18 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                     result = false;
                 }
                 break;
+            }
+            case NodeType::subscript:
+            {
+                auto subscript = (nodes::Subscript*)binary->right;
+                if(!visit(subscript))
+                {
+                    result = false;
+                }
+                else
+                {
+                    type2 = subscript->baseType;
+                }
             }
             case NodeType::literal:
             {
@@ -563,6 +642,33 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 }
                 break;
             }
+            case NodeType::unary:
+            {
+                auto unary = (nodes::Unary*)binary->left;
+
+                if(visit(unary))
+                {
+                    type1 = unary->unaryType;
+                }
+                else 
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::subscript:
+            {
+                auto subscript = (nodes::Subscript*)binary->left;
+                if(visit(subscript))
+                {
+                    type1 = subscript->baseType;
+                }
+                else 
+                {
+                    result = false;
+                }
+                break;
+            }
             case NodeType::literal:
             {
                 auto literal = (nodes::Literal*)binary->left;
@@ -609,6 +715,32 @@ bool SemanticAnalyser::visit(nodes::Binary* binary, bool global)
                 }
                 break;
             }
+            case NodeType::unary:
+            {
+                auto unary = (nodes::Unary*)binary->right;
+                if(visit(unary))
+                {
+                    type2 = unary->unaryType;
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
+            case NodeType::subscript:
+            {
+                auto subscript = (nodes::Subscript*)binary->right;
+                if(visit(subscript))
+                {
+                    type2 = subscript->baseType;
+                }
+                else
+                {
+                    result = false;
+                }
+                break;
+            }
             case NodeType::literal:
             {
                 auto literal = (nodes::Literal*)binary->right;
@@ -641,43 +773,88 @@ bool SemanticAnalyser::visit(nodes::Unary* unary)
 {
     if (helpers::equalsOr(unary->op, std::initializer_list<std::string>{"*", "&"}))
     {
-        if (NodeType::varRef != unary->expression->type)
+        switch(unary->expression->type)
         {
-            std::stringstream errorStream;
-            errorStream << "An error has occurred at the line " << unary->location.row << " and the column "
-                        << unary->location.col << ".\nThe operator '" << unary->op
-                        << "' can only be followed by a variable name.";
-            errors.emplace_back(errorStream.str());
-
-            return false;
-        }
-
-        auto varRef = (nodes::VarRef*)unary->expression.get();
-        if (!visit(varRef))
-        {
-            return false;
-        }
-        else if ("*" == unary->op)
-        {
-            Type& varType = ((Variable*)varRef->symbol)->type;
-            if (TypeKind::tpPoint != varType.kind)
+            case NodeType::varRef:
             {
+                auto varRef = (nodes::VarRef*)unary->expression.get();
+                if (!visit(varRef))
+                {
+                    return false;
+                }
+                else if ("*" == unary->op)
+                {
+                    Type& varType = ((Variable*)varRef->symbol)->type;
+                    if (TypeKind::tpPoint != varType.kind)
+                    {
+                        std::stringstream errorStream;
+                        errorStream << "An error has occurred at the line " << unary->location.row << " and the column "
+                                    << unary->location.col << ".\nThe '*' operator can only be used on a pointer type, but \""
+                                    << varRef->name << "\" is of the type " << varType << ".";
+                        errors.emplace_back(errorStream.str());
+
+                        return false;
+                    }
+                    unary->unaryType = *varType.baseType;
+                }
+                else if ("&" == unary->op)
+                {
+                    unary->unaryType = Type(TypeKind::tpPoint, std::make_unique<Type>(((Variable*)varRef->symbol)->type));
+                }
+                return true;
+            }
+            case NodeType::subscript:
+            {
+                auto subscript = (nodes::Subscript*)unary->expression.get();
+                if(!visit(subscript))
+                {
+                    return false;
+                }
+                unary->unaryType = subscript->baseType;
+                return true;
+            }
+            default:
                 std::stringstream errorStream;
                 errorStream << "An error has occurred at the line " << unary->location.row << " and the column "
-                            << unary->location.col << ".\nThe '*' operator can only be used on a pointer type, but \""
-                            << varRef->name << "\" is of the type " << varType << ".";
+                            << unary->location.col << ".\nThe operator '" << unary->op
+                            << "' can only be followed by a variable name.";
                 errors.emplace_back(errorStream.str());
 
                 return false;
-            }
-            unary->unaryType = *varType.baseType;
         }
-        else if ("&" == unary->op)
-        {
-            unary->unaryType = Type(TypeKind::tpPoint, std::make_unique<Type>(((Variable*)varRef->symbol)->type));
-        }
+    }
+
+    return false;
+}
+
+bool SemanticAnalyser::visit(nodes::Subscript* subscript)
+{
+    if (NodeType::varRef != subscript->expression->type)
+    {
+        std::stringstream errorStream;
+        errorStream << "An error has occurred at the line " << subscript->location.row << " and the column " << subscript->location.col << ".\nThe [] operator can only be used after a variable name.\n";
+        errors.emplace_back(errorStream.str());
+
+        return false;
+    }
+
+    auto varRef = (nodes::VarRef*)subscript->expression.get();
+    if(!visit(varRef))
+    {
+        return false;
+    }
+
+    auto symbol = (Variable*)varRef->symbol;
+    if (helpers::equalsOr(symbol->type.kind, {TypeKind::tpPoint, TypeKind::tpArray}))
+    {
+        subscript->baseType = *symbol->type.baseType;
         return true;
     }
+    subscript->baseType = Type(TypeKind::tpError);
+
+    std::stringstream errorStream;
+    errorStream << "An error has occurred at the line " << varRef->location.row << " and the column " << varRef->location.col << ".\nThe [] operator can only be applied to pointers and arrays, but the type " << symbol->type << " was found instead.\n";
+    errors.emplace_back(errorStream.str());
 
     return false;
 }
@@ -692,7 +869,7 @@ Type SemanticAnalyser::checkTypes(Type type1, Type type2)
     else if (helpers::equalsOr(type1.kind, {TypeKind::tpInt, TypeKind::tpPoint}) &&
              helpers::equalsOr(type2.kind, {TypeKind::tpInt, TypeKind::tpPoint}))
     {
-        return Type(TypeKind::tpInt);
+        return type1.kind == TypeKind::tpPoint ? type1 : type2;
     }
 
     return Type(TypeKind::tpError);

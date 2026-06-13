@@ -1,6 +1,6 @@
 Function Declaration(main, void):
 ├── Binary Operation:
-│   ├── Variable Declaration(a, int[0]):
+│   ├── Variable Declaration(a, int[3]):
 │   ├── =
 │   └── Initialiser list:
 │       ├── Integer Literal(1)

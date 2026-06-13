@@ -14,7 +14,7 @@ class Parser
     ~Parser();
     void parse(const std::vector<Token>& tokens);
 
-    std::vector<nodes::Node*> getAst();
+    std::vector<nodes::Node*>& getAst();
 
     void printToFile();
 

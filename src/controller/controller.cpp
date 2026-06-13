@@ -30,6 +30,7 @@ void Controller::start()
     std::println("\nSemantic analysing.");
 #endif
     sAnalyser.analyse(parser.getAst());
+    parser.printToFile();
 
 #ifdef DEBUG
     std::println("\nGenerating intermediate code.");

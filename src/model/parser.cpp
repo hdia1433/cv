@@ -59,7 +59,7 @@ void Parser::parse(const std::vector<Token>& tokens)
     }
 }
 
-std::vector<nodes::Node*> Parser::getAst()
+std::vector<nodes::Node*>& Parser::getAst()
 {
     return ast;
 }
