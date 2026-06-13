@@ -14,6 +14,7 @@ enum class NodeType
     initList,
     binary,
     unary,
+    subscript,
     empty
 };
 
@@ -140,6 +141,17 @@ struct Unary: public Node
     std::unique_ptr<Node> expression;
 
     Unary(const std::string& op, Node* expression, const Coordinate& location);
+
+    std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
+};
+
+struct Subscript: public Node
+{
+    std::unique_ptr<Node> expression;
+    std::unique_ptr<Node> index;
+    Type baseType;
+
+    Subscript(Node* expression, Node* index, const Coordinate& location);
 
     std::string printToFile(int indentNum = 0, int space = 0, bool last = false) override;
 };

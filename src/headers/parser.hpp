@@ -39,6 +39,7 @@ class Parser
     nodes::Node* parseFactor();
     nodes::Node* parseUnary();
     nodes::Node* parsePrimary();
+    nodes::Node* parsePostfix();
 
     // helper
     Token* peek(uint ahead = 0);

@@ -1,21 +1,22 @@
 Function Declaration(main, void):
 ├── Binary Operation:
-│   ├── Variable Declaration(x, int):
+│   ├── Variable Declaration(a, int[0]):
+│   ├── =
+│   └── Initialiser list:
+│       ├── Integer Literal(1)
+│       ├── Integer Literal(2)
+│       └── Integer Literal(3)
+├── Binary Operation:
+│   ├── Subscript:
+│   │   ├── Variable Reference(a)
+│   │   ├── [
+│   │   ├── Integer Literal(1)
+│   │   └── ]
 │   ├── =
 │   └── Integer Literal(5)
-├── Binary Operation:
-│   ├── Variable Declaration(y, int*):
-│   ├── =
-│   └── Unary Operation:
-│       ├── &
-│       └── Variable Reference(x)
-├── Binary Operation:
-│   ├── Unary Operation:
-│   │   ├── *
-│   │   └── Variable Reference(y)
-│   ├── =
-│   └── Integer Literal(6)
 └── Abort:
-    └── Unary Operation:
-        ├── *
-        └── Variable Reference(y)
+    └── Subscript:
+        ├── Variable Reference(a)
+        ├── [
+        ├── Integer Literal(0)
+        └── ]

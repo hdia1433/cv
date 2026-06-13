@@ -528,6 +528,74 @@ std::string Unary::printToFile(int indentNum, int space, bool last)
     return result.str();
 }
 
+//subscript
+Subscript::Subscript(Node* expression, Node* index, const Coordinate& location): Node(NodeType::subscript, location), expression(expression), index(index)
+{
+
+}
+
+std::string Subscript::printToFile(int indentNum, int space, bool last)
+{
+    std::string indent = "";
+    indent.reserve(indentNum * 2);
+    if (indentNum > 0)
+    {
+        for (uint i = 0; i < indentNum - 1; i++)
+        {
+            if ((space >> i) & 1)
+            {
+                indent += "    ";
+            }
+            else
+            {
+                indent += "│   ";
+            }
+        }
+        if (last)
+        {
+            indent += "└── ";
+        }
+        else
+        {
+            indent += "├── ";
+        }
+    }
+    if (last && indentNum > 0)
+    {
+        space |= (1 << (indentNum - 1));
+    }
+    std::stringstream result;
+
+    result << indent << "Subscript:\n";
+    result << expression->printToFile(indentNum + 1, space, false);
+    std::string newIndent = "";
+    int newIndentNum = indentNum + 1;
+    newIndent.reserve(newIndentNum * 2);
+    if (newIndentNum > 0)
+    {
+        for (uint i = 0; i < newIndentNum - 1; i++)
+        {
+            if ((space >> i) & 1)
+            {
+                newIndent += "    ";
+            }
+            else
+            {
+                newIndent += "│   ";
+            }
+        }
+
+        newIndent += "├── ";
+    }
+    result << newIndent << "[\n";
+    result << index->printToFile(indentNum + 1, space, false);
+    newIndent = newIndent.substr(0, newIndent.find("├")) + "└── ";
+    result << newIndent << "]\n";
+
+    return result.str();
+}
+
+
 // Empty
 Empty::Empty(): Node(NodeType::empty, Coordinate{})
 {

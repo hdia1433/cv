@@ -1,8 +1,7 @@
 void main()
 {
-    int x = 5;
-    int* y = &x;
-    *y = 6;
+    int[] a = {1, 2, 3};
+    a[1] = 5;
 
-    abort *y;
+    abort a[0];
 }

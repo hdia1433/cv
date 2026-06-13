@@ -37,6 +37,7 @@ class SemanticAnalyser
     // statement tree
     bool visit(nodes::Binary* binary, bool global = false);
     bool visit(nodes::Unary* unary);
+    bool visit(nodes::Subscript* subscript);
     bool visit(nodes::VarRef* varRef);
     bool visit(nodes::InitList* initList);
 
