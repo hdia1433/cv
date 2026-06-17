@@ -72,6 +72,10 @@ namespace helpers
                 return 4;
             case TypeKind::tpChar:
                 return 1;
+            case TypeKind::tpPoint:
+                return 8;
+            case TypeKind::tpArray:
+                return typeToSize(*type.baseType) * type.size;
             default:
                 return 0;
         }

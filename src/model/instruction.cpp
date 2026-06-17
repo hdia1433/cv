@@ -15,6 +15,7 @@ bool Operand::operator==(const Operand& other) const
         case OperandKind::deReference:
             return symbol == other.symbol;
         case OperandKind::temporary:
+        case OperandKind::tempAddress:
             return temporary == other.temporary;
         case OperandKind::immediate:
             return immediate == other.immediate;
@@ -146,6 +147,9 @@ std::string Instruction::opToString(const Operand& op)
             break;
         case OperandKind::temporary:
             line << "t" << op.temporary;
+            break;
+        case OperandKind::tempAddress:
+            line << "*t" << op.temporary;
             break;
         case OperandKind::immediate:
             std::visit([&line](auto& value) { line << value; }, op.immediate);

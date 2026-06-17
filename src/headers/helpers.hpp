@@ -1,7 +1,4 @@
 #pragma once
-#include "pch.hpp"
-#include "token.hpp"
-#include "typeKind.hpp"
 #include "type.hpp"
 
 struct Type;

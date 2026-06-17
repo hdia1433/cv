@@ -3,6 +3,9 @@
 #include "helpers.hpp"
 #include "instruction.hpp"
 #include "node.hpp"
+#include "symbol.hpp"
+#include <cstddef>
+#include <print>
 
 IRGenerator::IRGenerator(): tempNum(0), offset(0)
 {
@@ -137,23 +140,23 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
         switch (binary->left->type)
         {
             case NodeType::varDecl:
-            {
                 result = generateVarDecl((nodes::VarDecl*)binary->left);
-                Operand arg1 = generateExpression(binary->right);
-
-                instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
                 break;
-            }
             case NodeType::varRef:
-            {
                 result = generateVarRef((nodes::VarRef*)binary->left);
-                Operand arg1 = generateExpression(binary->right);
-
-                instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
                 break;
-            }
             default:
                 break;
+        }
+
+        if(NodeType::initList == binary->right->type)
+        {
+            
+        }
+        else
+        {
+            Operand arg1 = generateExpression(binary->right);
+            instructions.emplace_back(Instruction{.operation = OpCode::assign, .result = result, .arg1 = arg1});
         }
     }
 
@@ -173,6 +176,29 @@ Operand IRGenerator::generateUnary(nodes::Unary* unary)
                        .symbol = generateVarRef((nodes::VarRef*)unary->expression.get()).symbol};
     }
     return generateExpression(unary->expression.get());
+}
+
+Operand IRGenerator::generateSubscript(nodes::Subscript* subscript)
+{
+    nodes::VarRef* expression = (nodes::VarRef*)subscript->expression.get();
+    Variable* symbol = (Variable*)expression->symbol;
+
+    Operand pointer = {.kind = OperandKind::symbol, .symbol = symbol};
+
+    if(TypeKind::tpArray == symbol->type.kind)
+    {
+        pointer.kind = OperandKind::reference;
+    }
+
+    Operand index = {.kind = OperandKind::temporary, .temporary = (int)tempNum++};
+    instructions.emplace_back(Instruction{.operation = OpCode::mult, .result = index, .arg1 = generateExpression(subscript->index.get()), .arg2 = Operand{.kind = OperandKind::immediate, .immediate = helpers::typeToSize(*symbol->type.baseType)}});
+
+    Operand pIndex = {.kind = OperandKind::temporary, .temporary = (int)tempNum++};
+    instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = pIndex, .arg1 = pointer});
+
+    pIndex.kind = OperandKind::tempAddress;
+
+    return pIndex;
 }
 
 void IRGenerator::generateBody(nodes::Node* node)
@@ -221,8 +247,10 @@ Operand IRGenerator::generateExpression(nodes::Node* node)
             return generateBinary((nodes::Binary*)node);
         case NodeType::unary:
             return generateUnary((nodes::Unary*)node);
+        case NodeType::subscript:
+            return generateSubscript((nodes::Subscript*)node);
         default:
-            std::println("Broken!");
+            std::println("Broken in generateExpression(Node*) in iRGenerator.cpp.");
             return Operand{};
     }
 }

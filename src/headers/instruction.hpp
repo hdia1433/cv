@@ -21,6 +21,7 @@ enum class OperandKind
     reference,
     deReference,
     temporary,
+    tempAddress,
     immediate
 };
 
@@ -58,6 +59,7 @@ template <> struct std::hash<Operand>
             case OperandKind::deReference:
                 h2 = std::hash<Symbol*>{}(op.symbol);
                 break;
+            case OperandKind::tempAddress:
             case OperandKind::temporary:
                 h2 = std::hash<int>{}(op.temporary);
                 break;
