@@ -1,1 +1,14 @@
 func main:
+t0 = &a
+*t0 = 1
+t0 = &a+4
+*t0 = 2
+t0 = &a+8
+*t0 = 3
+t1 = 1 * 4
+t1 = &a+t1
+*t1 = 5
+t2 = 0 * 4
+t2 = &a+t2
+exit *t2
+endFunc

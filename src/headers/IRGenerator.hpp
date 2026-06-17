@@ -25,7 +25,7 @@ class IRGenerator
     void generate(nodes::Abort* abort);
     Operand generateBinary(nodes::Binary* binary);
     Operand generateUnary(nodes::Unary* unary);
-    Operand generateInitList(Operand base, nodes::InitList* initList);
+    void generateInitList(Operand base, nodes::InitList* initList);
     Operand generateSubscript(nodes::Subscript* subscript);
     void generateBody(nodes::Node* node);
     Operand generateVarDecl(nodes::VarDecl* varDecl);

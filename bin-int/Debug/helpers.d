@@ -702,8 +702,8 @@ bin-int/Debug/helpers.o: \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/print \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__system_error/throw_system_error.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/SDKSettings.json \
-  src/helpers/helpers.cpp src/headers/helpers.hpp src/headers/pch.hpp \
-  src/headers/token.hpp src/headers/typeKind.hpp src/headers/type.hpp \
+  src/helpers/helpers.cpp src/headers/helpers.hpp src/headers/type.hpp \
+  src/headers/typeKind.hpp \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/concepts \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__concepts/common_with.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/memory \
@@ -1451,10 +1451,8 @@ bin-int/Debug/helpers.o: \
 /Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/SDKSettings.json:
 src/helpers/helpers.cpp:
 src/headers/helpers.hpp:
-src/headers/pch.hpp:
-src/headers/token.hpp:
-src/headers/typeKind.hpp:
 src/headers/type.hpp:
+src/headers/typeKind.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/concepts:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__concepts/common_with.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/memory:
