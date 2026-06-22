@@ -1,69 +1,55 @@
 #include "instruction.hpp"
 #include "sstream"
+#include <sstream>
+
+bool Temporary::operator==(const Temporary& other) const
+{
+    return value == other.value;
+}
 
 bool Operand::operator==(const Operand& other) const
 {
-    if (kind != other.kind)
-    {
-        return false;
-    }
-
-    switch (kind)
-    {
-        case OperandKind::symbol:
-        case OperandKind::reference:
-        case OperandKind::deReference:
-            return symbol == other.symbol;
-        case OperandKind::temporary:
-        case OperandKind::tempAddress:
-            return temporary == other.temporary;
-        case OperandKind::immediate:
-            return immediate == other.immediate;
-    }
+    return kind == other.kind && value == other.value;
 }
 
 Operand Operand::operator+(const Operand& other) const
 {
-    return operation(other, "+");
+    return operation(Operation::Plus, other);
 }
 
 Operand Operand::operator-(const Operand& other) const
 {
-    return operation(other, "-");
+    return operation(Operation::Minus, other);
 }
 
 Operand Operand::operator*(const Operand& other) const
 {
-    return operation(other, "*");
+    return operation(Operation::Mult, other);
 }
 
-Operand Operand::operation(const Operand& other, const std::string& op) const
+Operand Operand::operation(Operand::Operation op, const Operand& other) const
 {
-    if (kind != OperandKind::immediate || other.kind != OperandKind::immediate)
-    {
-        std::cerr << "Error, cannot add 2 operands that are not both immediates";
-        throw std::runtime_error("math error");
-    }
+    Immediate im1 = std::get<Immediate>(value);
+    Immediate im2 = std::get<Immediate>(other.value);
 
     Operand result{.kind = OperandKind::immediate};
 
-    std::visit(
-        [&other, &op, &result, this](const auto& value, const auto& otherValue)
-        {
-            if (op == "+")
+    std::visit([&result, &op](const auto& value, const auto& otherValue)
             {
-                result.immediate = value + otherValue;
-            }
-            else if (op == "-")
-            {
-                result.immediate = value - otherValue;
-            }
-            else if (op == "*")
-            {
-                result.immediate = value * otherValue;
-            }
-        },
-        immediate, other.immediate);
+                switch (op)
+                {
+                    case Operation::Plus:
+                        result.value = Immediate{value + otherValue};
+                        break;
+                    case Operation::Minus:
+                        result.value = Immediate{value - otherValue};
+                        break;
+                    case Operation::Mult:
+                        result.value = Immediate{value * otherValue};
+                        break;
+
+                }
+            }, im1, im2);
 
     return result;
 }
@@ -75,7 +61,7 @@ std::string Instruction::toString()
         case OpCode::functionBegin:
         {
             std::stringstream line;
-            line << "func " << ((Function*)(arg1.symbol))->name << ":";
+            line << "func " << ((Function*)std::get<Symbol*>(arg1.value))->name << ":";
             return line.str();
         }
         case OpCode::functionEnd:
@@ -85,7 +71,7 @@ std::string Instruction::toString()
         case OpCode::define:
         {
             std::stringstream line;
-            line << "define " << ((Variable*)arg1.symbol)->name;
+            line << "define " << ((Variable*)std::get<Symbol*>(arg1.value))->name;
             return line.str();
         }
         case OpCode::plus:
@@ -132,29 +118,33 @@ std::string Instruction::opToString(const Operand& op)
     switch (op.kind)
     {
         case OperandKind::symbol:
-            if (op.symbol->kind == SymbolType::var)
+        {
+            Symbol* symbol = std::get<Symbol*>(op.value);
+            if (symbol->kind == SymbolType::var)
             {
-                line << ((Variable*)(op.symbol))->name;
+                line << ((Variable*)(symbol))->name;
                 break;
             }
-            line << ((Function*)(op.symbol))->name;
+            line << ((Function*)(symbol))->name;
             break;
+        }
         case OperandKind::reference:
-            line << "&" << ((Variable*)op.symbol)->name;
+            line << "&" << ((Variable*)std::get<Symbol*>(op.value))->name;
             break;
         case OperandKind::deReference:
-            line << "*" << ((Variable*)op.symbol)->name;
+            line << "*" << ((Variable*)std::get<Symbol*>(op.value))->name;
             break;
         case OperandKind::temporary:
-            line << "t" << op.temporary;
+            line << "t" << std::get<Temporary>(op.value).value;
             break;
         case OperandKind::tempAddress:
-            line << "*t" << op.temporary;
+            line << "*t" << std::get<Temporary>(op.value).value;
             break;
         case OperandKind::immediate:
-            std::visit([&line](auto& value) { line << value; }, op.immediate);
+            std::visit([&line](auto& value) { line << value; }, std::get<Immediate>(op.value));
             break;
     }
+
 
     return line.str();
 }

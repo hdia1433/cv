@@ -702,7 +702,7 @@ bin-int/Debug/optimizer.o: \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/print \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__system_error/throw_system_error.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/SDKSettings.json \
-  src/model/optimizer.cpp src/headers/optimizer.hpp src/headers/pch.hpp \
+  src/model/optimizer.cpp src/headers/optimizer.hpp \
   src/headers/instruction.hpp src/headers/symbol.hpp \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/functional \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/binary_negate.h \
@@ -775,7 +775,7 @@ bin-int/Debug/optimizer.o: \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/reference_converts_from_temporary.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/variant \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/forward_like.h \
-  src/headers/helpers.hpp \
+  src/headers/reg.hpp src/headers/helpers.hpp \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/algorithm \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/adjacent_find.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/all_of.h \
@@ -1645,7 +1645,6 @@ bin-int/Debug/optimizer.o: \
 /Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/SDKSettings.json:
 src/model/optimizer.cpp:
 src/headers/optimizer.hpp:
-src/headers/pch.hpp:
 src/headers/instruction.hpp:
 src/headers/symbol.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/functional:
@@ -1721,6 +1720,7 @@ src/headers/typeKind.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/reference_converts_from_temporary.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/variant:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/forward_like.h:
+src/headers/reg.hpp:
 src/headers/helpers.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/algorithm:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/adjacent_find.h:

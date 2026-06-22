@@ -1,4 +1,4 @@
-bin-int/Debug/iRGenerator.o: \
+bin-int/Debug/regAllocater.o: \
   /Users/heberdiamond/cppProjects/cv/src/headers/pch.hpp \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/string \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/max.h \
@@ -702,8 +702,17 @@ bin-int/Debug/iRGenerator.o: \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/print \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__system_error/throw_system_error.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/SDKSettings.json \
-  src/model/iRGenerator.cpp src/headers/iRGenerator.hpp \
-  src/headers/instruction.hpp src/headers/symbol.hpp \
+  src/model/regAllocater.cpp src/headers/regAllocater.hpp \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/unordered_map \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_permutation.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__hash_table \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__new/launder.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/try_key_extraction.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/remove_const_ref.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/erase_if_container.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/ranges_iterator_traits.h \
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__node_handle \
+  src/headers/reg.hpp src/headers/instruction.hpp src/headers/symbol.hpp \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/functional \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/binary_negate.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/bind.h \
@@ -723,15 +732,6 @@ bin-int/Debug/iRGenerator.o: \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/shared_ptr.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/allocation_guard.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/allocator_destructor.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/unordered_map \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_permutation.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__hash_table \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__new/launder.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/try_key_extraction.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/remove_const_ref.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/erase_if_container.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/ranges_iterator_traits.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__node_handle \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/default_searcher.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/search.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/not_fn.h \
@@ -774,31 +774,7 @@ bin-int/Debug/iRGenerator.o: \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/is_implicit_lifetime.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/reference_converts_from_temporary.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/variant \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/forward_like.h \
-  src/headers/reg.hpp src/headers/node.hpp \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/fstream \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/path.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace_copy.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/iomanip \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/filesystem \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/copy_options.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/directory_entry.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/file_status.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/file_type.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/perms.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/file_time_type.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__chrono/file_clock.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/filesystem_error.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/operations.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/perm_options.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/space_info.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/directory_iterator.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/directory_options.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/path_iterator.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/recursive_directory_iterator.h \
-  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/u8path.h \
-  src/headers/helpers.hpp
+  /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/forward_like.h
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/string:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/max.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/comp.h:
@@ -1501,8 +1477,18 @@ bin-int/Debug/iRGenerator.o: \
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/print:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__system_error/throw_system_error.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/SDKSettings.json:
-src/model/iRGenerator.cpp:
-src/headers/iRGenerator.hpp:
+src/model/regAllocater.cpp:
+src/headers/regAllocater.hpp:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/unordered_map:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_permutation.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__hash_table:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__new/launder.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/try_key_extraction.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/remove_const_ref.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/erase_if_container.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/ranges_iterator_traits.h:
+/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__node_handle:
+src/headers/reg.hpp:
 src/headers/instruction.hpp:
 src/headers/symbol.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/functional:
@@ -1524,15 +1510,6 @@ src/headers/symbol.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/shared_ptr.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/allocation_guard.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__memory/allocator_destructor.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/unordered_map:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/is_permutation.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__hash_table:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__new/launder.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/try_key_extraction.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/remove_const_ref.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/erase_if_container.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__iterator/ranges_iterator_traits.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__node_handle:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/default_searcher.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/search.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/not_fn.h:
@@ -1578,28 +1555,3 @@ src/headers/typeKind.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/reference_converts_from_temporary.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/variant:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/forward_like.h:
-src/headers/reg.hpp:
-src/headers/node.hpp:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/fstream:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/path.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/replace_copy.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/iomanip:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/filesystem:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/copy_options.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/directory_entry.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/file_status.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/file_type.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/perms.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/file_time_type.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__chrono/file_clock.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/filesystem_error.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/operations.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/perm_options.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/space_info.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/directory_iterator.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/directory_options.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/path_iterator.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/recursive_directory_iterator.h:
-/opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__filesystem/u8path.h:
-src/headers/helpers.hpp:

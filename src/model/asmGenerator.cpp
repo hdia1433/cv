@@ -32,7 +32,7 @@ void AsmGenerator::generate(std::vector<Instruction>& irCode)
             case OpCode::assign:
                 if (instr.arg1.kind == OperandKind::immediate)
                 {
-                    std::visit([this](auto& value) { generateGlobalVariable(value); }, instr.arg1.immediate);
+                    std::visit([this](auto& value) { generateGlobalVariable(value); }, std::get<Immediate>(instr.arg1.value));
                     break;
                 }
                 else if (instr.arg1.kind == OperandKind::reference)
@@ -69,7 +69,7 @@ void AsmGenerator::generateFunctionDecl(bool init)
 
     Instruction functionDecl = consume();
 
-    Function* function = ((Function*)(functionDecl.arg1.symbol));
+    Function* function = ((Function*)std::get<Symbol*>(functionDecl.arg1.value));
 
     std::string name = function->name;
 
@@ -174,7 +174,7 @@ void AsmGenerator::generateGlobalVariable()
     }
 
     Instruction instr = consume();
-    Variable* var = (Variable*)instr.result.symbol;
+    Variable* var = (Variable*)std::get<Symbol*>(instr.result.value);
 
     assembly << ".lcomm _" << var->name << ", ";
     switch (var->type.kind)
@@ -201,7 +201,7 @@ void AsmGenerator::generateGlobalVariable(std::variant<int, char> value)
     }
 
     Instruction instr = consume();
-    Variable* var = (Variable*)instr.result.symbol;
+    Variable* var = (Variable*)std::get<Symbol*>(instr.result.value);
 
     if (var->global)
     {
@@ -270,26 +270,26 @@ void AsmGenerator::generateAbort()
     std::stringstream value;
     if (abort.arg1.kind == OperandKind::temporary)
     {
-        value << "w" << abort.arg1.temporary;
+        value << "w" << std::get<Temporary>(abort.arg1.value).value;
     }
     else if (abort.arg1.kind == OperandKind::immediate)
     {
-        if (const int* integer = std::get_if<int>(&abort.arg1.immediate))
+        if (const int* integer = std::get_if<int>(&std::get<Immediate>(abort.arg1.value)))
         {
             value << "#" << *integer;
         }
-        else if (const char* character = std::get_if<char>(&abort.arg1.immediate))
+        else if (const char* character = std::get_if<char>(&std::get<Immediate>(abort.arg1.value)))
         {
             value << "#'" << *character << "'";
         }
     }
     else if (abort.arg1.kind == OperandKind::symbol)
     {
-        accessVar((Variable*)abort.arg1.symbol, "w0");
+        accessVar((Variable*)std::get<Symbol*>(abort.arg1.value), "w0");
     }
     else if (OperandKind::deReference == abort.arg1.kind)
     {
-        accessDeref((Variable*)abort.arg1.symbol, "w0");
+        accessDeref((Variable*)std::get<Symbol*>(abort.arg1.value), "w0");
     }
 
     if (!value.str().empty())
@@ -346,24 +346,24 @@ void AsmGenerator::generateAssign(const Instruction& instr)
     {
         case OperandKind::symbol:
         {
-            accessVar((Variable*)instr.arg1.symbol);
+            accessVar((Variable*)std::get<Symbol*>(instr.arg1.value));
             break;
         }
         case OperandKind::reference:
-            accessRef((Variable*)instr.arg1.symbol);
+            accessRef((Variable*)std::get<Symbol*>(instr.arg1.value));
             break;
         case OperandKind::deReference:
-            accessDeref((Variable*)instr.arg1.symbol);
+            accessDeref((Variable*)std::get<Symbol*>(instr.arg1.value));
             break;
         case OperandKind::temporary:
-            value << "w" << instr.arg1.temporary;
+            value << "w" << std::get<Temporary>(instr.arg1.value).value;
             break;
         case OperandKind::immediate:
-            if (const int* integer = std::get_if<int>(&instr.arg1.immediate))
+            if (const int* integer = std::get_if<int>(&std::get<Immediate>(instr.arg1.value)))
             {
                 value << "#" << *integer;
             }
-            else if (const char* character = std::get_if<char>(&instr.arg1.immediate))
+            else if (const char* character = std::get_if<char>(&std::get<Immediate>(instr.arg1.value)))
             {
                 value << "#'" << *character << "'";
             }
@@ -380,13 +380,15 @@ void AsmGenerator::generateAssign(const Instruction& instr)
     switch (instr.result.kind)
     {
         case OperandKind::symbol:
-            setVar((Variable*)instr.result.symbol, storeReg);
+            setVar((Variable*)std::get<Symbol*>(instr.result.value), storeReg);
             break;
         case OperandKind::deReference:
-            setDeref((Variable*)instr.result.symbol, storeReg);
+            setDeref((Variable*)std::get<Symbol*>(instr.result.value), storeReg);
             break;
+        case OperandKind::tempAddress:
+            assembly << indent << "str " << storeReg << ", [x" << std::get<Temporary>(instr.result.value).value << "]\n";
         default:
-            std::print("Broken!");
+            std::println("Broken in AsmGenerator::generateAssign(const Instruction&)");
             break;
     }
 }
@@ -398,7 +400,10 @@ void AsmGenerator::accessVar(Variable* symbol, const std::string& reg)
 
     if (!symbol->global)
     {
-        assembly << indent << "ldr " << reg << ", [sp, #" << symbol->offset << "]\n";
+        if (uint* offset = std::get_if<uint>(&symbol->loc))
+        {
+            assembly << indent << "ldr " << reg << ", [sp, #" << *offset << "]\n";
+        }
         return;
     }
 
@@ -414,7 +419,10 @@ void AsmGenerator::setVar(Variable* symbol, const std::string& storeReg, const s
 
     if (!symbol->global)
     {
-        assembly << indent << "str " << storeReg << ", [sp, #" << symbol->offset << "]\n";
+        if (uint* offset = std::get_if<uint>(&symbol->loc))
+        {
+            assembly << indent << "str " << storeReg << ", [sp, #" << *offset << "]\n";
+        }
         return;
     }
 
@@ -429,7 +437,10 @@ void AsmGenerator::accessRef(Variable* symbol, const std::string& reg)
 
     if (!symbol->global)
     {
-        assembly << indent << "add " << reg << ", sp, #" << symbol->offset << std::endl;
+        if (uint* offset = std::get_if<uint>(&symbol->loc))
+        {
+            assembly << indent << "add " << reg << ", sp, #" << *offset << std::endl;
+        }
         return;
     }
 
@@ -443,7 +454,10 @@ void AsmGenerator::accessDeref(Variable* symbol, const std::string& reg)
 
     if (!symbol->global)
     {
-        assembly << indent << "ldr x" << reg[1] << ", [sp, #" << symbol->offset << "]\n";
+        if (uint* offset = std::get_if<uint>(&symbol->loc))
+        {
+            assembly << indent << "ldr x" << reg[1] << ", [sp, #" << *offset << "]\n";
+        }
         assembly << indent << "ldr " << reg << ", [x" << reg[1] << "]\n";
         return;
     }
@@ -461,7 +475,10 @@ void AsmGenerator::setDeref(Variable* symbol, const std::string& storeReg, const
 
     if (!symbol->global)
     {
-        assembly << indent << "ldr " << useReg << ", [sp, #" << symbol->offset << "]\n";
+        if (uint* offset = std::get_if<uint>(&symbol->loc))
+        {
+            assembly << indent << "ldr " << useReg << ", [sp, #" << *offset << "]\n";
+        }
         assembly << indent << "str " << storeReg << ", [" << useReg << "]\n";
         return;
     }
@@ -487,21 +504,21 @@ void AsmGenerator::generateOperation(const std::string& op, const Instruction& i
 
     if (instr.result.kind == OperandKind::temporary)
     {
-        reg = getReg(instr.result.temporary);
+        reg = getReg(std::get<Temporary>(instr.result.value).value);
     }
 
     if (instr.arg1.kind == OperandKind::temporary)
     {
-        arg1 = getReg(instr.arg1.temporary);
+        arg1 = getReg(std::get<Temporary>(instr.arg1.value).value);
     }
     else if (instr.arg1.kind == OperandKind::immediate)
     {
         assembly << indent << "mov " << reg << ", ";
-        if (const int* integer = std::get_if<int>(&instr.arg1.immediate))
+        if (const int* integer = std::get_if<int>(&std::get<Immediate>(instr.arg1.value)))
         {
             assembly << "#" << *integer << std::endl;
         }
-        else if (const char* character = std::get_if<char>(&instr.arg1.immediate))
+        else if (const char* character = std::get_if<char>(&std::get<Immediate>(instr.arg1.value)))
         {
             assembly << "#'" << *character << "'\n";
         }
@@ -509,34 +526,34 @@ void AsmGenerator::generateOperation(const std::string& op, const Instruction& i
     }
     else if (instr.arg1.kind == OperandKind::symbol)
     {
-        accessVar((Variable*)instr.arg1.symbol);
+        accessVar((Variable*)std::get<Symbol*>(instr.arg1.value));
 
         arg1 = "w28";
     }
     else if (instr.arg1.kind == OperandKind::reference)
     {
-        accessRef((Variable*)instr.arg1.symbol);
+        accessRef((Variable*)std::get<Symbol*>(instr.arg1.value));
 
         arg1 = "x28";
         reg[0] = 'x';
     }
     else if (OperandKind::deReference == instr.arg1.kind)
     {
-        accessDeref((Variable*)instr.arg1.symbol);
+        accessDeref((Variable*)std::get<Symbol*>(instr.arg1.value));
         arg1 = "w28";
     }
 
     if (instr.arg2.kind == OperandKind::temporary)
     {
-        arg2 = getReg(instr.arg2.temporary);
+        arg2 = getReg(std::get<Temporary>(instr.arg2.value).value);
     }
     else if (instr.arg2.kind == OperandKind::immediate)
     {
-        if (const int* integer = std::get_if<int>(&instr.arg2.immediate))
+        if (const int* integer = std::get_if<int>(&std::get<Immediate>(instr.arg2.value)))
         {
             arg2 = "#" + std::to_string(*integer);
         }
-        else if (const char* character = std::get_if<char>(&instr.arg2.immediate))
+        else if (const char* character = std::get_if<char>(&std::get<Immediate>(instr.arg2.value)))
         {
             arg2 = "#'" + std::to_string(*character);
         }
@@ -567,14 +584,14 @@ void AsmGenerator::generateOperation(const std::string& op, const Instruction& i
             reg = "w28";
         }
 
-        accessVar((Variable*)instr.arg2.symbol, reg);
+        accessVar((Variable*)std::get<Symbol*>(instr.arg2.value), reg);
         arg2 = reg;
     }
     else if (OperandKind::reference == instr.arg2.kind)
     {
         std::string storeReg = "28" == arg1.substr(1) ? "x27" : "x28";
 
-        accessRef((Variable*)instr.arg2.symbol, storeReg);
+        accessRef((Variable*)std::get<Symbol*>(instr.arg2.value), storeReg);
         arg2 = storeReg;
 
         reg[0] = 'x';

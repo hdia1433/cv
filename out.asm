@@ -6,16 +6,19 @@ _main:
 	add x28, sp, #0
 
 	mov w28, #1
+	str w28, [x0]
 
 	add x28, sp, #0
 	add x0, x28, #4
 
 	mov w28, #2
+	str w28, [x0]
 
 	add x28, sp, #0
 	add x0, x28, #8
 
 	mov w28, #3
+	str w28, [x0]
 
 	mov w1, #1
 	mov w28, #4
@@ -25,6 +28,7 @@ _main:
 	add x1, x28, w1
 
 	mov w28, #5
+	str w28, [x1]
 
 	mov w2, #0
 	mov w28, #4

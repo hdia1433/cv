@@ -72,7 +72,7 @@ void IRGenerator::generate(nodes::FuncDecl* funcDecl)
     currentSymbolTable = &funcDecl->symbol->locals;
 
     instructions.emplace_back(Instruction{.operation = OpCode::functionBegin,
-                                          .arg1 = Operand{.kind = OperandKind::symbol, .symbol = funcDecl->symbol}});
+                                          .arg1 = Operand{.kind = OperandKind::symbol, .value = funcDecl->symbol}});
 
     for (nodes::Node* node : funcDecl->body)
     {
@@ -96,15 +96,15 @@ Operand IRGenerator::generateVarDecl(nodes::VarDecl* varDecl)
 {
     if (!varDecl->symbol->global)
     {
-        varDecl->symbol->offset = offset;
+        varDecl->symbol->loc = offset;
         offset += helpers::typeToSize(varDecl->symbol->type);
     }
-    return Operand{.kind = OperandKind::symbol, .symbol = varDecl->symbol};
+    return Operand{.kind = OperandKind::symbol, .value = varDecl->symbol};
 }
 
 Operand IRGenerator::generateVarRef(nodes::VarRef* varRef)
 {
-    return Operand{.kind = OperandKind::symbol, .symbol = varRef->symbol};
+    return Operand{.kind = OperandKind::symbol, .value = varRef->symbol};
 }
 
 Operand IRGenerator::generateBinary(nodes::Binary* binary)
@@ -115,7 +115,7 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
     {
         Operand arg1 = generateExpression(binary->left);
         Operand arg2 = generateExpression(binary->right);
-        result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++};
+        result = Operand{.kind = OperandKind::temporary, .value = Temporary{(int)tempNum++}};
 
         instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = result, .arg1 = arg1, .arg2 = arg2});
     }
@@ -123,7 +123,7 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
     {
         Operand arg1 = generateExpression(binary->left);
         Operand arg2 = generateExpression(binary->right);
-        result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++};
+        result = Operand{.kind = OperandKind::temporary, .value = Temporary{(int)tempNum++}};
 
         instructions.emplace_back(
             Instruction{.operation = OpCode::minus, .result = result, .arg1 = arg1, .arg2 = arg2});
@@ -132,7 +132,7 @@ Operand IRGenerator::generateBinary(nodes::Binary* binary)
     {
         Operand arg1 = generateExpression(binary->left);
         Operand arg2 = generateExpression(binary->right);
-        result = Operand{.kind = OperandKind::temporary, .temporary = (int)tempNum++};
+        result = Operand{.kind = OperandKind::temporary, .value = Temporary{(int)tempNum++}};
 
         instructions.emplace_back(Instruction{.operation = OpCode::mult, .result = result, .arg1 = arg1, .arg2 = arg2});
     }
@@ -174,12 +174,12 @@ Operand IRGenerator::generateUnary(nodes::Unary* unary)
     if ("&" == unary->op)
     {
         return Operand{.kind = OperandKind::reference,
-                       .symbol = generateVarRef((nodes::VarRef*)unary->expression.get()).symbol};
+                       .value = generateVarRef((nodes::VarRef*)unary->expression.get()).value};
     }
     else if ("*" == unary->op)
     {
         return Operand{.kind = OperandKind::deReference,
-                       .symbol = generateVarRef((nodes::VarRef*)unary->expression.get()).symbol};
+                       .value = generateVarRef((nodes::VarRef*)unary->expression.get()).value};
     }
     return generateExpression(unary->expression.get());
 }
@@ -205,10 +205,10 @@ void IRGenerator::generateInitList(Operand base, nodes::InitList* initList)
 
     for(uint i = 0; i < initList->values.size(); i++)
     {
-        Operand index = {.kind = OperandKind::temporary, .temporary = temp};
+        Operand index = {.kind = OperandKind::temporary, .value = Temporary{temp}};
         if(0 != i)
         {
-            instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = index, .arg1 = base, .arg2 = Operand{.kind = OperandKind::immediate, .immediate = (int)i * helpers::typeToSize(initList->baseType)}});
+            instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = index, .arg1 = base, .arg2 = Operand{.kind = OperandKind::immediate, .value = (int)i * helpers::typeToSize(initList->baseType)}});
         }
         else
         {
@@ -232,15 +232,15 @@ Operand IRGenerator::generateSubscript(nodes::Subscript* subscript)
     nodes::VarRef* expression = (nodes::VarRef*)subscript->expression.get();
     Variable* symbol = (Variable*)expression->symbol;
 
-    Operand pointer = {.kind = OperandKind::symbol, .symbol = symbol};
+    Operand pointer = {.kind = OperandKind::symbol, .value = symbol};
 
     if(TypeKind::tpArray == symbol->type.kind)
     {
         pointer.kind = OperandKind::reference;
     }
 
-    Operand index = {.kind = OperandKind::temporary, .temporary = (int)tempNum++};
-    instructions.emplace_back(Instruction{.operation = OpCode::mult, .result = index, .arg1 = generateExpression(subscript->index.get()), .arg2 = Operand{.kind = OperandKind::immediate, .immediate = helpers::typeToSize(*symbol->type.baseType)}});
+    Operand index = {.kind = OperandKind::temporary, .value = Temporary{(int)tempNum++}};
+    instructions.emplace_back(Instruction{.operation = OpCode::mult, .result = index, .arg1 = generateExpression(subscript->index.get()), .arg2 = Operand{.kind = OperandKind::immediate, .value = helpers::typeToSize(*symbol->type.baseType)}});
 
     instructions.emplace_back(Instruction{.operation = OpCode::plus, .result = index, .arg1 = pointer, .arg2 = index});
 
@@ -278,11 +278,11 @@ Operand IRGenerator::generateExpression(nodes::Node* node)
 
             if (const int* integer = std::get_if<int>(&lit->value))
             {
-                value.immediate = *integer;
+                value.value = *integer;
             }
             else if (const char* character = std::get_if<char>(&lit->value))
             {
-                value.immediate = *character;
+                value.value = *character;
             }
 
             return value;

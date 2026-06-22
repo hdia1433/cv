@@ -2,7 +2,10 @@
 #include "functional"
 #include "token.hpp"
 #include "type.hpp"
+#include "reg.hpp"
 #include <unordered_map>
+
+using SymbolLocation = std::variant<uint, Reg>;
 
 struct FunctionSignature
 {
@@ -40,7 +43,7 @@ struct Symbol
 
 struct Variable: public Symbol
 {
-    uint offset;
+    SymbolLocation loc;
     std::string name;
     Type type;
     Coordinate location;

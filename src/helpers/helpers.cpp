@@ -7,7 +7,7 @@ namespace helpers
     {
         try
         {
-            std::stoi(str);
+            int _ = std::stoi(str);
             return true;
         }
         catch(const std::exception& e)
@@ -20,7 +20,7 @@ namespace helpers
     {
         try
         {
-            std::stof(str);
+            float _ = std::stof(str);
             return true;
         }
         catch(const std::exception& e)
@@ -34,7 +34,7 @@ namespace helpers
     {
         try
         {
-            std::stod(str);
+            double _ = std::stod(str);
             return true;
         }
         catch(const std::exception& e)

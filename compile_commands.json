@@ -358,5 +358,29 @@
   "command": "",
   "file": "bin-int/Debug/cv.postbuild",
   "output": "cv_Debug"
+ },
+ {
+  "directory": "/Users/heberdiamond/cppProjects/cv",
+  "arguments": [
+   "clang++",
+   "-include",
+   "bin-int/Debug/pch.hpp",
+   "-MD",
+   "-MP",
+   "-DDEBUG",
+   "-Isrc/headers",
+   "-arch",
+   "arm64",
+   "-g",
+   "-std=c++23",
+   "-std=c++23",
+   "-o",
+   "bin-int/Debug/regAllocater.o",
+   "-MF",
+   "bin-int/Debug/regAllocater.d",
+   "-c",
+   "src/model/regAllocater.cpp"
+  ],
+  "file": "src/model/regAllocater.cpp"
  }
 ]

@@ -85,6 +85,7 @@ GENERATED += $(OBJDIR)/node.o
 GENERATED += $(OBJDIR)/optimizer.o
 GENERATED += $(OBJDIR)/parser.o
 GENERATED += $(OBJDIR)/pch.o
+GENERATED += $(OBJDIR)/regAllocater.o
 GENERATED += $(OBJDIR)/semanticAnalyser.o
 GENERATED += $(OBJDIR)/symbol.o
 GENERATED += $(OBJDIR)/type.o
@@ -99,6 +100,7 @@ OBJECTS += $(OBJDIR)/node.o
 OBJECTS += $(OBJDIR)/optimizer.o
 OBJECTS += $(OBJDIR)/parser.o
 OBJECTS += $(OBJDIR)/pch.o
+OBJECTS += $(OBJDIR)/regAllocater.o
 OBJECTS += $(OBJDIR)/semanticAnalyser.o
 OBJECTS += $(OBJDIR)/symbol.o
 OBJECTS += $(OBJDIR)/type.o
@@ -196,6 +198,9 @@ $(OBJDIR)/optimizer.o: src/model/optimizer.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/parser.o: src/model/parser.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/regAllocater.o: src/model/regAllocater.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/semanticAnalyser.o: src/model/semanticAnalyser.cpp

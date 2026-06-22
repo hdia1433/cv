@@ -6,7 +6,7 @@
 #include <unordered_set>
 #include <vector>
 
-Optimizer::Optimizer()
+Optimizer::Optimizer() 
 {
 
 }
@@ -75,25 +75,25 @@ bool Optimizer::propagate(std::vector<Instruction>& iRCode)
                     instr2.arg1 = instr.arg1;
                     changed = true;
                 }
-                else if(OperandKind::reference == instr2.arg1.kind && instr2.operation == OpCode::assign && instr2.arg1.symbol == assignee.symbol)
+                else if(OperandKind::reference == instr2.arg1.kind && instr2.operation == OpCode::assign && instr2.arg1.value == assignee.value)
                 {
-                    if(!std::ranges::contains(pointers, instr2.result.symbol))
+                    if(!std::ranges::contains(pointers, std::get<Symbol*>(instr2.result.value)))
                     {
-                        pointers.emplace_back(instr2.result.symbol);
+                        pointers.emplace_back(std::get<Symbol*>(instr2.result.value));
                     }
                 }
-                else if(OperandKind::deReference == instr2.arg1.kind && std::ranges::contains(pointers, instr2.arg1.symbol))
+                else if(OperandKind::deReference == instr2.arg1.kind && std::ranges::contains(pointers, std::get<Symbol*>(instr2.arg1.value)))
                 {
                     instr2.arg1 = instr.arg1;
                     changed = true;
                 }
                 
-                if(helpers::equalsOr(instr2.arg2.kind, {OperandKind::symbol, OperandKind::temporary}) && instr2.arg2.symbol == assignee.symbol)
+                if(helpers::equalsOr(instr2.arg2.kind, {OperandKind::symbol, OperandKind::temporary}) && instr2.arg2.value == assignee.value)
                 {
                     instr2.arg2 = instr.arg1;
                     changed = true;
                 }
-                else if(OperandKind::deReference == instr2.arg2.kind && std::ranges::contains(pointers, instr2.arg2.symbol))
+                else if(OperandKind::deReference == instr2.arg2.kind && std::ranges::contains(pointers, std::get<Symbol*>(instr2.arg2.value)))
                 {
                     instr2.arg2 = instr.arg1;
                     changed = true;
@@ -145,46 +145,46 @@ bool Optimizer::eliminate(std::vector<Instruction>& iRCode)
         {
             keep = true;
         }
-        else if((instr.result.kind == OperandKind::temporary && liveTemp.find(instr.result.temporary) != liveTemp.end()) ||
-                (helpers::equalsOr(instr.result.kind, {OperandKind::symbol, OperandKind::deReference, OperandKind::reference}) && liveVar.find(instr.result.symbol) != liveVar.end()))
+        else if((instr.result.kind == OperandKind::temporary && liveTemp.find(std::get<Temporary>(instr.result.value).value) != liveTemp.end()) ||
+                (helpers::equalsOr(instr.result.kind, {OperandKind::symbol, OperandKind::deReference, OperandKind::reference}) && liveVar.find(std::get<Symbol*>(instr.result.value)) != liveVar.end()))
         {
             keep = true;
         }
 
         if(keep)
         {
-            if(instr.result.kind == OperandKind::temporary && liveTemp.find(instr.result.temporary) != liveTemp.end())
+            if(instr.result.kind == OperandKind::temporary && liveTemp.find(std::get<Temporary>(instr.result.value).value) != liveTemp.end())
             {
-                liveTemp.erase(instr.result.temporary);
+                liveTemp.erase(std::get<Temporary>(instr.result.value).value);
             }
-            else if((helpers::equalsOr(instr.result.kind, {OperandKind::symbol, OperandKind::reference, OperandKind::deReference})) && liveVar.find(instr.result.symbol) != liveVar.end())
+            else if((helpers::equalsOr(instr.result.kind, {OperandKind::symbol, OperandKind::reference, OperandKind::deReference})) && liveVar.find(std::get<Symbol*>(instr.result.value)) != liveVar.end())
             {
-                liveVar.erase(instr.result.symbol);
+                liveVar.erase(std::get<Symbol*>(instr.result.value));
             }
 
             if(instr.arg1.kind == OperandKind::temporary)
             {
-                liveTemp.emplace(instr.arg1.temporary);
+                liveTemp.emplace(std::get<Temporary>(instr.arg1.value).value);
             }
             else if((helpers::equalsOr(instr.result.kind, {OperandKind::symbol, OperandKind::reference, OperandKind::deReference})))
             {
-                liveVar.emplace(instr.arg1.symbol);
+                liveVar.emplace(std::get<Symbol*>(instr.arg1.value));
             }
 
             if(instr.arg2.kind == OperandKind::temporary)
             {
-                liveTemp.emplace(instr.arg2.temporary);
+                liveTemp.emplace(std::get<Temporary>(instr.arg2.value).value);
             }
             else if((helpers::equalsOr(instr.result.kind, {OperandKind::symbol, OperandKind::reference, OperandKind::deReference})))
             {
-                liveVar.emplace(instr.arg2.symbol);
+                liveVar.emplace(std::get<Symbol*>(instr.arg2.value));
             }
         }
         else
         {
             if(instr.result.kind == OperandKind::symbol)
             {
-                ((Variable*)instr.result.symbol)->used = false;
+                ((Variable*)std::get<Symbol*>(instr.result.value))->used = false;
             }
             deadIndexes.emplace_back(i);
         }

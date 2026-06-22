@@ -1,7 +1,5 @@
 #pragma once
-#include "pch.hpp"
 #include "instruction.hpp"
-#include <unordered_map>
 
 class Optimizer
 {

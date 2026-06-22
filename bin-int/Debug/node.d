@@ -736,8 +736,7 @@ bin-int/Debug/node.o: \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/not_fn.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/bind_back.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/bind_front.h \
-  src/headers/token.hpp src/headers/pch.hpp src/headers/type.hpp \
-  src/headers/typeKind.hpp \
+  src/headers/token.hpp src/headers/type.hpp src/headers/typeKind.hpp \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/concepts \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__concepts/common_with.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/memory \
@@ -775,6 +774,7 @@ bin-int/Debug/node.o: \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/reference_converts_from_temporary.h \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/variant \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/forward_like.h \
+  src/headers/reg.hpp \
   /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/sstream
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/string:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__algorithm/max.h:
@@ -1515,7 +1515,6 @@ src/headers/symbol.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/bind_back.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__functional/bind_front.h:
 src/headers/token.hpp:
-src/headers/pch.hpp:
 src/headers/type.hpp:
 src/headers/typeKind.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/concepts:
@@ -1555,4 +1554,5 @@ src/headers/typeKind.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__type_traits/reference_converts_from_temporary.h:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/variant:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/__utility/forward_like.h:
+src/headers/reg.hpp:
 /opt/homebrew/Cellar/llvm/22.1.6/bin/../include/c++/v1/sstream:
